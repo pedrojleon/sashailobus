@@ -85,7 +85,7 @@ values ('Registro de llegada a Destino');
 GO
 
 INSERT INTO SASHAILO.Funcion(DESCRIPCION)
-values ('Compra de Pasaje/Enconmienda');
+values ('Compra de Pasaje/Encomienda');
 
 GO
 
@@ -191,7 +191,7 @@ select @idFuncionDevolucion = ID_FUNCION from SASHAILO.Funcion
 where DESCRIPCION = 'Devolución/Cancelación de pasaje y/o encomienda'
 
 select @idFuncionCompraPasaje = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'Compra de Pasaje/Enconmienda'
+where DESCRIPCION = 'Compra de Pasaje/Encomienda'
 
 select @idFuncionConsultaPuntos = ID_FUNCION from SASHAILO.Funcion
 where DESCRIPCION = 'Consulta de puntos de pasajero frecuente'
@@ -298,7 +298,7 @@ select @idFuncionDevolucion = ID_FUNCION from SASHAILO.Funcion
 where DESCRIPCION = 'Devolución/Cancelación de pasaje y/o encomienda'
 
 select @idFuncionCompraPasaje = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'Compra de Pasaje/Enconmienda'
+where DESCRIPCION = 'Compra de Pasaje/Encomienda'
 
 select @idFuncionConsultaPuntos = ID_FUNCION from SASHAILO.Funcion
 where DESCRIPCION = 'Consulta de puntos de pasajero frecuente'
