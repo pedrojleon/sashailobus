@@ -37,8 +37,63 @@ CREATE TABLE SASHAILO.FuncionxRol(
 
 GO
 
+CREATE TABLE SASHAILO.Usuario(
+	ID_USUARIO int not null IDENTITY,
+	USUARIO varchar(15) not null,
+	PASS varchar(64) not null,
+	LOGIN_FALLIDOS smallint not null DEFAULT 0,
+	BLOQUEADO char(1) not null DEFAULT 'N',
+	HABILITADO char(1) not null DEFAULT 'S',
+	UNIQUE(USUARIO),
+	PRIMARY KEY(ID_USUARIO)
+)
+
+GO
+
+CREATE TABLE SASHAILO.RolxUsuario(
+	ID_ROLXUSUARIO int PRIMARY KEY NOT NULL IDENTITY,
+	ID_ROL int NOT NULL FOREIGN KEY REFERENCES SASHAILO.Rol(ID_ROL),
+	ID_USUARIO int NOT NULL FOREIGN KEY REFERENCES SASHAILO.Usuario(ID_USUARIO),
+	UNIQUE(ID_ROL,ID_USUARIO)
+)
+
+GO
+
+CREATE TABLE SASHAILO.Ciudad(
+	ID_CIUDAD smallint not null IDENTITY,
+	NOMBRE_CIUDAD varchar(60) not null,
+	HABILITADA char(1) not null DEFAULT 'S',
+	UNIQUE(NOMBRE_CIUDAD),
+	PRIMARY KEY (ID_CIUDAD)
+)
+
+GO
+
+
 /******************************************** FIN - CREACION DE TABLAS *********************************************/
 
+/****************** INICIO - CREACION DE USUARIOS ADMINISTRADORES  *******************/
+
+INSERT INTO SASHAILO.Usuario (USUARIO, PASS)
+values('admin1', 'E6-B8-70-50-BF-CB-81-43-FC-B8-DB-01-70-A4-DC-9E-D0-0D-90-4D-DD-3')
+GO
+INSERT INTO SASHAILO.Usuario (USUARIO, PASS)
+values('admin2', 'E6-B8-70-50-BF-CB-81-43-FC-B8-DB-01-70-A4-DC-9E-D0-0D-90-4D-DD-3')
+GO
+INSERT INTO SASHAILO.Usuario (USUARIO, PASS)
+values('admin3', 'E6-B8-70-50-BF-CB-81-43-FC-B8-DB-01-70-A4-DC-9E-D0-0D-90-4D-DD-3')
+GO
+INSERT INTO SASHAILO.RolxUsuario (ID_ROL, ID_USUARIO)
+values(1,1)
+GO
+INSERT INTO SASHAILO.RolxUsuario (ID_ROL, ID_USUARIO)
+values(1,2)
+GO
+INSERT INTO SASHAILO.RolxUsuario (ID_ROL, ID_USUARIO)
+values(1,3)
+GO
+
+/******************** FIN - CREACION DE USUARIOS ADMINISTRADORES  *******************/
 
 /******************************************** INICIO - LLENADO DE TABLAS *********************************************/
 
@@ -140,11 +195,79 @@ values(1,10)
 
 GO
 
+INSERT INTO SASHAILO.Ciudad(NOMBRE_CIUDAD)
+SELECT DISTINCT Recorrido_Ciudad_Origen FROM gd_esquema.Maestra where Recorrido_Ciudad_Origen is not null
+GO
+
 
 /******************************************** FIN - LLENADO DE TABLAS ************************************************/
 
 
 /******************************************** INICIO - CREACION DE STORED PROCEDURES ************************************************/
+
+CREATE PROCEDURE SASHAILO.login
+    	@p_usuario VARCHAR(15),
+    	@p_password VARCHAR(64),
+    	@hayErr int OUT,
+    	@errores varchar(200) OUT
+AS
+	
+BEGIN
+
+	SET @hayErr = 0
+	SET @errores = ''
+
+	/*verifico que exista el username*/
+	DECLARE @existeUser int 
+	select @existeUser = (select COUNT(*) from SASHAILO.Usuario where USUARIO=@p_usuario)
+	if @existeUser = 0
+	BEGIN
+		set @hayErr = 1
+		set @errores = 'El usuario no existe.'
+		RETURN
+	END
+	
+	/*verifico que el usuario no esté bloqueado*/
+	DECLARE @bloqueado char 
+	select @bloqueado = (select BLOQUEADO from SASHAILO.Usuario where USUARIO=@p_usuario)
+	if @bloqueado = 'S'
+	BEGIN
+		set @hayErr = 1
+		set @errores = 'El usuario está bloqueado.'
+		RETURN
+	END
+		
+	/*verifico si la password es correcta*/
+	DECLARE @password_db varchar(64) 
+	select @password_db = (select PASS from SASHAILO.Usuario where USUARIO=@p_usuario)
+	IF @password_db <> @p_password
+	BEGIN
+		
+		set @hayErr = 1
+		set @errores = 'La contraseña es incorrecta. '
+		
+		/*sumo los login fallidos*/
+		update SASHAILO.Usuario set LOGIN_FALLIDOS=(LOGIN_FALLIDOS + 1) where USUARIO=@p_usuario
+		DECLARE @login_fallidos int 
+		select @login_fallidos = (select LOGIN_FALLIDOS from SASHAILO.Usuario where USUARIO=@p_usuario)
+		
+		if @login_fallidos >= 3
+		BEGIN
+			update SASHAILO.Usuario set BLOQUEADO='S' where USUARIO=@p_usuario
+			set @errores = @errores + 'El usuario ha sido bloqueado.'
+		END
+	
+		RETURN
+	END
+	ELSE
+	BEGIN
+		/*Se logueó correctamente. Blanqueo los login fallidos*/
+		update SASHAILO.Usuario set LOGIN_FALLIDOS=0 where USUARIO=@p_usuario
+	END
+	
+END
+
+GO
 
 CREATE PROCEDURE SASHAILO.rol_alta
 	
