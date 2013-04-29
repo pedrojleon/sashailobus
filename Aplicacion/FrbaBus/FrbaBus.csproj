@@ -69,12 +69,6 @@
     <Compile Include="Abm Ciudad\Abm_Ciudad.Designer.cs">
       <DependentUpon>Abm_Ciudad.cs</DependentUpon>
     </Compile>
-    <Compile Include="Abm Ciudad\Alta_Ciudad.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Abm Ciudad\Alta_Ciudad.Designer.cs">
-      <DependentUpon>Alta_Ciudad.cs</DependentUpon>
-    </Compile>
     <Compile Include="Abm Ciudad\Modif_Ciudad.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -158,9 +152,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Abm Ciudad\Abm_Ciudad.resx">
       <DependentUpon>Abm_Ciudad.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Abm Ciudad\Alta_Ciudad.resx">
-      <DependentUpon>Alta_Ciudad.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Abm Ciudad\Modif_Ciudad.resx">
       <DependentUpon>Modif_Ciudad.cs</DependentUpon>
