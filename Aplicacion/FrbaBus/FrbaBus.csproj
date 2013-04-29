@@ -63,6 +63,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abm Ciudad\Abm_Ciudad.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Abm Ciudad\Abm_Ciudad.Designer.cs">
+      <DependentUpon>Abm_Ciudad.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abm Ciudad\Alta_Ciudad.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Abm Ciudad\Alta_Ciudad.Designer.cs">
+      <DependentUpon>Alta_Ciudad.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abm Ciudad\Modif_Ciudad.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Abm Ciudad\Modif_Ciudad.Designer.cs">
+      <DependentUpon>Modif_Ciudad.cs</DependentUpon>
+    </Compile>
     <Compile Include="Abm Micro\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,12 +98,6 @@
     </Compile>
     <Compile Include="Abm Permisos\Alta_rol.designer.cs">
       <DependentUpon>Alta_rol.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Abm Permisos\Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Abm Permisos\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Abm Permisos\Modif_rol.cs">
       <SubType>Form</SubType>
@@ -124,11 +136,11 @@
     <Compile Include="Consulta Puntos Adquiridos\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form1.cs">
+    <Compile Include="Funciones.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Funciones.Designer.cs">
+      <DependentUpon>Funciones.cs</DependentUpon>
     </Compile>
     <Compile Include="GenerarViaje\Form1.cs">
       <SubType>Form</SubType>
@@ -136,14 +148,23 @@
     <Compile Include="GenerarViaje\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Login\Form1.cs">
+    <Compile Include="Login\Login.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Login\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Login\Login.Designer.cs">
+      <DependentUpon>Login.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Abm Ciudad\Abm_Ciudad.resx">
+      <DependentUpon>Abm_Ciudad.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abm Ciudad\Alta_Ciudad.resx">
+      <DependentUpon>Alta_Ciudad.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abm Ciudad\Modif_Ciudad.resx">
+      <DependentUpon>Modif_Ciudad.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Abm Permisos\ABM_rol.resx">
       <DependentUpon>ABM_rol.cs</DependentUpon>
     </EmbeddedResource>
@@ -152,6 +173,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Abm Permisos\Modif_rol.resx">
       <DependentUpon>Modif_rol.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Login\Login.resx">
+      <DependentUpon>Login.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

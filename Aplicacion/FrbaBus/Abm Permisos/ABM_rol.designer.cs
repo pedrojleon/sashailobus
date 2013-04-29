@@ -54,13 +54,13 @@
             this.DGVRol.ReadOnly = true;
             this.DGVRol.RowHeadersWidth = 30;
             this.DGVRol.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.DGVRol.Size = new System.Drawing.Size(383, 180);
+            this.DGVRol.Size = new System.Drawing.Size(396, 180);
             this.DGVRol.TabIndex = 0;
             this.DGVRol.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGVRol_CellContentClick);
             // 
             // CrearRol
             // 
-            this.CrearRol.Location = new System.Drawing.Point(370, 225);
+            this.CrearRol.Location = new System.Drawing.Point(383, 225);
             this.CrearRol.Name = "CrearRol";
             this.CrearRol.Size = new System.Drawing.Size(75, 23);
             this.CrearRol.TabIndex = 1;
@@ -85,18 +85,18 @@
             // acciones
             // 
             this.acciones.HeaderText = "";
-            this.acciones.MinimumWidth = 25;
+            this.acciones.MinimumWidth = 32;
             this.acciones.Name = "acciones";
             this.acciones.ReadOnly = true;
-            this.acciones.Width = 25;
+            this.acciones.Width = 32;
             // 
             // modificacion
             // 
             this.modificacion.HeaderText = "";
-            this.modificacion.MinimumWidth = 25;
+            this.modificacion.MinimumWidth = 32;
             this.modificacion.Name = "modificacion";
             this.modificacion.ReadOnly = true;
-            this.modificacion.Width = 25;
+            this.modificacion.Width = 32;
             // 
             // ABMRol
             // 

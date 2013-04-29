@@ -15,7 +15,7 @@ namespace FrbaBus
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Abm_Permisos.ABMRol());
+            Application.Run(new Login.Login());
         }
     }
 }

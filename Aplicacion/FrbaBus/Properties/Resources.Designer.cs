@@ -60,13 +60,6 @@ namespace FrbaBus.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap accept {
-            get {
-                object obj = ResourceManager.GetObject("accept", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
         internal static System.Drawing.Icon accept_ico {
             get {
                 object obj = ResourceManager.GetObject("accept_ico", resourceCulture);
