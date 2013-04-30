@@ -60,12 +60,32 @@ CREATE TABLE SASHAILO.RolxUsuario(
 GO
 
 CREATE TABLE SASHAILO.Ciudad(
-	ID_CIUDAD smallint not null IDENTITY,
+	ID_CIUDAD int not null IDENTITY,
 	NOMBRE_CIUDAD varchar(60) not null,
 	HABILITADA char(1) not null DEFAULT 'S',
 	UNIQUE(NOMBRE_CIUDAD),
 	PRIMARY KEY (ID_CIUDAD)
 )
+
+GO
+
+CREATE TABLE SASHAILO.Tipo_Servicio(
+	ID_TIPO_SERVICIO int PRIMARY KEY NOT NULL IDENTITY,
+	DESCRIPCION nvarchar(255),
+	ADICIONAL decimal(10,2)
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Recorrido(
+	ID_RECORRIDO int PRIMARY KEY NOT NULL IDENTITY,
+	CODIGO_RECORRIDO nvarchar(15),
+	ID_CIUDAD_ORIGEN int FOREIGN KEY REFERENCES SASHAILO.Ciudad(ID_CIUDAD),
+	ID_CIUDAD_DESTINO int FOREIGN KEY REFERENCES SASHAILO.Ciudad(ID_CIUDAD),
+	PRECIO_BASE_KG decimal(10,2),
+	PRECIO_BASE_PASAJE decimal(10,2),
+	ID_TIPO_SERVICIO int FOREIGN KEY REFERENCES SASHAILO.Tipo_Servicio(ID_TIPO_SERVICIO)
+) 
 
 GO
 
@@ -199,6 +219,34 @@ INSERT INTO SASHAILO.Ciudad(NOMBRE_CIUDAD)
 SELECT DISTINCT Recorrido_Ciudad_Origen FROM gd_esquema.Maestra where Recorrido_Ciudad_Origen is not null
 GO
 
+INSERT INTO SASHAILO.Tipo_Servicio (DESCRIPCION, ADICIONAL) VALUES ('Común', 1.2)
+GO
+INSERT INTO SASHAILO.Tipo_Servicio (DESCRIPCION, ADICIONAL) VALUES ('Semi-Cama', 1.4)
+GO
+INSERT INTO SASHAILO.Tipo_Servicio (DESCRIPCION, ADICIONAL) VALUES ('Cama', 1.6)
+GO
+INSERT INTO SASHAILO.Tipo_Servicio (DESCRIPCION, ADICIONAL) VALUES ('Premium', 1.8)
+GO
+INSERT INTO SASHAILO.Tipo_Servicio (DESCRIPCION, ADICIONAL) VALUES ('Ejecutivo', 2.0)
+GO
+
+INSERT INTO SASHAILO.Recorrido(ID_CIUDAD_ORIGEN,ID_CIUDAD_DESTINO,PRECIO_BASE_KG,PRECIO_BASE_PASAJE,ID_TIPO_SERVICIO)
+select distinct ci_o.ID_CIUDAD, ci_d.ID_CIUDAD,(select max(ma2.Recorrido_Precio_BaseKG) 
+                                                from gd_esquema.Maestra ma2 
+                                                where ma2.Recorrido_Ciudad_Origen = ma.Recorrido_Ciudad_Origen
+                                                and ma2.Recorrido_Ciudad_Destino = ma.Recorrido_Ciudad_Destino
+                                                and ma2.Recorrido_Precio_BaseKG <> 0), 
+ ma.Recorrido_Precio_BasePasaje, ts.ID_TIPO_SERVICIO
+from gd_esquema.Maestra ma
+join SASHAILO.Ciudad ci_o on ci_o.NOMBRE_CIUDAD = ma.Recorrido_Ciudad_Origen
+join SASHAILO.Ciudad ci_d on ci_d.NOMBRE_CIUDAD = ma.Recorrido_Ciudad_Destino
+join SASHAILO.Tipo_Servicio ts on ts.DESCRIPCION = ma.Tipo_Servicio
+where ma.Recorrido_Precio_BaseKG = 0
+GO
+
+UPDATE SASHAILO.Recorrido
+SET CODIGO_RECORRIDO = (SELECT upper(SUBSTRING(master.dbo.fn_varbintohexstr(HashBytes('MD5', CAST(ID_RECORRIDO as varchar(10)))), 3, 15)))
+;
 
 /******************************************** FIN - LLENADO DE TABLAS ************************************************/
 
@@ -482,6 +530,22 @@ BEGIN
 INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionConsultaPuntos, @IDROL)
 END
 
+GO
+
+CREATE PROCEDURE SASHAILO.listado_recorridos
+    	@p_id_ciudad_origen int, 
+    	@p_id_ciudad_destino int
+AS
+
+	SELECT ID_RECORRIDO, ori.NOMBRE_CIUDAD, dest.NOMBRE_CIUDAD, ts.DESCRIPCION, re.PRECIO_BASE_PASAJE, re.PRECIO_BASE_KG
+	FROM SASHAILO.Recorrido re
+	JOIN SASHAILO.Ciudad ori on ori.ID_CIUDAD = re.ID_CIUDAD_ORIGEN
+	JOIN SASHAILO.Ciudad dest on dest.ID_CIUDAD = re.ID_CIUDAD_DESTINO
+	JOIN SASHAILO.Tipo_Servicio ts on ts.ID_TIPO_SERVICIO = re.ID_TIPO_SERVICIO
+	WHERE @p_id_ciudad_origen is null or ori.ID_CIUDAD = @p_id_ciudad_origen
+	and @p_id_ciudad_destino is null or dest.ID_CIUDAD = @p_id_ciudad_destino
+	;
+		
 GO
 
 /******************************************** FIN - CREACION DE STORED PROCEDURES ************************************************/
