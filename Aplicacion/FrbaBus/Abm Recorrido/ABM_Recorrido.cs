@@ -104,5 +104,13 @@ namespace FrbaBus.Abm_Recorrido
             }
 
         }
+
+        private void b_nuevo_Click(object sender, EventArgs e)
+        {
+            Alta_Recorrido alta = new Alta_Recorrido();
+            alta.Tag = this; //guardo en Tag una referencia a mi formulario
+            alta.ShowDialog();
+            b_buscar_Click(null, null);
+        }
     }
 }

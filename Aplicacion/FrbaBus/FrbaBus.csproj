@@ -50,6 +50,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Messaging" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -104,6 +105,12 @@
     </Compile>
     <Compile Include="Abm Recorrido\ABM_Recorrido.Designer.cs">
       <DependentUpon>ABM_Recorrido.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abm Recorrido\Alta_Recorrido.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Abm Recorrido\Alta_Recorrido.Designer.cs">
+      <DependentUpon>Alta_Recorrido.cs</DependentUpon>
     </Compile>
     <Compile Include="Cancelar Viaje\Form1.cs">
       <SubType>Form</SubType>
@@ -167,6 +174,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Abm Recorrido\ABM_Recorrido.resx">
       <DependentUpon>ABM_Recorrido.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abm Recorrido\Alta_Recorrido.resx">
+      <DependentUpon>Alta_Recorrido.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Login\Login.resx">
       <DependentUpon>Login.cs</DependentUpon>

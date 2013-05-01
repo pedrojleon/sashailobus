@@ -39,11 +39,11 @@
             this.acciones = new System.Windows.Forms.DataGridViewImageColumn();
             this.modificacion = new System.Windows.Forms.DataGridViewImageColumn();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.combo_origen = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.combo_destino = new System.Windows.Forms.ComboBox();
             this.b_buscar = new System.Windows.Forms.Button();
+            this.combo_destino = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.combo_origen = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.b_nuevo = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.listado_recorridos)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -145,40 +145,6 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Filtros de Búsqueda";
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(29, 25);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(41, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Origen:";
-            // 
-            // combo_origen
-            // 
-            this.combo_origen.FormattingEnabled = true;
-            this.combo_origen.Location = new System.Drawing.Point(76, 22);
-            this.combo_origen.Name = "combo_origen";
-            this.combo_origen.Size = new System.Drawing.Size(153, 21);
-            this.combo_origen.TabIndex = 1;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(248, 25);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(46, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Destino:";
-            // 
-            // combo_destino
-            // 
-            this.combo_destino.FormattingEnabled = true;
-            this.combo_destino.Location = new System.Drawing.Point(300, 22);
-            this.combo_destino.Name = "combo_destino";
-            this.combo_destino.Size = new System.Drawing.Size(153, 21);
-            this.combo_destino.TabIndex = 3;
-            // 
             // b_buscar
             // 
             this.b_buscar.Location = new System.Drawing.Point(513, 20);
@@ -189,6 +155,40 @@
             this.b_buscar.UseVisualStyleBackColor = true;
             this.b_buscar.Click += new System.EventHandler(this.b_buscar_Click);
             // 
+            // combo_destino
+            // 
+            this.combo_destino.FormattingEnabled = true;
+            this.combo_destino.Location = new System.Drawing.Point(300, 22);
+            this.combo_destino.Name = "combo_destino";
+            this.combo_destino.Size = new System.Drawing.Size(153, 21);
+            this.combo_destino.TabIndex = 3;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(248, 25);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(46, 13);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "Destino:";
+            // 
+            // combo_origen
+            // 
+            this.combo_origen.FormattingEnabled = true;
+            this.combo_origen.Location = new System.Drawing.Point(76, 22);
+            this.combo_origen.Name = "combo_origen";
+            this.combo_origen.Size = new System.Drawing.Size(153, 21);
+            this.combo_origen.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(29, 25);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(41, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Origen:";
+            // 
             // b_nuevo
             // 
             this.b_nuevo.Location = new System.Drawing.Point(591, 337);
@@ -197,6 +197,7 @@
             this.b_nuevo.TabIndex = 5;
             this.b_nuevo.Text = "Nuevo Recorrido";
             this.b_nuevo.UseVisualStyleBackColor = true;
+            this.b_nuevo.Click += new System.EventHandler(this.b_nuevo_Click);
             // 
             // ABM_Recorrido
             // 
