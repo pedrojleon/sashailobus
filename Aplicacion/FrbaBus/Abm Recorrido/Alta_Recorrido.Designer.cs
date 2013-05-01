@@ -148,9 +148,9 @@
             // 
             this.edit_base_pasaje.Image = ((System.Drawing.Image)(resources.GetObject("edit_base_pasaje.Image")));
             this.edit_base_pasaje.InitialImage = ((System.Drawing.Image)(resources.GetObject("edit_base_pasaje.InitialImage")));
-            this.edit_base_pasaje.Location = new System.Drawing.Point(506, 76);
+            this.edit_base_pasaje.Location = new System.Drawing.Point(501, 71);
             this.edit_base_pasaje.Name = "edit_base_pasaje";
-            this.edit_base_pasaje.Size = new System.Drawing.Size(15, 13);
+            this.edit_base_pasaje.Size = new System.Drawing.Size(22, 21);
             this.edit_base_pasaje.TabIndex = 11;
             this.edit_base_pasaje.TabStop = false;
             this.edit_base_pasaje.Visible = false;
@@ -160,9 +160,9 @@
             // 
             this.edit_base_kg.Image = ((System.Drawing.Image)(resources.GetObject("edit_base_kg.Image")));
             this.edit_base_kg.InitialImage = ((System.Drawing.Image)(resources.GetObject("edit_base_kg.InitialImage")));
-            this.edit_base_kg.Location = new System.Drawing.Point(506, 112);
+            this.edit_base_kg.Location = new System.Drawing.Point(501, 108);
             this.edit_base_kg.Name = "edit_base_kg";
-            this.edit_base_kg.Size = new System.Drawing.Size(15, 13);
+            this.edit_base_kg.Size = new System.Drawing.Size(22, 21);
             this.edit_base_kg.TabIndex = 12;
             this.edit_base_kg.TabStop = false;
             this.edit_base_kg.Visible = false;

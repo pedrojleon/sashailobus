@@ -76,11 +76,17 @@
     <Compile Include="Abm Ciudad\Modif_Ciudad.Designer.cs">
       <DependentUpon>Modif_Ciudad.cs</DependentUpon>
     </Compile>
-    <Compile Include="Abm Micro\Form1.cs">
+    <Compile Include="Abm Micro\ABM_Micro.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Abm Micro\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Abm Micro\ABM_Micro.Designer.cs">
+      <DependentUpon>ABM_Micro.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abm Micro\Alta_Micro.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Abm Micro\Alta_Micro.Designer.cs">
+      <DependentUpon>Alta_Micro.cs</DependentUpon>
     </Compile>
     <Compile Include="Abm Permisos\ABM_rol.cs">
       <SubType>Form</SubType>
@@ -162,6 +168,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Abm Ciudad\Modif_Ciudad.resx">
       <DependentUpon>Modif_Ciudad.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abm Micro\ABM_Micro.resx">
+      <DependentUpon>ABM_Micro.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Abm Permisos\ABM_rol.resx">
       <DependentUpon>ABM_rol.cs</DependentUpon>
