@@ -127,6 +127,64 @@ namespace FrbaBus.Abm_Recorrido
         {
             base_kg.Enabled = !base_kg.Enabled;
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string str_error = "";
+            if (((ComboboxItem)origen.SelectedItem) == null || ((ComboboxItem)destino.SelectedItem) == null)
+                str_error = "Debe seleccionar las ciudades Origen y Destino.\n";
+            if (((ComboboxItem)tipo_servicio.SelectedItem) == null)
+                str_error = str_error + "Debe seleccionar el Tipo de Servicio.\n";
+            if (base_kg.Text.Trim().Equals("") || base_pasaje.Text.Trim().Equals(""))
+                str_error = str_error + "Debe seleccionar los precios base (Pasaje y Kg).\n";
+
+            if (!str_error.Equals("")){
+                MessageBox.Show(str_error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            Conexion conn = new Conexion();
+            SqlCommand sp_recorrido_alta;
+
+            sp_recorrido_alta = new SqlCommand("SASHAILO.sp_alta_recorrido", conn.miConexion); // Lo inicializo
+            sp_recorrido_alta.CommandType = CommandType.StoredProcedure; // Defino que tipo de comando es
+            SqlParameter ID_CIUDAD_ORIGEN = sp_recorrido_alta.Parameters.Add("@p_id_ciudad_origen", SqlDbType.Int);
+            SqlParameter ID_CIUDAD_DESTINO = sp_recorrido_alta.Parameters.Add("@p_id_ciudad_destino", SqlDbType.Int);
+            SqlParameter PRECIO_KG = sp_recorrido_alta.Parameters.Add("@p_base_kg", SqlDbType.Decimal);
+            SqlParameter PRECIO_PASAJE = sp_recorrido_alta.Parameters.Add("@p_base_pasaje", SqlDbType.Decimal);
+            SqlParameter ID_TIPO_SERVICIO = sp_recorrido_alta.Parameters.Add("@p_id_tipo_servicio", SqlDbType.Int);
+            SqlParameter HAY_ERROR_USER = sp_recorrido_alta.Parameters.Add("@hayErr", SqlDbType.Int);
+            SqlParameter ERRORES_USER = sp_recorrido_alta.Parameters.Add("@errores", SqlDbType.VarChar, 200);
+
+            ID_CIUDAD_ORIGEN.Value = ((ComboboxItem)origen.SelectedItem).Value;
+            ID_CIUDAD_DESTINO.Value = ((ComboboxItem)destino.SelectedItem).Value;
+            PRECIO_KG.Value = Convert.ToDecimal(base_kg.Text.Trim());
+            PRECIO_PASAJE.Value = Convert.ToDecimal(base_pasaje.Text.Trim());
+            ID_TIPO_SERVICIO.Value = ((ComboboxItem)tipo_servicio.SelectedItem).Value;
+            HAY_ERROR_USER.Direction = ParameterDirection.Output;
+            ERRORES_USER.Direction = ParameterDirection.Output;
+
+            try
+            {
+                sp_recorrido_alta.ExecuteNonQuery();
+
+                int hayError = Convert.ToInt16(sp_recorrido_alta.Parameters["@hayErr"].Value.ToString());
+                if (hayError == 1)
+                {
+                    string errores = sp_recorrido_alta.Parameters["@errores"].Value.ToString();
+                    MessageBox.Show("Error: \n" + errores, null, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    conn.desconectar();
+                    return;
+                }
+                MessageBox.Show("El recorrido ha sido dado de alta", null, MessageBoxButtons.OK);
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show("Error en la creación del recorrido. Error: " + error.ToString(), null, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                conn.desconectar();
+                return;
+            }
+        }
     }
 
     public class ComboboxItem

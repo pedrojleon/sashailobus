@@ -542,10 +542,35 @@ AS
 	JOIN SASHAILO.Ciudad ori on ori.ID_CIUDAD = re.ID_CIUDAD_ORIGEN
 	JOIN SASHAILO.Ciudad dest on dest.ID_CIUDAD = re.ID_CIUDAD_DESTINO
 	JOIN SASHAILO.Tipo_Servicio ts on ts.ID_TIPO_SERVICIO = re.ID_TIPO_SERVICIO
-	WHERE @p_id_ciudad_origen is null or ori.ID_CIUDAD = @p_id_ciudad_origen
-	and @p_id_ciudad_destino is null or dest.ID_CIUDAD = @p_id_ciudad_destino
+	WHERE (@p_id_ciudad_origen is null or ori.ID_CIUDAD = @p_id_ciudad_origen)
+	and (@p_id_ciudad_destino is null or dest.ID_CIUDAD = @p_id_ciudad_destino)
 	;
 		
+GO
+
+CREATE PROCEDURE SASHAILO.sp_alta_recorrido
+	@p_id_ciudad_origen INT,
+	@p_id_ciudad_destino INT,
+	@p_base_kg DECIMAL(10,2),
+	@p_base_pasaje DECIMAL(10,2),
+	@p_id_tipo_servicio INT,
+	@hayErr int OUT,
+    @errores varchar(200) OUT
+AS
+	SET @hayErr = 0
+	SET @errores = ''
+
+	DECLARE @id_recorrido int 
+	DECLARE @cod_recorrido nvarchar(15) 
+	select @id_recorrido = (select MAX(ID_RECORRIDO)+1 from SASHAILO.Recorrido)
+	select @cod_recorrido = (SELECT upper(SUBSTRING(master.dbo.fn_varbintohexstr(HashBytes('MD5', CAST(@id_recorrido as varchar(10)))), 3, 15)))
+	
+	INSERT INTO SASHAILO.Recorrido(CODIGO_RECORRIDO, ID_CIUDAD_ORIGEN, ID_CIUDAD_DESTINO, PRECIO_BASE_KG, PRECIO_BASE_PASAJE, ID_TIPO_SERVICIO)
+	VALUES (@cod_recorrido, @p_id_ciudad_origen, @p_id_ciudad_destino, @p_base_kg, @p_base_pasaje, @p_id_tipo_servicio)
+	
+	UPDATE SASHAILO.Recorrido SET PRECIO_BASE_KG = @p_base_kg, PRECIO_BASE_PASAJE = @p_base_pasaje
+	WHERE ID_CIUDAD_ORIGEN = @p_id_ciudad_origen AND ID_CIUDAD_DESTINO = @p_id_ciudad_destino
+
 GO
 
 /******************************************** FIN - CREACION DE STORED PROCEDURES ************************************************/
