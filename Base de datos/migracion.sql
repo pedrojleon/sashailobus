@@ -89,6 +89,49 @@ CREATE TABLE SASHAILO.Recorrido(
 
 GO
 
+CREATE TABLE SASHAILO.Tipo_Butaca(
+	ID_TIPO_BUTACA int PRIMARY KEY NOT NULL IDENTITY,
+	DESCRIPCION nvarchar(50)
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Marca_Micro(
+	ID_MARCA int PRIMARY KEY NOT NULL IDENTITY,
+	DESCRIPCION nvarchar(50)
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Micro(
+	ID_MICRO int not null IDENTITY,
+	PATENTE varchar(6) not null,
+	ID_MARCA int FOREIGN KEY REFERENCES SASHAILO.Marca_Micro(ID_MARCA),
+	MODELO varchar(25) not null,
+	ID_TIPO_SERVICIO int FOREIGN KEY REFERENCES SASHAILO.Tipo_Servicio(ID_TIPO_SERVICIO),
+	FUERA_DE_SERVICIO char(1) not null DEFAULT 'N',
+	FIN_VIDA_UTIL char(1) not null DEFAULT 'N',
+	F_FUERA_SERVICIO smalldatetime,
+	F_REINICIO_SERVICIO smalldatetime,
+	F_FIN_VIDA_UTIL smalldatetime,
+	CANT_BUTACAS int,
+	CANT_KG int,
+	UNIQUE(PATENTE),
+	PRIMARY KEY(ID_MICRO)
+)
+
+GO
+
+CREATE TABLE SASHAILO.Butaca(
+	ID_BUTACA int not null IDENTITY,
+	ID_MICRO int FOREIGN KEY REFERENCES SASHAILO.Micro(ID_MICRO),
+	ID_TIPO_BUTACA int FOREIGN KEY REFERENCES SASHAILO.Tipo_Butaca(ID_TIPO_BUTACA),
+	NRO_PISO smallint,
+	PRIMARY KEY(ID_BUTACA)
+)
+
+GO
+
 
 /******************************************** FIN - CREACION DE TABLAS *********************************************/
 
@@ -248,10 +291,21 @@ UPDATE SASHAILO.Recorrido
 SET CODIGO_RECORRIDO = (SELECT upper(SUBSTRING(master.dbo.fn_varbintohexstr(HashBytes('MD5', CAST(ID_RECORRIDO as varchar(10)))), 3, 15)))
 ;
 
+INSERT INTO SASHAILO.Marca_Micro(DESCRIPCION)
+select distinct Micro_Marca
+from gd_esquema.Maestra
+GO
+
+INSERT INTO SASHAILO.Tipo_Butaca(DESCRIPCION)
+select distinct Butaca_Tipo
+from gd_esquema.Maestra
+where Butaca_Tipo<>'0'
+GO
+
 /******************************************** FIN - LLENADO DE TABLAS ************************************************/
 
 
-/******************************************** INICIO - CREACION DE STORED PROCEDURES ************************************************/
+/******************************************** INICIO - CREACION DE STORED PROCEDURES, FUNCIONES Y VISTAS ************************************************/
 
 CREATE PROCEDURE SASHAILO.login
     	@p_usuario VARCHAR(15),
@@ -573,4 +627,77 @@ AS
 
 GO
 
-/******************************************** FIN - CREACION DE STORED PROCEDURES ************************************************/
+CREATE VIEW SASHAILO.vwRandom
+AS
+SELECT RAND() as Rnd
+GO 
+
+CREATE FUNCTION SASHAILO.fnCustomPass 
+(    
+    @size AS INT, --Tamaño de la cadena aleatoria
+    @op AS VARCHAR(2) --Opción para letras(ABC..), numeros(123...) o ambos.
+)
+RETURNS VARCHAR(62)
+AS
+BEGIN    
+
+    DECLARE @chars AS VARCHAR(52),
+            @numbers AS VARCHAR(10),
+            @strChars AS VARCHAR(62),        
+            @strPass AS VARCHAR(62),
+            @index AS INT,
+            @cont AS INT
+
+    SET @strPass = ''
+    SET @strChars = ''    
+    SET @chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    SET @numbers = '0123456789'
+
+    SET @strChars = CASE @op WHEN 'C' THEN @chars --Letras
+                        WHEN 'N' THEN @numbers --Números
+                        WHEN 'CN' THEN @chars + @numbers --Ambos (Letras y Números)
+                        ELSE '------'
+                    END
+
+    SET @cont = 0
+    WHILE @cont < @size
+    BEGIN
+        SET @index = ceiling( ( SELECT rnd FROM SASHAILO.vwRandom ) * (len(@strChars)))--Uso de la vista para el Rand() y no generar error.
+        SET @strPass = @strPass + substring(@strChars, @index, 1)
+        SET @cont = @cont + 1
+    END    
+        
+    RETURN @strPass
+
+END
+GO
+
+CREATE FUNCTION SASHAILO.fnGetPatente()
+RETURNS VARCHAR(6)
+AS
+BEGIN    
+
+    DECLARE @letras  AS VARCHAR(3),
+            @numbers AS VARCHAR(3)
+
+    SET @letras = ( SELECT SASHAILO.fnCustomPass(3,'C'))
+    SET @numbers = ( SELECT SASHAILO.fnCustomPass(3,'N'))
+        
+    RETURN @letras + @numbers
+
+END
+GO
+
+/******************************************** FIN - CREACION DE STORED PROCEDURES, FUNCIONES Y VISTAS ************************************************/
+
+/****************************** INICIO -  LLENADO DE TABLAS A TRAVES DE SP *********************************/
+
+INSERT INTO SASHAILO.Micro(PATENTE, ID_MARCA, MODELO, ID_TIPO_SERVICIO, CANT_KG)
+select SASHAILO.fnGetPatente(), tabla.* from (
+select distinct mm.ID_MARCA, Micro_Modelo, ts.ID_TIPO_SERVICIO, Micro_KG_Disponibles
+from gd_esquema.Maestra ma
+join SASHAILO.Marca_Micro mm on mm.DESCRIPCION = ma.Micro_Marca
+join SASHAILO.Tipo_Servicio ts on ts.DESCRIPCION = ma.Tipo_Servicio) tabla
+GO
+
+/****************************** FIN -  LLENADO DE TABLAS A TRAVES DE SP *********************************/
