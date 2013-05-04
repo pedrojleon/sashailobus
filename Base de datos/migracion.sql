@@ -78,7 +78,7 @@ CREATE TABLE SASHAILO.Tipo_Servicio(
 GO
 
 CREATE TABLE SASHAILO.Recorrido(
-	ID_RECORRIDO int PRIMARY KEY NOT NULL IDENTITY,
+	ID_RECORRIDO numeric(18,0) PRIMARY KEY NOT NULL,
 	CODIGO_RECORRIDO nvarchar(15),
 	ID_CIUDAD_ORIGEN int FOREIGN KEY REFERENCES SASHAILO.Ciudad(ID_CIUDAD),
 	ID_CIUDAD_DESTINO int FOREIGN KEY REFERENCES SASHAILO.Ciudad(ID_CIUDAD),
@@ -105,7 +105,7 @@ GO
 
 CREATE TABLE SASHAILO.Micro(
 	ID_MICRO int not null IDENTITY,
-	PATENTE varchar(6) not null,
+	PATENTE varchar(7) not null,
 	ID_MARCA int FOREIGN KEY REFERENCES SASHAILO.Marca_Micro(ID_MARCA),
 	MODELO varchar(25) not null,
 	ID_TIPO_SERVICIO int FOREIGN KEY REFERENCES SASHAILO.Tipo_Servicio(ID_TIPO_SERVICIO),
@@ -125,6 +125,7 @@ GO
 CREATE TABLE SASHAILO.Butaca(
 	ID_BUTACA int not null IDENTITY,
 	ID_MICRO int FOREIGN KEY REFERENCES SASHAILO.Micro(ID_MICRO),
+	NRO_BUTACA int,
 	ID_TIPO_BUTACA int FOREIGN KEY REFERENCES SASHAILO.Tipo_Butaca(ID_TIPO_BUTACA),
 	NRO_PISO smallint,
 	PRIMARY KEY(ID_BUTACA)
@@ -135,28 +136,6 @@ GO
 
 /******************************************** FIN - CREACION DE TABLAS *********************************************/
 
-/****************** INICIO - CREACION DE USUARIOS ADMINISTRADORES  *******************/
-
-INSERT INTO SASHAILO.Usuario (USUARIO, PASS)
-values('admin1', 'E6-B8-70-50-BF-CB-81-43-FC-B8-DB-01-70-A4-DC-9E-D0-0D-90-4D-DD-3')
-GO
-INSERT INTO SASHAILO.Usuario (USUARIO, PASS)
-values('admin2', 'E6-B8-70-50-BF-CB-81-43-FC-B8-DB-01-70-A4-DC-9E-D0-0D-90-4D-DD-3')
-GO
-INSERT INTO SASHAILO.Usuario (USUARIO, PASS)
-values('admin3', 'E6-B8-70-50-BF-CB-81-43-FC-B8-DB-01-70-A4-DC-9E-D0-0D-90-4D-DD-3')
-GO
-INSERT INTO SASHAILO.RolxUsuario (ID_ROL, ID_USUARIO)
-values(1,1)
-GO
-INSERT INTO SASHAILO.RolxUsuario (ID_ROL, ID_USUARIO)
-values(1,2)
-GO
-INSERT INTO SASHAILO.RolxUsuario (ID_ROL, ID_USUARIO)
-values(1,3)
-GO
-
-/******************** FIN - CREACION DE USUARIOS ADMINISTRADORES  *******************/
 
 /******************************************** INICIO - LLENADO DE TABLAS *********************************************/
 
@@ -258,6 +237,30 @@ values(1,10)
 
 GO
 
+/****************** INICIO - CREACION DE USUARIOS ADMINISTRADORES  *******************/
+
+INSERT INTO SASHAILO.Usuario (USUARIO, PASS)
+values('admin1', 'E6-B8-70-50-BF-CB-81-43-FC-B8-DB-01-70-A4-DC-9E-D0-0D-90-4D-DD-3')
+GO
+INSERT INTO SASHAILO.Usuario (USUARIO, PASS)
+values('admin2', 'E6-B8-70-50-BF-CB-81-43-FC-B8-DB-01-70-A4-DC-9E-D0-0D-90-4D-DD-3')
+GO
+INSERT INTO SASHAILO.Usuario (USUARIO, PASS)
+values('admin3', 'E6-B8-70-50-BF-CB-81-43-FC-B8-DB-01-70-A4-DC-9E-D0-0D-90-4D-DD-3')
+GO
+INSERT INTO SASHAILO.RolxUsuario (ID_ROL, ID_USUARIO)
+values(1,1)
+GO
+INSERT INTO SASHAILO.RolxUsuario (ID_ROL, ID_USUARIO)
+values(1,2)
+GO
+INSERT INTO SASHAILO.RolxUsuario (ID_ROL, ID_USUARIO)
+values(1,3)
+GO
+
+/******************** FIN - CREACION DE USUARIOS ADMINISTRADORES  *******************/
+
+
 INSERT INTO SASHAILO.Ciudad(NOMBRE_CIUDAD)
 SELECT DISTINCT Recorrido_Ciudad_Origen FROM gd_esquema.Maestra where Recorrido_Ciudad_Origen is not null
 GO
@@ -273,13 +276,13 @@ GO
 INSERT INTO SASHAILO.Tipo_Servicio (DESCRIPCION, ADICIONAL) VALUES ('Ejecutivo', 2.0)
 GO
 
-INSERT INTO SASHAILO.Recorrido(ID_CIUDAD_ORIGEN,ID_CIUDAD_DESTINO,PRECIO_BASE_KG,PRECIO_BASE_PASAJE,ID_TIPO_SERVICIO)
+INSERT INTO SASHAILO.Recorrido(ID_CIUDAD_ORIGEN,ID_CIUDAD_DESTINO,PRECIO_BASE_KG,PRECIO_BASE_PASAJE,ID_TIPO_SERVICIO, ID_RECORRIDO)
 select distinct ci_o.ID_CIUDAD, ci_d.ID_CIUDAD,(select max(ma2.Recorrido_Precio_BaseKG) 
                                                 from gd_esquema.Maestra ma2 
                                                 where ma2.Recorrido_Ciudad_Origen = ma.Recorrido_Ciudad_Origen
                                                 and ma2.Recorrido_Ciudad_Destino = ma.Recorrido_Ciudad_Destino
                                                 and ma2.Recorrido_Precio_BaseKG <> 0), 
- ma.Recorrido_Precio_BasePasaje, ts.ID_TIPO_SERVICIO
+ ma.Recorrido_Precio_BasePasaje, ts.ID_TIPO_SERVICIO, ma.Recorrido_Codigo
 from gd_esquema.Maestra ma
 join SASHAILO.Ciudad ci_o on ci_o.NOMBRE_CIUDAD = ma.Recorrido_Ciudad_Origen
 join SASHAILO.Ciudad ci_d on ci_d.NOMBRE_CIUDAD = ma.Recorrido_Ciudad_Destino
@@ -619,8 +622,8 @@ AS
 	select @id_recorrido = (select MAX(ID_RECORRIDO)+1 from SASHAILO.Recorrido)
 	select @cod_recorrido = (SELECT upper(SUBSTRING(master.dbo.fn_varbintohexstr(HashBytes('MD5', CAST(@id_recorrido as varchar(10)))), 3, 15)))
 	
-	INSERT INTO SASHAILO.Recorrido(CODIGO_RECORRIDO, ID_CIUDAD_ORIGEN, ID_CIUDAD_DESTINO, PRECIO_BASE_KG, PRECIO_BASE_PASAJE, ID_TIPO_SERVICIO)
-	VALUES (@cod_recorrido, @p_id_ciudad_origen, @p_id_ciudad_destino, @p_base_kg, @p_base_pasaje, @p_id_tipo_servicio)
+	INSERT INTO SASHAILO.Recorrido(ID_RECORRIDO, CODIGO_RECORRIDO, ID_CIUDAD_ORIGEN, ID_CIUDAD_DESTINO, PRECIO_BASE_KG, PRECIO_BASE_PASAJE, ID_TIPO_SERVICIO)
+	VALUES (@id_recorrido, @cod_recorrido, @p_id_ciudad_origen, @p_id_ciudad_destino, @p_base_kg, @p_base_pasaje, @p_id_tipo_servicio)
 	
 	UPDATE SASHAILO.Recorrido SET PRECIO_BASE_KG = @p_base_kg, PRECIO_BASE_PASAJE = @p_base_pasaje
 	WHERE ID_CIUDAD_ORIGEN = @p_id_ciudad_origen AND ID_CIUDAD_DESTINO = @p_id_ciudad_destino
@@ -673,7 +676,7 @@ END
 GO
 
 CREATE FUNCTION SASHAILO.fnGetPatente()
-RETURNS VARCHAR(6)
+RETURNS VARCHAR(7)
 AS
 BEGIN    
 
@@ -683,7 +686,7 @@ BEGIN
     SET @letras = ( SELECT SASHAILO.fnCustomPass(3,'C'))
     SET @numbers = ( SELECT SASHAILO.fnCustomPass(3,'N'))
         
-    RETURN @letras + @numbers
+    RETURN @letras + '-' +  @numbers
 
 END
 GO
@@ -693,11 +696,67 @@ GO
 /****************************** INICIO -  LLENADO DE TABLAS A TRAVES DE SP *********************************/
 
 INSERT INTO SASHAILO.Micro(PATENTE, ID_MARCA, MODELO, ID_TIPO_SERVICIO, CANT_KG)
-select SASHAILO.fnGetPatente(), tabla.* from (
-select distinct mm.ID_MARCA, Micro_Modelo, ts.ID_TIPO_SERVICIO, Micro_KG_Disponibles
+select distinct ma.Micro_Patente, mm.ID_MARCA, Micro_Modelo, ts.ID_TIPO_SERVICIO, Micro_KG_Disponibles
 from gd_esquema.Maestra ma
 join SASHAILO.Marca_Micro mm on mm.DESCRIPCION = ma.Micro_Marca
-join SASHAILO.Tipo_Servicio ts on ts.DESCRIPCION = ma.Tipo_Servicio) tabla
+join SASHAILO.Tipo_Servicio ts on ts.DESCRIPCION = ma.Tipo_Servicio
+GO
+
+BEGIN
+
+	SET NOCOUNT ON;
+	
+	DECLARE @id_micro int
+	DECLARE @patente varchar(7)
+	DECLARE @nro_factura int
+	DECLARE curr_micros CURSOR FOR 
+	select distinct ID_MICRO, PATENTE from SASHAILO.Micro order by 1
+	
+	BEGIN TRANSACTION;
+	
+	OPEN curr_micros 
+	FETCH curr_micros INTO @id_micro, @patente
+	
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+		
+		DECLARE @butaca_nro int
+		DECLARE @butaca_tipo int
+		DECLARE @butaca_piso smallint
+		DECLARE curr_butacas CURSOR FOR 
+		select distinct Butaca_Nro, tb.ID_TIPO_BUTACA, Butaca_Piso 
+		from gd_esquema.Maestra ma join SASHAILO.Tipo_Butaca tb on ma.Butaca_Tipo = tb.DESCRIPCION
+		where Micro_Patente=@patente and Butaca_Nro <> 0 order by 1
+		
+		BEGIN TRANSACTION;
+		
+		OPEN curr_butacas 
+		FETCH curr_butacas INTO @butaca_nro, @butaca_tipo, @butaca_piso
+		
+		WHILE (@@FETCH_STATUS = 0)
+		BEGIN
+		
+			-- Inserto la butaca
+			INSERT INTO SASHAILO.Butaca(ID_MICRO, NRO_BUTACA, ID_TIPO_BUTACA, NRO_PISO)
+			VALUES (@id_micro, @butaca_nro, @butaca_tipo, @butaca_piso);
+			
+			FETCH curr_butacas INTO @butaca_nro, @butaca_tipo, @butaca_piso
+		END
+		
+		COMMIT TRANSACTION;
+		CLOSE curr_butacas
+		DEALLOCATE curr_butacas
+		
+		
+		FETCH curr_micros INTO @id_micro, @patente	
+	END
+	
+	COMMIT TRANSACTION;
+	CLOSE curr_micros
+	DEALLOCATE curr_micros
+
+END
+
 GO
 
 /****************************** FIN -  LLENADO DE TABLAS A TRAVES DE SP *********************************/
