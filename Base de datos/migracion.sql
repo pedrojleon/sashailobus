@@ -114,6 +114,7 @@ CREATE TABLE SASHAILO.Micro(
 	F_FUERA_SERVICIO smalldatetime,
 	F_REINICIO_SERVICIO smalldatetime,
 	F_FIN_VIDA_UTIL smalldatetime,
+	F_ALTA smalldatetime,
 	CANT_BUTACAS int,
 	CANT_KG int,
 	UNIQUE(PATENTE),
@@ -691,6 +692,24 @@ BEGIN
 END
 GO
 
+CREATE PROCEDURE SASHAILO.listado_micros
+    	@p_id_marca int, 
+    	@p_id_tipo_servicio int, 
+    	@p_patente varchar(7)
+AS
+
+	SELECT ID_MICRO, PATENTE, ma.DESCRIPCION, MODELO, ts.DESCRIPCION, 
+		   CANT_BUTACAS, CANT_KG, FUERA_DE_SERVICIO, FIN_VIDA_UTIL
+	FROM SASHAILO.Micro mi
+	JOIN SASHAILO.Marca_Micro ma on ma.ID_MARCA=mi.ID_MARCA
+	JOIN SASHAILO.Tipo_Servicio ts on ts.ID_TIPO_SERVICIO=mi.ID_TIPO_SERVICIO
+	WHERE (@p_id_marca is null or mi.ID_MARCA = @p_id_marca)
+	and (@p_id_tipo_servicio is null or mi.ID_TIPO_SERVICIO = @p_id_tipo_servicio)
+	and (@p_patente is null or upper(mi.PATENTE) = upper(@p_patente))
+	;
+		
+GO
+
 /******************************************** FIN - CREACION DE STORED PROCEDURES, FUNCIONES Y VISTAS ************************************************/
 
 /****************************** INICIO -  LLENADO DE TABLAS A TRAVES DE SP *********************************/
@@ -749,6 +768,38 @@ BEGIN
 		
 		
 		FETCH curr_micros INTO @id_micro, @patente	
+	END
+	
+	COMMIT TRANSACTION;
+	CLOSE curr_micros
+	DEALLOCATE curr_micros
+
+END
+
+GO
+
+BEGIN
+
+	SET NOCOUNT ON;
+	
+	DECLARE @id_micro int
+	DECLARE curr_micros CURSOR FOR 
+	select distinct ID_MICRO from SASHAILO.Micro order by 1
+	
+	BEGIN TRANSACTION;
+	
+	OPEN curr_micros 
+	FETCH curr_micros INTO @id_micro
+	
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+		
+		DECLARE @cant_butacas int
+		select @cant_butacas = (select COUNT(1) from SASHAILO.Butaca bu where bu.ID_MICRO = @id_micro)
+
+		UPDATE SASHAILO.Micro SET CANT_BUTACAS = @cant_butacas WHERE ID_MICRO = @id_micro;
+		
+		FETCH curr_micros INTO @id_micro	
 	END
 	
 	COMMIT TRANSACTION;
