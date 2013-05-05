@@ -169,6 +169,9 @@
     <EmbeddedResource Include="Abm Ciudad\Modif_Ciudad.resx">
       <DependentUpon>Modif_Ciudad.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Abm Micro\ABM_Micro.resx">
+      <DependentUpon>ABM_Micro.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Abm Permisos\ABM_rol.resx">
       <DependentUpon>ABM_rol.cs</DependentUpon>
     </EmbeddedResource>
