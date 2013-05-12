@@ -123,6 +123,9 @@ CREATE TABLE SASHAILO.Micro(
 
 GO
 
+ALTER TABLE SASHAILO.Micro ADD F_ALTA smalldatetime
+GO
+
 CREATE TABLE SASHAILO.Butaca(
 	ID_BUTACA int not null IDENTITY,
 	ID_MICRO int FOREIGN KEY REFERENCES SASHAILO.Micro(ID_MICRO),
@@ -708,6 +711,60 @@ AS
 	and (@p_patente is null or upper(mi.PATENTE) = upper(@p_patente))
 	;
 		
+GO
+
+CREATE PROCEDURE SASHAILO.alta_micro
+    	@p_patente varchar(7),
+    	@p_id_marca int, 
+    	@p_modelo varchar(25),
+    	@p_id_tipo_servicio int, 
+    	@p_m_fuera_servicio char(1),
+    	@p_cant_kg int, 
+    	@p_cant_butacas int,
+    	@id_micro_generado int OUT,
+    	@hayErr int OUT,
+		@errores varchar(200) OUT
+    	
+AS
+BEGIN
+	SET @hayErr = 0
+	SET @errores = ''
+	
+	BEGIN TRANSACTION	
+	/*grabo el micro*/
+	INSERT INTO SASHAILO.Micro (PATENTE, ID_MARCA, MODELO, ID_TIPO_SERVICIO, FUERA_DE_SERVICIO, CANT_BUTACAS, CANT_KG, F_ALTA) 
+	VALUES (@p_patente, @p_id_marca, @p_modelo, @p_id_tipo_servicio, @p_m_fuera_servicio, @p_cant_butacas, @p_cant_kg, GETDATE())
+	IF @@error != 0
+		ROLLBACK TRANSACTION
+	SET @id_micro_generado = SCOPE_IDENTITY()	
+
+	
+	COMMIT TRANSACTION  
+END
+GO
+
+CREATE PROCEDURE SASHAILO.alta_butaca
+    	@p_id_micro int, 
+    	@p_nro_butaca int,
+    	@p_id_tipo_butaca int, 
+    	@p_nro_piso smallint,
+    	@hayErr int OUT,
+		@errores varchar(200) OUT
+    	
+AS
+BEGIN
+	SET @hayErr = 0
+	SET @errores = ''
+	
+	BEGIN TRANSACTION	
+	/*grabo butaca*/
+	INSERT INTO SASHAILO.Butaca (ID_MICRO, NRO_BUTACA, ID_TIPO_BUTACA, NRO_PISO) 
+	VALUES (@p_id_micro, @p_nro_butaca, @p_id_tipo_butaca, @p_nro_piso)
+	IF @@error != 0
+		ROLLBACK TRANSACTION
+	
+	COMMIT TRANSACTION  
+END
 GO
 
 /******************************************** FIN - CREACION DE STORED PROCEDURES, FUNCIONES Y VISTAS ************************************************/
