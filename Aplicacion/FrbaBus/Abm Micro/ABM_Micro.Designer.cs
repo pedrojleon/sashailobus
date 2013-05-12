@@ -31,6 +31,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ABM_Micro));
             this.b_nuevo = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.tb_patente = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.b_buscar = new System.Windows.Forms.Button();
             this.combo_servicio = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -48,8 +50,6 @@
             this.FinVidaUtil = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.acciones = new System.Windows.Forms.DataGridViewImageColumn();
             this.modificacion = new System.Windows.Forms.DataGridViewImageColumn();
-            this.label3 = new System.Windows.Forms.Label();
-            this.tb_patente = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.listado_micros)).BeginInit();
             this.SuspendLayout();
@@ -62,6 +62,7 @@
             this.b_nuevo.TabIndex = 8;
             this.b_nuevo.Text = "Nuevo Micro";
             this.b_nuevo.UseVisualStyleBackColor = true;
+            this.b_nuevo.Click += new System.EventHandler(this.b_nuevo_Click);
             // 
             // groupBox1
             // 
@@ -78,6 +79,22 @@
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Filtros de Búsqueda";
+            // 
+            // tb_patente
+            // 
+            this.tb_patente.Location = new System.Drawing.Point(459, 22);
+            this.tb_patente.Name = "tb_patente";
+            this.tb_patente.Size = new System.Drawing.Size(63, 20);
+            this.tb_patente.TabIndex = 6;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(406, 25);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(47, 13);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "Patente:";
             // 
             // b_buscar
             // 
@@ -225,22 +242,6 @@
             this.modificacion.Name = "modificacion";
             this.modificacion.ReadOnly = true;
             this.modificacion.Width = 32;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(406, 25);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(47, 13);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Patente:";
-            // 
-            // tb_patente
-            // 
-            this.tb_patente.Location = new System.Drawing.Point(459, 22);
-            this.tb_patente.Name = "tb_patente";
-            this.tb_patente.Size = new System.Drawing.Size(63, 20);
-            this.tb_patente.TabIndex = 6;
             // 
             // ABM_Micro
             // 

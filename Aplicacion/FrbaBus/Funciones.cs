@@ -28,5 +28,14 @@ namespace FrbaBus
             claveEncriptada = BitConverter.ToString(tmpHash);
             return claveEncriptada;
         }
+
+        public void soloNumeros(KeyPressEventArgs e)
+        {
+            char ch = e.KeyChar;
+            if (!Char.IsDigit(ch) && ch != 8)
+            {
+                e.Handled = true;
+            }
+        }
     }
 }

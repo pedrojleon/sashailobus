@@ -136,5 +136,12 @@ namespace FrbaBus.Abm_Micro
             }
 
         }
+
+        private void b_nuevo_Click(object sender, EventArgs e)
+        {
+            Alta_Micro alta = new Alta_Micro();
+            alta.Tag = this; //guardo en Tag una referencia a mi formulario
+            alta.ShowDialog();
+        }
     }
 }

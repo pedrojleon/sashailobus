@@ -88,6 +88,12 @@
     <Compile Include="Abm Micro\Alta_Micro.Designer.cs">
       <DependentUpon>Alta_Micro.cs</DependentUpon>
     </Compile>
+    <Compile Include="Abm Micro\Modif_Micro.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Abm Micro\Modif_Micro.Designer.cs">
+      <DependentUpon>Modif_Micro.cs</DependentUpon>
+    </Compile>
     <Compile Include="Abm Permisos\ABM_rol.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -171,6 +177,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Abm Micro\ABM_Micro.resx">
       <DependentUpon>ABM_Micro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abm Micro\Alta_Micro.resx">
+      <DependentUpon>Alta_Micro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abm Micro\Modif_Micro.resx">
+      <DependentUpon>Modif_Micro.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Abm Permisos\ABM_rol.resx">
       <DependentUpon>ABM_rol.cs</DependentUpon>
