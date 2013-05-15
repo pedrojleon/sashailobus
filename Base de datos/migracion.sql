@@ -634,6 +634,28 @@ AS
 
 GO
 
+CREATE PROCEDURE SASHAILO.sp_modif_recorrido
+	@p_id_recorrido numeric(18,0),
+	@p_id_ciudad_origen INT,
+	@p_id_ciudad_destino INT,
+	@p_base_kg DECIMAL(10,2),
+	@p_base_pasaje DECIMAL(10,2),
+	@p_id_tipo_servicio INT,
+	@hayErr int OUT,
+    @errores varchar(200) OUT
+AS
+	SET @hayErr = 0
+	SET @errores = ''
+	
+	UPDATE SASHAILO.Recorrido SET ID_CIUDAD_ORIGEN = @p_id_ciudad_origen, ID_CIUDAD_DESTINO = @p_id_ciudad_destino,
+	                              PRECIO_BASE_KG = @p_base_kg, PRECIO_BASE_PASAJE = @p_base_pasaje, ID_TIPO_SERVICIO = @p_id_tipo_servicio
+	WHERE ID_RECORRIDO = @p_id_recorrido
+	
+	UPDATE SASHAILO.Recorrido SET PRECIO_BASE_KG = @p_base_kg, PRECIO_BASE_PASAJE = @p_base_pasaje
+	WHERE ID_CIUDAD_ORIGEN = @p_id_ciudad_origen AND ID_CIUDAD_DESTINO = @p_id_ciudad_destino
+
+GO
+
 CREATE VIEW SASHAILO.vwRandom
 AS
 SELECT RAND() as Rnd
