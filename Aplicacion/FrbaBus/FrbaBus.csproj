@@ -124,6 +124,12 @@
     <Compile Include="Abm Recorrido\Alta_Recorrido.Designer.cs">
       <DependentUpon>Alta_Recorrido.cs</DependentUpon>
     </Compile>
+    <Compile Include="Abm Recorrido\Modif_Recorrido.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Abm Recorrido\Modif_Recorrido.Designer.cs">
+      <DependentUpon>Modif_Recorrido.cs</DependentUpon>
+    </Compile>
     <Compile Include="Cancelar Viaje\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -198,6 +204,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Abm Recorrido\Alta_Recorrido.resx">
       <DependentUpon>Alta_Recorrido.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abm Recorrido\Modif_Recorrido.resx">
+      <DependentUpon>Modif_Recorrido.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Login\Login.resx">
       <DependentUpon>Login.cs</DependentUpon>

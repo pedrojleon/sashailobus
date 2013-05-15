@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Security.Cryptography;
+using System.Data.SqlClient;
 
 namespace FrbaBus
 {
@@ -37,5 +38,15 @@ namespace FrbaBus
                 e.Handled = true;
             }
         }
+
+        public void soloNumerosPuntosyComas(KeyPressEventArgs e)
+        {
+            char ch = e.KeyChar;
+            if (!Char.IsDigit(ch) && ch != 8 && ch != 44 && ch != 46)
+            {
+                e.Handled = true;
+            }
+        }
+
     }
 }

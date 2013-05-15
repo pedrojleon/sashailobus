@@ -30,6 +30,13 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ABM_Recorrido));
             this.listado_recorridos = new System.Windows.Forms.DataGridView();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.b_buscar = new System.Windows.Forms.Button();
+            this.combo_destino = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.combo_origen = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.b_nuevo = new System.Windows.Forms.Button();
             this.id_recorrido = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CiudadOrigen = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CiudadDestino = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -38,13 +45,6 @@
             this.PrecioBaseKg = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.acciones = new System.Windows.Forms.DataGridViewImageColumn();
             this.modificacion = new System.Windows.Forms.DataGridViewImageColumn();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.b_buscar = new System.Windows.Forms.Button();
-            this.combo_destino = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.combo_origen = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.b_nuevo = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.listado_recorridos)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -71,65 +71,7 @@
             this.listado_recorridos.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.listado_recorridos.Size = new System.Drawing.Size(663, 240);
             this.listado_recorridos.TabIndex = 3;
-            // 
-            // id_recorrido
-            // 
-            this.id_recorrido.HeaderText = "id_ciudad";
-            this.id_recorrido.MinimumWidth = 100;
-            this.id_recorrido.Name = "id_recorrido";
-            this.id_recorrido.ReadOnly = true;
-            this.id_recorrido.Visible = false;
-            // 
-            // CiudadOrigen
-            // 
-            this.CiudadOrigen.HeaderText = "Ciudad Origen";
-            this.CiudadOrigen.Name = "CiudadOrigen";
-            this.CiudadOrigen.ReadOnly = true;
-            this.CiudadOrigen.Width = 160;
-            // 
-            // CiudadDestino
-            // 
-            this.CiudadDestino.HeaderText = "Ciudad Destino";
-            this.CiudadDestino.Name = "CiudadDestino";
-            this.CiudadDestino.ReadOnly = true;
-            this.CiudadDestino.Width = 160;
-            // 
-            // TipoServicio
-            // 
-            this.TipoServicio.HeaderText = "Servicio";
-            this.TipoServicio.Name = "TipoServicio";
-            this.TipoServicio.ReadOnly = true;
-            this.TipoServicio.Width = 80;
-            // 
-            // PrecioBasePasaje
-            // 
-            this.PrecioBasePasaje.HeaderText = "$/Pasaje";
-            this.PrecioBasePasaje.Name = "PrecioBasePasaje";
-            this.PrecioBasePasaje.ReadOnly = true;
-            this.PrecioBasePasaje.Width = 70;
-            // 
-            // PrecioBaseKg
-            // 
-            this.PrecioBaseKg.HeaderText = "$/KG";
-            this.PrecioBaseKg.Name = "PrecioBaseKg";
-            this.PrecioBaseKg.ReadOnly = true;
-            this.PrecioBaseKg.Width = 80;
-            // 
-            // acciones
-            // 
-            this.acciones.HeaderText = "";
-            this.acciones.MinimumWidth = 32;
-            this.acciones.Name = "acciones";
-            this.acciones.ReadOnly = true;
-            this.acciones.Width = 32;
-            // 
-            // modificacion
-            // 
-            this.modificacion.HeaderText = "";
-            this.modificacion.MinimumWidth = 32;
-            this.modificacion.Name = "modificacion";
-            this.modificacion.ReadOnly = true;
-            this.modificacion.Width = 32;
+            this.listado_recorridos.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.listado_recorridos_CellContentClick);
             // 
             // groupBox1
             // 
@@ -199,6 +141,65 @@
             this.b_nuevo.UseVisualStyleBackColor = true;
             this.b_nuevo.Click += new System.EventHandler(this.b_nuevo_Click);
             // 
+            // id_recorrido
+            // 
+            this.id_recorrido.HeaderText = "id_recorrido";
+            this.id_recorrido.MinimumWidth = 100;
+            this.id_recorrido.Name = "id_recorrido";
+            this.id_recorrido.ReadOnly = true;
+            this.id_recorrido.Visible = false;
+            // 
+            // CiudadOrigen
+            // 
+            this.CiudadOrigen.HeaderText = "Ciudad Origen";
+            this.CiudadOrigen.Name = "CiudadOrigen";
+            this.CiudadOrigen.ReadOnly = true;
+            this.CiudadOrigen.Width = 160;
+            // 
+            // CiudadDestino
+            // 
+            this.CiudadDestino.HeaderText = "Ciudad Destino";
+            this.CiudadDestino.Name = "CiudadDestino";
+            this.CiudadDestino.ReadOnly = true;
+            this.CiudadDestino.Width = 160;
+            // 
+            // TipoServicio
+            // 
+            this.TipoServicio.HeaderText = "Servicio";
+            this.TipoServicio.Name = "TipoServicio";
+            this.TipoServicio.ReadOnly = true;
+            this.TipoServicio.Width = 80;
+            // 
+            // PrecioBasePasaje
+            // 
+            this.PrecioBasePasaje.HeaderText = "$/Pasaje";
+            this.PrecioBasePasaje.Name = "PrecioBasePasaje";
+            this.PrecioBasePasaje.ReadOnly = true;
+            this.PrecioBasePasaje.Width = 70;
+            // 
+            // PrecioBaseKg
+            // 
+            this.PrecioBaseKg.HeaderText = "$/KG";
+            this.PrecioBaseKg.Name = "PrecioBaseKg";
+            this.PrecioBaseKg.ReadOnly = true;
+            this.PrecioBaseKg.Width = 80;
+            // 
+            // acciones
+            // 
+            this.acciones.HeaderText = "";
+            this.acciones.MinimumWidth = 32;
+            this.acciones.Name = "acciones";
+            this.acciones.ReadOnly = true;
+            this.acciones.Width = 32;
+            // 
+            // modificacion
+            // 
+            this.modificacion.HeaderText = "";
+            this.modificacion.MinimumWidth = 32;
+            this.modificacion.Name = "modificacion";
+            this.modificacion.ReadOnly = true;
+            this.modificacion.Width = 32;
+            // 
             // ABM_Recorrido
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -220,6 +221,13 @@
         #endregion
 
         private System.Windows.Forms.DataGridView listado_recorridos;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button b_buscar;
+        private System.Windows.Forms.ComboBox combo_destino;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox combo_origen;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button b_nuevo;
         private System.Windows.Forms.DataGridViewTextBoxColumn id_recorrido;
         private System.Windows.Forms.DataGridViewTextBoxColumn CiudadOrigen;
         private System.Windows.Forms.DataGridViewTextBoxColumn CiudadDestino;
@@ -228,12 +236,5 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn PrecioBaseKg;
         private System.Windows.Forms.DataGridViewImageColumn acciones;
         private System.Windows.Forms.DataGridViewImageColumn modificacion;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button b_buscar;
-        private System.Windows.Forms.ComboBox combo_destino;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox combo_origen;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button b_nuevo;
     }
 }

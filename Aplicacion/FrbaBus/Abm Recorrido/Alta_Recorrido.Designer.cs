@@ -116,6 +116,7 @@
             this.base_pasaje.Name = "base_pasaje";
             this.base_pasaje.Size = new System.Drawing.Size(64, 20);
             this.base_pasaje.TabIndex = 7;
+            this.base_pasaje.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.base_pasaje_KeyPress);
             // 
             // base_kg
             // 
@@ -124,6 +125,7 @@
             this.base_kg.Name = "base_kg";
             this.base_kg.Size = new System.Drawing.Size(64, 20);
             this.base_kg.TabIndex = 8;
+            this.base_kg.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.base_kg_KeyPress);
             // 
             // label5
             // 

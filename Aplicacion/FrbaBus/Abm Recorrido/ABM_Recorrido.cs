@@ -73,6 +73,18 @@ namespace FrbaBus.Abm_Recorrido
             }
         }
 
+        public class ComboboxItem
+        {
+            public string Text { get; set; }
+            public int Value { get; set; }
+
+            public override string ToString()
+            {
+                return Text;
+            }
+
+        }
+
         private void cargarCombosCiudad()
         {
 
@@ -93,17 +105,7 @@ namespace FrbaBus.Abm_Recorrido
             cn.desconectar();
         }
 
-        public class ComboboxItem
-        {
-            public string Text { get; set; }
-            public int Value { get; set; }
 
-            public override string ToString()
-            {
-                return Text;
-            }
-
-        }
 
         private void b_nuevo_Click(object sender, EventArgs e)
         {
@@ -111,6 +113,32 @@ namespace FrbaBus.Abm_Recorrido
             alta.Tag = this; //guardo en Tag una referencia a mi formulario
             alta.ShowDialog();
             b_buscar_Click(null, null);
+        }
+
+        private void listado_recorridos_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 6)
+            {
+                Int32 id_recorrido = Convert.ToInt32(listado_recorridos.Rows[e.RowIndex].Cells["id_recorrido"].Value.ToString());
+                Conexion conn = new Conexion();
+                SqlDataReader resultado = conn.consultar("UPDATE SASHAILO.Rol SET ELIMINADO = 'S' WHERE NOMBRE = '" + id_recorrido + "'");
+                resultado.Dispose(); // Aca hago el borrado logico
+                MessageBox.Show("El rol '" + id_recorrido.ToString() + "' ha sido eliminado", "");
+                conn.desconectar();
+                b_buscar_Click(null, null);
+
+            }
+
+            if (e.ColumnIndex == 7)
+            {
+                Modif_Recorrido modificacion = new Modif_Recorrido();
+                Int32 id_recorrido = Convert.ToInt32(listado_recorridos.Rows[e.RowIndex].Cells["id_recorrido"].Value.ToString());
+                modificacion.cargarDatos(id_recorrido);
+                modificacion.Text = "Modificacion de Recorrido";
+                modificacion.Tag = this;
+                modificacion.ShowDialog();
+                b_buscar_Click(null, null);
+            }
         }
     }
 }

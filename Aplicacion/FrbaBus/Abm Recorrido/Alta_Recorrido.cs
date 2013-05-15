@@ -128,6 +128,18 @@ namespace FrbaBus.Abm_Recorrido
             base_kg.Enabled = !base_kg.Enabled;
         }
 
+        public class ComboboxItem
+        {
+            public string Text { get; set; }
+            public int Value { get; set; }
+
+            public override string ToString()
+            {
+                return Text;
+            }
+
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             string str_error = "";
@@ -158,8 +170,8 @@ namespace FrbaBus.Abm_Recorrido
 
             ID_CIUDAD_ORIGEN.Value = ((ComboboxItem)origen.SelectedItem).Value;
             ID_CIUDAD_DESTINO.Value = ((ComboboxItem)destino.SelectedItem).Value;
-            PRECIO_KG.Value = Convert.ToDecimal(base_kg.Text.Trim());
-            PRECIO_PASAJE.Value = Convert.ToDecimal(base_pasaje.Text.Trim());
+            PRECIO_KG.Value = Convert.ToDecimal(base_kg.Text.Trim().Replace('.', ','));
+            PRECIO_PASAJE.Value = Convert.ToDecimal(base_pasaje.Text.Trim().Replace('.', ','));
             ID_TIPO_SERVICIO.Value = ((ComboboxItem)tipo_servicio.SelectedItem).Value;
             HAY_ERROR_USER.Direction = ParameterDirection.Output;
             ERRORES_USER.Direction = ParameterDirection.Output;
@@ -184,18 +196,23 @@ namespace FrbaBus.Abm_Recorrido
                 conn.desconectar();
                 return;
             }
+
+            Alta_Recorrido.ActiveForm.Close();
+
         }
-    }
 
-    public class ComboboxItem
-    {
-        public string Text { get; set; }
-        public int Value { get; set; }
-
-        public override string ToString()
+        private void base_pasaje_KeyPress(object sender, KeyPressEventArgs e)
         {
-            return Text;
+            Funciones func = new Funciones();
+            func.soloNumerosPuntosyComas(e);
+        }
+
+        private void base_kg_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            Funciones func = new Funciones();
+            func.soloNumerosPuntosyComas(e);
         }
 
     }
+
 }
