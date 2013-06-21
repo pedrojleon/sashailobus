@@ -117,14 +117,11 @@ CREATE TABLE SASHAILO.Micro(
 	F_FIN_VIDA_UTIL smalldatetime,
 	F_ALTA smalldatetime,
 	CANT_BUTACAS int,
-	CANT_KG int,
+	CANT_KG numeric(18,0),
 	UNIQUE(PATENTE),
 	PRIMARY KEY(ID_MICRO)
 )
 
-GO
-
-ALTER TABLE SASHAILO.Micro ADD F_ALTA smalldatetime
 GO
 
 CREATE TABLE SASHAILO.Butaca(
@@ -138,8 +135,161 @@ CREATE TABLE SASHAILO.Butaca(
 
 GO
 
+CREATE TABLE SASHAILO.Cliente(
+	ID_CLIENTE int not null IDENTITY,
+	NOMBRE nvarchar(255),
+	APELLIDO nvarchar(255),
+	DNI numeric(18,0) NOT NULL UNIQUE,
+	DIRECCION nvarchar(255),
+	TELEFONO numeric(18,0),
+	MAIL nvarchar(255),
+	F_NACIMIENTO datetime,
+	PUNTOS int DEFAULT 0,
+	HABILITADO char(1) not null DEFAULT 'S',
+	PRIMARY KEY(ID_CLIENTE)
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Producto(
+	ID_PRODUCTO int not null IDENTITY,
+	DESCRIPCION nvarchar(255),
+	STOCK int,
+	PUNTOS_NECESARIOS int,
+	PRIMARY KEY(ID_PRODUCTO)
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Canje(
+	ID_CANJE int not null IDENTITY,
+	ID_CLIENTE int FOREIGN KEY REFERENCES SASHAILO.Cliente(ID_CLIENTE),
+	ID_PRODUCTO int FOREIGN KEY REFERENCES SASHAILO.Producto(ID_PRODUCTO),
+	CANTIDAD int not null,
+	PRIMARY KEY(ID_CANJE)
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Viaje(
+	ID_VIAJE int not null IDENTITY,
+	ID_RECORRIDO numeric(18,0) FOREIGN KEY REFERENCES SASHAILO.Recorrido(ID_RECORRIDO),
+	ID_MICRO int FOREIGN KEY REFERENCES SASHAILO.Micro(ID_MICRO),
+	F_SALIDA datetime,
+	F_LLEGADA_ESTIMADA datetime,
+	F_LLEGADA datetime,
+	PRIMARY KEY (ID_VIAJE)
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Tipo_Pasaje(
+	ID_TIPO_PASAJE int not null IDENTITY,
+	DESCRIPCION nvarchar(30),
+	PRIMARY KEY (ID_TIPO_PASAJE)
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Tipo_Tarjeta(
+	ID_TIPO_TARJETA int not null IDENTITY,
+	DESCRIPCION nvarchar(30) not null,
+	CUOTAS int not null,
+	PRIMARY KEY (ID_TIPO_TARJETA)
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Tarjeta_Credito(
+	ID_TARJETA int not null IDENTITY,
+	NRO_TARJETA nvarchar(16) not null UNIQUE,
+	VENCIMIENTO nvarchar(4) not null,
+	CODIGO_SEGURIDAD nvarchar(3) not null,
+	ID_TIPO_TARJETA int FOREIGN KEY REFERENCES SASHAILO.Tipo_Tarjeta(ID_TIPO_TARJETA),
+	PRIMARY KEY (ID_TARJETA)
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Medio_Pago(
+	ID_MEDIO_PAGO int not null IDENTITY,
+	DESCRIPCION nvarchar(30) not null,
+	PRIMARY KEY (ID_MEDIO_PAGO)
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Compra(
+	ID_COMPRA int PRIMARY KEY not null,
+	F_COMPRA datetime not null,
+	IMPORTE numeric(18,2) not null,
+	ID_CLIENTE int FOREIGN KEY REFERENCES SASHAILO.Cliente(ID_CLIENTE),
+	ID_MEDIO_PAGO int FOREIGN KEY REFERENCES SASHAILO.Medio_Pago(ID_MEDIO_PAGO),
+	ID_TARJETA int FOREIGN KEY REFERENCES SASHAILO.Tarjeta_Credito(ID_TARJETA)
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Pasaje_Encomienda(
+	ID_PASAJE_ENCOMIENDA numeric(18,0) PRIMARY KEY NOT NULL,
+	ID_COMPRA int,
+	ID_CLIENTE int FOREIGN KEY REFERENCES SASHAILO.Cliente(ID_CLIENTE),
+	ID_VIAJE int FOREIGN KEY REFERENCES SASHAILO.Viaje(ID_VIAJE),
+	ID_BUTACA int FOREIGN KEY REFERENCES SASHAILO.Butaca(ID_BUTACA),
+	ID_TIPO_PASAJE int FOREIGN KEY REFERENCES SASHAILO.Tipo_Pasaje(ID_TIPO_PASAJE),
+	PRECIO numeric(18,2),
+	KG numeric(18,0)
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Devolucion(
+	ID_DEVOLUCION int not null IDENTITY,
+	ID_PASAJE_ENCOMIENDA numeric(18,0) FOREIGN KEY REFERENCES SASHAILO.Pasaje_Encomienda(ID_PASAJE_ENCOMIENDA),
+	F_DEVOLUCION datetime not null,
+	MOTIVO nvarchar(255),
+	PRIMARY KEY (ID_DEVOLUCION)
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Llegada(
+	ID_LLEGADA int not null IDENTITY,
+	PATENTE varchar(7) not null,
+	ID_MICRO int FOREIGN KEY REFERENCES SASHAILO.Micro(ID_MICRO),
+	F_LLEGADA datetime not null,
+	ID_VIAJE int FOREIGN KEY REFERENCES SASHAILO.Viaje(ID_VIAJE) not null,
+	ID_CIUDAD_ORIGEN int FOREIGN KEY REFERENCES SASHAILO.Ciudad(ID_CIUDAD) not null,
+	ID_CIUDAD_DESTINO int FOREIGN KEY REFERENCES SASHAILO.Ciudad(ID_CIUDAD) not null,
+	PRIMARY KEY (ID_LLEGADA)
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Historial_Puntos(
+	ID_HISTORIAL_PUNTOS int not null IDENTITY,
+	ID_CLIENTE int FOREIGN KEY REFERENCES SASHAILO.Cliente(ID_CLIENTE),
+	ID_PASAJE_ENCOMIENDA numeric(18,0) FOREIGN KEY REFERENCES SASHAILO.Pasaje_Encomienda(ID_PASAJE_ENCOMIENDA),
+	PUNTOS int not null,
+	FECHA datetime not null,
+	PRIMARY KEY (ID_HISTORIAL_PUNTOS)
+) 
+
+GO
 
 /******************************************** FIN - CREACION DE TABLAS *********************************************/
+
+/******************************************** INICIO - CREACION DE INDICES *********************************************/
+
+CREATE INDEX I_BUTACAS
+ON SASHAILO.Butaca(ID_MICRO,NRO_BUTACA)
+GO
+
+CREATE INDEX I_VIAJES
+ON SASHAILO.Viaje(ID_RECORRIDO,ID_MICRO,F_SALIDA,F_LLEGADA_ESTIMADA,F_LLEGADA)
+GO
+
+/******************************************** FIN - CREACION DE INDICES *********************************************/
 
 
 /******************************************** INICIO - LLENADO DE TABLAS *********************************************/
@@ -152,6 +302,39 @@ GO
 
 INSERT INTO SASHAILO.Rol(NOMBRE)
 values ('Cliente');
+
+GO
+
+-- TIPO PASAJE
+INSERT INTO SASHAILO.Tipo_Pasaje(DESCRIPCION)
+values ('Pasaje');
+
+GO
+
+INSERT INTO SASHAILO.Tipo_Pasaje(DESCRIPCION)
+values ('Encomienda');
+
+GO
+
+-- TIPO TARJETA
+INSERT INTO SASHAILO.Tipo_Tarjeta(DESCRIPCION, CUOTAS)
+values ('Visa', 6);
+
+GO
+
+INSERT INTO SASHAILO.Tipo_Tarjeta(DESCRIPCION, CUOTAS)
+values ('Mastercard', 3);
+
+GO
+
+-- MEDIO DE PAGO
+INSERT INTO SASHAILO.Medio_Pago(DESCRIPCION)
+values ('Efectivo');
+
+GO
+
+INSERT INTO SASHAILO.Medio_Pago(DESCRIPCION)
+values ('Tarjeta');
 
 GO
 
@@ -308,6 +491,11 @@ INSERT INTO SASHAILO.Tipo_Butaca(DESCRIPCION)
 select distinct Butaca_Tipo
 from gd_esquema.Maestra
 where Butaca_Tipo<>'0'
+GO
+
+INSERT INTO SASHAILO.Cliente(NOMBRE,APELLIDO,DNI,DIRECCION,TELEFONO,MAIL,F_NACIMIENTO)
+SELECT DISTINCT Cli_Nombre, Cli_Apellido, Cli_Dni, Cli_Dir, Cli_Telefono, Cli_Mail, Cli_Fecha_Nac
+FROM gd_esquema.Maestra
 GO
 
 /******************************************** FIN - LLENADO DE TABLAS ************************************************/
@@ -825,7 +1013,7 @@ BEGIN
 		DECLARE curr_butacas CURSOR FOR 
 		select distinct Butaca_Nro, tb.ID_TIPO_BUTACA, Butaca_Piso 
 		from gd_esquema.Maestra ma join SASHAILO.Tipo_Butaca tb on ma.Butaca_Tipo = tb.DESCRIPCION
-		where Micro_Patente=@patente and Butaca_Nro <> 0 order by 1
+		where Micro_Patente=@patente and Pasaje_Codigo <> 0 order by 1
 		
 		BEGIN TRANSACTION;
 		
@@ -891,3 +1079,110 @@ END
 GO
 
 /****************************** FIN -  LLENADO DE TABLAS A TRAVES DE SP *********************************/
+
+/****************************** INICIO -  LLENADO DE TABLAS II *********************************/
+
+INSERT INTO SASHAILO.Viaje (ID_RECORRIDO, ID_MICRO, F_SALIDA, F_LLEGADA_ESTIMADA, F_LLEGADA)
+SELECT DISTINCT Recorrido_Codigo, mi.id_micro, FechaSalida, Fecha_LLegada_Estimada, FechaLLegada
+from gd_esquema.Maestra ma join SASHAILO.Micro mi on mi.patente = ma.Micro_Patente
+GO
+
+INSERT INTO SASHAILO.Pasaje_Encomienda(ID_PASAJE_ENCOMIENDA, ID_CLIENTE, ID_VIAJE, ID_BUTACA, ID_TIPO_PASAJE, PRECIO, KG)
+select case ma.Pasaje_Codigo when 0 then ma.Paquete_Codigo else ma.Pasaje_Codigo end Codigo,
+	cli.ID_CLIENTE, vi.ID_VIAJE, bu.ID_BUTACA, 
+	case ma.Pasaje_Codigo when 0 then 2 else 1 end Tipo_Pasaje,
+	case ma.Pasaje_Codigo when 0 then ma.Paquete_Precio else ma.Pasaje_Precio end PRECIO,
+	case ma.Pasaje_Codigo when 0 then ma.Paquete_KG else NULL end KG
+	from gd_esquema.Maestra ma
+	join SASHAILO.Cliente cli on cli.DNI = ma.Cli_Dni
+	join SASHAILO.Micro mi on ma.Micro_Patente = mi.PATENTE
+	left join SASHAILO.Butaca bu on (bu.ID_MICRO = mi.ID_MICRO and
+								bu.NRO_BUTACA = ma.Butaca_Nro and 
+								Pasaje_Codigo <>0)
+	join SASHAILO.Viaje vi on (vi.ID_RECORRIDO = ma.Recorrido_Codigo and 
+							   vi.F_SALIDA = ma.FechaSalida and 
+							   vi.F_LLEGADA_ESTIMADA = ma.Fecha_LLegada_Estimada and 
+							   vi.F_LLEGADA = ma.FechaLLegada and 
+							   vi.ID_MICRO = mi.ID_MICRO)
+GO
+
+BEGIN
+
+	SET NOCOUNT ON;
+
+	DECLARE @id_pasaje_encomienda numeric(18,0)
+	DECLARE @contador int
+	SET @contador = 0;
+	DECLARE curr_pasajes CURSOR FOR 
+	SELECT ID_PASAJE_ENCOMIENDA FROM SASHAILO.Pasaje_Encomienda
+
+	BEGIN TRANSACTION;
+
+	OPEN curr_pasajes 
+	FETCH curr_pasajes INTO @id_pasaje_encomienda
+
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+		
+		SET @contador = @contador + 1;
+		
+		UPDATE SASHAILO.Pasaje_Encomienda SET ID_COMPRA = @contador WHERE ID_PASAJE_ENCOMIENDA = @id_pasaje_encomienda
+		
+		FETCH curr_pasajes INTO @id_pasaje_encomienda
+	END
+
+	COMMIT TRANSACTION;
+
+	CLOSE curr_pasajes
+	DEALLOCATE curr_pasajes
+
+END
+
+GO
+
+--inserto las compras de los pasajes
+INSERT INTO SASHAILO.Compra(ID_COMPRA, F_COMPRA, IMPORTE, ID_CLIENTE, ID_MEDIO_PAGO)
+SELECT PE.ID_COMPRA, MA.Pasaje_FechaCompra, pe.PRECIO, pe.ID_CLIENTE, 1
+FROM SASHAILO.Pasaje_Encomienda pe
+JOIN gd_esquema.Maestra ma on ma.Pasaje_Codigo = pe.ID_PASAJE_ENCOMIENDA 
+GO
+
+--inserto las compras de los paquetes
+INSERT INTO SASHAILO.Compra(ID_COMPRA, F_COMPRA, IMPORTE, ID_CLIENTE, ID_MEDIO_PAGO)
+SELECT PE.ID_COMPRA, MA.Paquete_FechaCompra, pe.PRECIO, pe.ID_CLIENTE, 1
+FROM SASHAILO.Pasaje_Encomienda pe
+JOIN gd_esquema.Maestra ma on ma.Paquete_Codigo = pe.ID_PASAJE_ENCOMIENDA 
+GO
+
+--creo la fk
+ALTER TABLE SASHAILO.Pasaje_Encomienda
+ADD CONSTRAINT fk_id_compra
+FOREIGN KEY (ID_COMPRA)
+REFERENCES SASHAILO.Compra(ID_COMPRA)
+GO
+
+-- lleno el historial de puntos
+INSERT INTO SASHAILO.Historial_Puntos(ID_CLIENTE, ID_PASAJE_ENCOMIENDA, PUNTOS, FECHA)
+SELECT id_cliente, id_pasaje_encomienda, round (pe.PRECIO/5,0) as PUNTOS, vi.F_SALIDA
+FROM SASHAILO.Pasaje_Encomienda pe
+JOIN SASHAILO.Viaje vi on vi.ID_VIAJE = pe.ID_VIAJE
+GO
+
+-- lleno la tabla de llegada a destino
+INSERT INTO SASHAILO.Llegada(PATENTE, ID_MICRO, F_LLEGADA, ID_VIAJE, ID_CIUDAD_ORIGEN, ID_CIUDAD_DESTINO)
+SELECT mi.PATENTE, mi.ID_MICRO, vi.F_LLEGADA, vi.ID_VIAJE, re.ID_CIUDAD_ORIGEN, re.ID_CIUDAD_DESTINO
+FROM SASHAILO.Viaje vi
+join SASHAILO.Micro mi on mi.ID_MICRO = vi.ID_MICRO
+join SASHAILO.Recorrido re on re.ID_RECORRIDO = vi.ID_RECORRIDO
+GO
+
+--actualizo los puntos de los clientes
+UPDATE SASHAILO.Cliente SET PUNTOS = t2.PUNTOS
+FROM SASHAILO.Cliente
+INNER JOIN (SELECT ID_CLIENTE, SUM(PUNTOS) as PUNTOS
+			FROM SASHAILO.Historial_Puntos
+			GROUP BY ID_CLIENTE) t2
+ON SASHAILO.Cliente.ID_CLIENTE = t2.id_CLIENTE
+GO
+
+/****************************** FIN -  LLENADO DE TABLAS II *********************************/
