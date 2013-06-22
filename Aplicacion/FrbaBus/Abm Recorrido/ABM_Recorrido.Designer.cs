@@ -38,6 +38,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.b_nuevo = new System.Windows.Forms.Button();
             this.id_recorrido = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.habilitado = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CiudadOrigen = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CiudadDestino = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.TipoServicio = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -56,6 +57,7 @@
             this.listado_recorridos.ColumnHeadersHeight = 20;
             this.listado_recorridos.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.id_recorrido,
+            this.habilitado,
             this.CiudadOrigen,
             this.CiudadDestino,
             this.TipoServicio,
@@ -149,6 +151,13 @@
             this.id_recorrido.ReadOnly = true;
             this.id_recorrido.Visible = false;
             // 
+            // habilitado
+            // 
+            this.habilitado.HeaderText = "habilitado";
+            this.habilitado.Name = "habilitado";
+            this.habilitado.ReadOnly = true;
+            this.habilitado.Visible = false;
+            // 
             // CiudadOrigen
             // 
             this.CiudadOrigen.HeaderText = "Ciudad Origen";
@@ -229,6 +238,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button b_nuevo;
         private System.Windows.Forms.DataGridViewTextBoxColumn id_recorrido;
+        private System.Windows.Forms.DataGridViewTextBoxColumn habilitado;
         private System.Windows.Forms.DataGridViewTextBoxColumn CiudadOrigen;
         private System.Windows.Forms.DataGridViewTextBoxColumn CiudadDestino;
         private System.Windows.Forms.DataGridViewTextBoxColumn TipoServicio;

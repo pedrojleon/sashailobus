@@ -53,9 +53,14 @@ namespace FrbaBus.Abm_Recorrido
                     listado_recorridos.Rows[i].Cells["TipoServicio"].Value = DR[3].ToString();
                     listado_recorridos.Rows[i].Cells["PrecioBasePasaje"].Value = DR[4].ToString();
                     listado_recorridos.Rows[i].Cells["PrecioBaseKg"].Value = DR[5].ToString();
+                    String habilitado = DR[6].ToString();
+                    listado_recorridos.Rows[i].Cells["habilitado"].Value = habilitado.Trim();
 
                     DataGridViewImageCell iconColumn = (DataGridViewImageCell)listado_recorridos.Rows[i].Cells["acciones"];
-                    iconColumn.Value = FrbaBus.Properties.Resources.deny_ico;
+                    if (habilitado.Trim().Equals("N"))
+                        iconColumn.Value = FrbaBus.Properties.Resources.accept_ico;
+                    else
+                        iconColumn.Value = FrbaBus.Properties.Resources.deny_ico;
 
                     iconColumn = (DataGridViewImageCell)listado_recorridos.Rows[i].Cells["modificacion"];
                     iconColumn.Value = FrbaBus.Properties.Resources.edit_ico;
@@ -117,19 +122,23 @@ namespace FrbaBus.Abm_Recorrido
 
         private void listado_recorridos_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == 6)
+            if (e.ColumnIndex == 7)
             {
                 Int32 id_recorrido = Convert.ToInt32(listado_recorridos.Rows[e.RowIndex].Cells["id_recorrido"].Value.ToString());
+                String habilitado = (listado_recorridos.Rows[e.RowIndex].Cells["habilitado"].Value.ToString().Trim().Equals("N")) ? "S" : "N";
                 Conexion conn = new Conexion();
-                SqlDataReader resultado = conn.consultar("UPDATE SASHAILO.Rol SET ELIMINADO = 'S' WHERE NOMBRE = '" + id_recorrido + "'");
+                SqlDataReader resultado = conn.consultar("UPDATE SASHAILO.Recorrido SET HABILITADO = '"+habilitado+"' WHERE ID_RECORRIDO = " + id_recorrido + "");
                 resultado.Dispose(); // Aca hago el borrado logico
-                MessageBox.Show("El rol '" + id_recorrido.ToString() + "' ha sido eliminado", "");
+                if(habilitado.Equals("N"))
+                    MessageBox.Show("El recorrido ha sido deshabilitado", "");
+                else
+                    MessageBox.Show("El recorrido ha sido habilitado", "");
                 conn.desconectar();
                 b_buscar_Click(null, null);
 
             }
 
-            if (e.ColumnIndex == 7)
+            if (e.ColumnIndex == 8)
             {
                 Modif_Recorrido modificacion = new Modif_Recorrido();
                 Int32 id_recorrido = Convert.ToInt32(listado_recorridos.Rows[e.RowIndex].Cells["id_recorrido"].Value.ToString());
