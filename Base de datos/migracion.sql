@@ -297,132 +297,111 @@ GO
 -- ROLES
 INSERT INTO SASHAILO.Rol(NOMBRE)
 values ('Administrador');
-
 GO
-
 INSERT INTO SASHAILO.Rol(NOMBRE)
 values ('Cliente');
-
 GO
 
 -- TIPO PASAJE
 INSERT INTO SASHAILO.Tipo_Pasaje(DESCRIPCION)
 values ('Pasaje');
-
 GO
-
 INSERT INTO SASHAILO.Tipo_Pasaje(DESCRIPCION)
 values ('Encomienda');
-
 GO
 
 -- TIPO TARJETA
 INSERT INTO SASHAILO.Tipo_Tarjeta(DESCRIPCION, CUOTAS)
 values ('Visa', 6);
-
 GO
-
 INSERT INTO SASHAILO.Tipo_Tarjeta(DESCRIPCION, CUOTAS)
 values ('Mastercard', 3);
-
 GO
 
 -- MEDIO DE PAGO
 INSERT INTO SASHAILO.Medio_Pago(DESCRIPCION)
 values ('Efectivo');
-
 GO
-
 INSERT INTO SASHAILO.Medio_Pago(DESCRIPCION)
 values ('Tarjeta');
-
 GO
-
 --FUNCIONES
 INSERT INTO SASHAILO.Funcion(DESCRIPCION)
 values ('ABM de Rol');
-
 GO
-
 INSERT INTO SASHAILO.Funcion(DESCRIPCION)
 values ('ABM de Ciudad');
-
 GO
-
 INSERT INTO SASHAILO.Funcion(DESCRIPCION)
 values ('ABM de Recorrido');
-
 GO
-
 INSERT INTO SASHAILO.Funcion(DESCRIPCION)
 values ('ABM de Micro');
-
 GO
-
 INSERT INTO SASHAILO.Funcion(DESCRIPCION)
 values ('Generación de Viaje');
-
 GO
-
 INSERT INTO SASHAILO.Funcion(DESCRIPCION)
 values ('Registro de llegada a Destino');
-
 GO
-
 INSERT INTO SASHAILO.Funcion(DESCRIPCION)
 values ('Compra de Pasaje/Encomienda');
-
 GO
-
 INSERT INTO SASHAILO.Funcion(DESCRIPCION)
 values ('Devolución/Cancelación de pasaje y/o encomienda');
-
 GO
-
 INSERT INTO SASHAILO.Funcion(DESCRIPCION)
 values ('Consulta de puntos de pasajero frecuente');
-
 GO
-
 INSERT INTO SASHAILO.Funcion(DESCRIPCION)
 values ('Listado Estadístico');
-
 GO
 
 -- FUNCIONES X ROL
 INSERT INTO SASHAILO.FuncionxRol(ID_ROL, ID_FUNCION)
 values(1,1)
-
 GO
-
 INSERT INTO SASHAILO.FuncionxRol(ID_ROL, ID_FUNCION)
 values(1,2)
-
 GO
-
 INSERT INTO SASHAILO.FuncionxRol(ID_ROL, ID_FUNCION)
 values(1,3)
 
 GO
-
 INSERT INTO SASHAILO.FuncionxRol(ID_ROL, ID_FUNCION)
 values(1,4)
-
 GO
-
 INSERT INTO SASHAILO.FuncionxRol(ID_ROL, ID_FUNCION)
 values(1,5)
-
 GO
-
 INSERT INTO SASHAILO.FuncionxRol(ID_ROL, ID_FUNCION)
 values(1,6)
-
 GO
-
 INSERT INTO SASHAILO.FuncionxRol(ID_ROL, ID_FUNCION)
 values(1,10)
+GO
 
+-- PRODUCTOS
+INSERT INTO SASHAILO.Producto(DESCRIPCION, STOCK, PUNTOS_NECESARIOS)
+VALUES('Pelota de Futbol', 5, 100)
+GO
+INSERT INTO SASHAILO.Producto(DESCRIPCION, STOCK, PUNTOS_NECESARIOS)
+VALUES('Oso de peluche', 5, 100)
+GO
+INSERT INTO SASHAILO.Producto(DESCRIPCION, STOCK, PUNTOS_NECESARIOS)
+VALUES('Pava Eléctrica', 3, 300)
+GO
+INSERT INTO SASHAILO.Producto(DESCRIPCION, STOCK, PUNTOS_NECESARIOS)
+VALUES('Reproductor de DVD', 4, 200)
+GO
+INSERT INTO SASHAILO.Producto(DESCRIPCION, STOCK, PUNTOS_NECESARIOS)
+VALUES('Afeitadora Eléctrica', 4, 300)
+GO
+INSERT INTO SASHAILO.Producto(DESCRIPCION, STOCK, PUNTOS_NECESARIOS)
+VALUES('Metegol', 4, 3000)
+GO
+INSERT INTO SASHAILO.Producto(DESCRIPCION, STOCK, PUNTOS_NECESARIOS)
+VALUES('Televisor LCD', 4, 5000)
 GO
 
 /****************** INICIO - CREACION DE USUARIOS ADMINISTRADORES  *******************/
@@ -787,7 +766,7 @@ CREATE PROCEDURE SASHAILO.listado_recorridos
     	@p_id_ciudad_destino int
 AS
 
-	SELECT ID_RECORRIDO, ori.NOMBRE_CIUDAD, dest.NOMBRE_CIUDAD, ts.DESCRIPCION, re.PRECIO_BASE_PASAJE, re.PRECIO_BASE_KG
+	SELECT ID_RECORRIDO, ori.NOMBRE_CIUDAD, dest.NOMBRE_CIUDAD, ts.DESCRIPCION, re.PRECIO_BASE_PASAJE, re.PRECIO_BASE_KG, re.HABILITADO
 	FROM SASHAILO.Recorrido re
 	JOIN SASHAILO.Ciudad ori on ori.ID_CIUDAD = re.ID_CIUDAD_ORIGEN
 	JOIN SASHAILO.Ciudad dest on dest.ID_CIUDAD = re.ID_CIUDAD_DESTINO
@@ -930,8 +909,9 @@ CREATE PROCEDURE SASHAILO.alta_micro
     	@p_modelo varchar(25),
     	@p_id_tipo_servicio int, 
     	@p_m_fuera_servicio char(1),
-    	@p_cant_kg int, 
+    	@p_cant_kg numeric(18,0), 
     	@p_cant_butacas int,
+	@p_f_alta datetime,
     	@id_micro_generado int OUT,
     	@hayErr int OUT,
 		@errores varchar(200) OUT
@@ -944,11 +924,87 @@ BEGIN
 	BEGIN TRANSACTION	
 	/*grabo el micro*/
 	INSERT INTO SASHAILO.Micro (PATENTE, ID_MARCA, MODELO, ID_TIPO_SERVICIO, FUERA_DE_SERVICIO, CANT_BUTACAS, CANT_KG, F_ALTA) 
-	VALUES (@p_patente, @p_id_marca, @p_modelo, @p_id_tipo_servicio, @p_m_fuera_servicio, @p_cant_butacas, @p_cant_kg, GETDATE())
+	VALUES (@p_patente, @p_id_marca, @p_modelo, @p_id_tipo_servicio, @p_m_fuera_servicio, @p_cant_butacas, @p_cant_kg, @p_f_alta)
 	IF @@error != 0
 		ROLLBACK TRANSACTION
 	SET @id_micro_generado = SCOPE_IDENTITY()	
 
+	
+	COMMIT TRANSACTION  
+END
+GO
+
+CREATE PROCEDURE SASHAILO.modif_micro
+    	@p_id_micro int,
+    	@p_patente varchar(7),
+    	@p_id_marca int, 
+    	@p_modelo varchar(25),
+    	@p_id_tipo_servicio int, 
+    	@p_m_fuera_servicio char(1),
+    	@p_f_fuera_servicio datetime,
+    	@p_f_reinicio_servicio datetime,
+    	@p_m_baja_definitiva char(1),
+    	@p_f_baja_definitiva datetime,
+    	@p_cant_kg numeric(18,0), 
+    	@hayErr int OUT,
+		@errores varchar(200) OUT
+    	
+AS
+BEGIN
+	SET @hayErr = 0
+	SET @errores = ''
+	
+	/*verifico que la patente no pertenezca a otro micro*/
+	DECLARE @existePatente int 
+	select @existePatente = (select COUNT(1) from SASHAILO.Micro where upper(PATENTE)=upper(@p_patente) and ID_MICRO <> @p_id_micro)
+	if @existePatente > 0
+	BEGIN
+		set @hayErr = 1
+		set @errores = 'La patente ingresada pertenece a otro micro.'
+		RETURN
+	END
+	
+	BEGIN TRANSACTION	
+	/*actualizo el micro*/
+	UPDATE SASHAILO.Micro SET PATENTE = @p_patente, 
+	                          ID_MARCA = @p_id_marca, 
+	                          MODELO = @p_modelo, 
+	                          ID_TIPO_SERVICIO = @p_id_tipo_servicio, 
+	                          FUERA_DE_SERVICIO = @p_m_fuera_servicio,
+	                          F_FUERA_SERVICIO = @p_f_fuera_servicio,
+	                          F_REINICIO_SERVICIO = @p_f_reinicio_servicio,
+	                          FIN_VIDA_UTIL = @p_m_baja_definitiva,
+	                          F_FIN_VIDA_UTIL = @p_f_baja_definitiva,
+	                          CANT_KG = @p_cant_kg
+	WHERE ID_MICRO = @p_id_micro
+	
+	IF @@error != 0
+		ROLLBACK TRANSACTION
+	
+	COMMIT TRANSACTION  
+END
+GO
+
+CREATE PROCEDURE SASHAILO.fin_vida_util_micro
+    	@p_id_micro int,
+    	@p_m_baja_definitiva char(1),
+    	@p_f_baja_definitiva datetime,
+    	@hayErr int OUT,
+		@errores varchar(200) OUT
+    	
+AS
+BEGIN
+	SET @hayErr = 0
+	SET @errores = ''
+	
+	BEGIN TRANSACTION	
+	/*actualizo el micro*/
+	UPDATE SASHAILO.Micro SET FIN_VIDA_UTIL = @p_m_baja_definitiva,
+	                          F_FIN_VIDA_UTIL = @p_f_baja_definitiva
+	WHERE ID_MICRO = @p_id_micro
+	
+	IF @@error != 0
+		ROLLBACK TRANSACTION
 	
 	COMMIT TRANSACTION  
 END
@@ -982,8 +1038,8 @@ GO
 
 /****************************** INICIO -  LLENADO DE TABLAS A TRAVES DE SP *********************************/
 
-INSERT INTO SASHAILO.Micro(PATENTE, ID_MARCA, MODELO, ID_TIPO_SERVICIO, CANT_KG)
-select distinct ma.Micro_Patente, mm.ID_MARCA, Micro_Modelo, ts.ID_TIPO_SERVICIO, Micro_KG_Disponibles
+INSERT INTO SASHAILO.Micro(PATENTE, ID_MARCA, MODELO, ID_TIPO_SERVICIO, CANT_KG, F_ALTA)
+select distinct ma.Micro_Patente, mm.ID_MARCA, Micro_Modelo, ts.ID_TIPO_SERVICIO, Micro_KG_Disponibles, CONVERT(Datetime, '1900-01-01 00:00:00.000', 120)
 from gd_esquema.Maestra ma
 join SASHAILO.Marca_Micro mm on mm.DESCRIPCION = ma.Micro_Marca
 join SASHAILO.Tipo_Servicio ts on ts.DESCRIPCION = ma.Tipo_Servicio
