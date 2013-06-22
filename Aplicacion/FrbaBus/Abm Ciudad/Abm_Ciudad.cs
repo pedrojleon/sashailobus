@@ -28,7 +28,7 @@ namespace FrbaBus.Abm_Ciudad
             while (resultado.Read())
             {
                 renglon = DGVCiudad.Rows.Add();
-                DGVCiudad.Rows[renglon].Cells["id_ciudad"].Value = resultado.GetInt16(0);
+                DGVCiudad.Rows[renglon].Cells["id_ciudad"].Value = resultado.GetInt32(0);
                 DGVCiudad.Rows[renglon].Cells["NombreDeCiudad"].Value = resultado.GetString(1);
                 DGVCiudad.Rows[renglon].Cells["Habilitada"].Value = resultado.GetString(2);
 

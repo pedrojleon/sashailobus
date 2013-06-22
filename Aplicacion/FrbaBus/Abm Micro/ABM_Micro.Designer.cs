@@ -40,6 +40,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.listado_micros = new System.Windows.Forms.DataGridView();
             this.id_micro = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.fin_vida_util = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Patente = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Marca = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Modelo = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -147,6 +148,7 @@
             this.listado_micros.ColumnHeadersHeight = 20;
             this.listado_micros.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.id_micro,
+            this.fin_vida_util,
             this.Patente,
             this.Marca,
             this.Modelo,
@@ -165,6 +167,7 @@
             this.listado_micros.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.listado_micros.Size = new System.Drawing.Size(693, 240);
             this.listado_micros.TabIndex = 6;
+            this.listado_micros.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.listado_micros_CellContentClick);
             // 
             // id_micro
             // 
@@ -173,6 +176,13 @@
             this.id_micro.Name = "id_micro";
             this.id_micro.ReadOnly = true;
             this.id_micro.Visible = false;
+            // 
+            // fin_vida_util
+            // 
+            this.fin_vida_util.HeaderText = "fin_vida_util";
+            this.fin_vida_util.Name = "fin_vida_util";
+            this.fin_vida_util.ReadOnly = true;
+            this.fin_vida_util.Visible = false;
             // 
             // Patente
             // 
@@ -271,7 +281,10 @@
         private System.Windows.Forms.ComboBox combo_marca;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.DataGridView listado_micros;
+        private System.Windows.Forms.TextBox tb_patente;
+        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.DataGridViewTextBoxColumn id_micro;
+        private System.Windows.Forms.DataGridViewTextBoxColumn fin_vida_util;
         private System.Windows.Forms.DataGridViewTextBoxColumn Patente;
         private System.Windows.Forms.DataGridViewTextBoxColumn Marca;
         private System.Windows.Forms.DataGridViewTextBoxColumn Modelo;
@@ -282,7 +295,5 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn FinVidaUtil;
         private System.Windows.Forms.DataGridViewImageColumn acciones;
         private System.Windows.Forms.DataGridViewImageColumn modificacion;
-        private System.Windows.Forms.TextBox tb_patente;
-        private System.Windows.Forms.Label label3;
     }
 }

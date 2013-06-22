@@ -47,11 +47,11 @@
             this.cant_kg = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
             this.boxButacas = new System.Windows.Forms.FlowLayoutPanel();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.icono_mas = new System.Windows.Forms.PictureBox();
             this.label8 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label9 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.icono_mas)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -80,7 +80,7 @@
             this.modelo.Location = new System.Drawing.Point(85, 180);
             this.modelo.Name = "modelo";
             this.modelo.Size = new System.Drawing.Size(94, 20);
-            this.modelo.TabIndex = 21;
+            this.modelo.TabIndex = 3;
             // 
             // label_f_actual
             // 
@@ -125,7 +125,7 @@
             this.combo_marca.Location = new System.Drawing.Point(85, 147);
             this.combo_marca.Name = "combo_marca";
             this.combo_marca.Size = new System.Drawing.Size(86, 21);
-            this.combo_marca.TabIndex = 14;
+            this.combo_marca.TabIndex = 2;
             // 
             // combo_servicio
             // 
@@ -133,7 +133,7 @@
             this.combo_servicio.Location = new System.Drawing.Point(85, 214);
             this.combo_servicio.Name = "combo_servicio";
             this.combo_servicio.Size = new System.Drawing.Size(94, 21);
-            this.combo_servicio.TabIndex = 13;
+            this.combo_servicio.TabIndex = 4;
             // 
             // label_nro_micro
             // 
@@ -160,7 +160,7 @@
             this.fuera_servicio.Location = new System.Drawing.Point(37, 298);
             this.fuera_servicio.Name = "fuera_servicio";
             this.fuera_servicio.Size = new System.Drawing.Size(109, 17);
-            this.fuera_servicio.TabIndex = 28;
+            this.fuera_servicio.TabIndex = 6;
             this.fuera_servicio.Text = "Fuera de Servicio";
             this.fuera_servicio.UseVisualStyleBackColor = true;
             // 
@@ -170,7 +170,7 @@
             this.patente.Location = new System.Drawing.Point(85, 110);
             this.patente.Name = "patente";
             this.patente.Size = new System.Drawing.Size(86, 20);
-            this.patente.TabIndex = 30;
+            this.patente.TabIndex = 1;
             // 
             // label6
             // 
@@ -197,7 +197,7 @@
             this.cant_kg.Location = new System.Drawing.Point(85, 253);
             this.cant_kg.Name = "cant_kg";
             this.cant_kg.Size = new System.Drawing.Size(60, 20);
-            this.cant_kg.TabIndex = 43;
+            this.cant_kg.TabIndex = 5;
             this.cant_kg.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.cant_kg_KeyPress);
             // 
             // label16
@@ -220,16 +220,16 @@
             this.boxButacas.Size = new System.Drawing.Size(367, 330);
             this.boxButacas.TabIndex = 46;
             // 
-            // pictureBox1
+            // icono_mas
             // 
-            this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(253, 299);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(16, 23);
-            this.pictureBox1.TabIndex = 47;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            this.icono_mas.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.icono_mas.Image = ((System.Drawing.Image)(resources.GetObject("icono_mas.Image")));
+            this.icono_mas.Location = new System.Drawing.Point(253, 299);
+            this.icono_mas.Name = "icono_mas";
+            this.icono_mas.Size = new System.Drawing.Size(16, 23);
+            this.icono_mas.TabIndex = 47;
+            this.icono_mas.TabStop = false;
+            this.icono_mas.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
             // label8
             // 
@@ -246,7 +246,7 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.combo_servicio);
-            this.groupBox1.Controls.Add(this.pictureBox1);
+            this.groupBox1.Controls.Add(this.icono_mas);
             this.groupBox1.Controls.Add(this.combo_marca);
             this.groupBox1.Controls.Add(this.boxButacas);
             this.groupBox1.Controls.Add(this.label2);
@@ -290,7 +290,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Alta_Micro";
             this.Text = "Alta de Micro";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.icono_mas)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
@@ -317,7 +317,7 @@
         private System.Windows.Forms.TextBox cant_kg;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.FlowLayoutPanel boxButacas;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox icono_mas;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label9;

@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 using System.Text.RegularExpressions;
+using System.Configuration;
 
 namespace FrbaBus.Abm_Micro
 {
@@ -25,8 +26,8 @@ namespace FrbaBus.Abm_Micro
 
         private void setearFechaActual(){
             DateTime ahora = DateTime.Now;
-            string fecha = ahora.Day.ToString() + "/" + ahora.Month.ToString() + "/" + ahora.Year.ToString();
-            label_f_actual.Text = fecha;
+            string f_actual = ConfigurationSettings.AppSettings["fechaActual"];
+            label_f_actual.Text = f_actual;
         }
 
         private void llenarComboPisos(ComboBox cb){
@@ -190,6 +191,8 @@ namespace FrbaBus.Abm_Micro
                 str_errores = str_errores + "Debe agregar alguna butaca\n";
             if (!validarButacas())
                 str_errores = str_errores + "Las butacas tienen campos incompletos. Por favor verifique.\n";
+            if (butacasRepetidas())
+                str_errores = str_errores + "Hay números de butacas repetidos.\n";
 
             if (!str_errores.Equals(""))
             {
@@ -212,6 +215,7 @@ namespace FrbaBus.Abm_Micro
             SqlParameter M_FUERA_SERVICIO = sp_alta.Parameters.Add("@p_m_fuera_servicio", SqlDbType.Char, 1);
             SqlParameter CANT_KG = sp_alta.Parameters.Add("@p_cant_kg", SqlDbType.Int);
             SqlParameter CANT_BUTACAS = sp_alta.Parameters.Add("@p_cant_butacas", SqlDbType.Int);
+            SqlParameter F_ALTA = sp_alta.Parameters.Add("@p_f_alta", SqlDbType.DateTime);
             SqlParameter ID_MICRO_GEN = sp_alta.Parameters.Add("@id_micro_generado", SqlDbType.Int);
             SqlParameter HAY_ERROR_USER = sp_alta.Parameters.Add("@hayErr", SqlDbType.Int);
             SqlParameter ERRORES_USER = sp_alta.Parameters.Add("@errores", SqlDbType.VarChar, 200);
@@ -223,6 +227,7 @@ namespace FrbaBus.Abm_Micro
             M_FUERA_SERVICIO.Value = (fuera_servicio.Checked) ? 'S' : 'N';
             CANT_KG.Value = cant_kg.Text.Trim();
             CANT_BUTACAS.Value = getButacas().Count;
+            F_ALTA.Value = Convert.ToDateTime(ConfigurationSettings.AppSettings["fechaActual"]);
             ID_MICRO_GEN.Direction = ParameterDirection.Output;
             HAY_ERROR_USER.Direction = ParameterDirection.Output;
             ERRORES_USER.Direction = ParameterDirection.Output;
@@ -387,6 +392,32 @@ namespace FrbaBus.Abm_Micro
             }
 
             return true;
+        }
+
+        private Boolean butacasRepetidas()
+        {
+            int[] nros_butacas = new int[200];
+            int nro_butaca;
+            Boolean rtado = false;
+            int c = 0;
+
+            foreach (Control ctrl in boxButacas.Controls)
+            {
+
+                if (ctrl is TextBox)
+                {
+                    nro_butaca = Convert.ToInt32(((TextBox)ctrl).Text.Trim());
+                    if (nros_butacas.Contains(nro_butaca))
+                        rtado = true;
+                    else
+                    {
+                        nros_butacas[c] = nro_butaca;
+                        c++;
+                    }
+                }
+            }
+
+            return rtado;
         }
 
         private List<Butaca> getButacas()
