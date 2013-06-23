@@ -27,6 +27,7 @@ namespace FrbaBus.Abm_Recorrido
             sp_listado.CommandType = CommandType.StoredProcedure; // Defino que tipo de comando es
             SqlParameter ID_CIUDAD_ORIGEN = sp_listado.Parameters.Add("@p_id_ciudad_origen", SqlDbType.Int);
             SqlParameter ID_CIUDAD_DESTINO = sp_listado.Parameters.Add("@p_id_ciudad_destino", SqlDbType.Int);
+            SqlParameter HABILITADO = sp_listado.Parameters.Add("@p_m_habilitado", SqlDbType.Char, 1);
 
             if (((ComboboxItem)combo_origen.SelectedItem) == null)
                 ID_CIUDAD_ORIGEN.Value = DBNull.Value;
@@ -37,6 +38,8 @@ namespace FrbaBus.Abm_Recorrido
                 ID_CIUDAD_DESTINO.Value = DBNull.Value;
             else
                 ID_CIUDAD_DESTINO.Value = ((ComboboxItem)combo_destino.SelectedItem).Value;
+
+            HABILITADO.Value = DBNull.Value;
 
             try
             {
@@ -148,6 +151,11 @@ namespace FrbaBus.Abm_Recorrido
                 modificacion.ShowDialog();
                 b_buscar_Click(null, null);
             }
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }

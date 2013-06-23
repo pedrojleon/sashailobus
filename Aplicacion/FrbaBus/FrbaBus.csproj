@@ -161,11 +161,29 @@
     <Compile Include="Funciones.Designer.cs">
       <DependentUpon>Funciones.cs</DependentUpon>
     </Compile>
-    <Compile Include="GenerarViaje\Form1.cs">
+    <Compile Include="GenerarViaje\Generar_Viaje.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GenerarViaje\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="GenerarViaje\Generar_Viaje.Designer.cs">
+      <DependentUpon>Generar_Viaje.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GenerarViaje\Listado_Viajes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GenerarViaje\Listado_Viajes.Designer.cs">
+      <DependentUpon>Listado_Viajes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GenerarViaje\Seleccionar_Micro.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GenerarViaje\Seleccionar_Micro.Designer.cs">
+      <DependentUpon>Seleccionar_Micro.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GenerarViaje\Seleccionar_Recorrido.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GenerarViaje\Seleccionar_Recorrido.Designer.cs">
+      <DependentUpon>Seleccionar_Recorrido.cs</DependentUpon>
     </Compile>
     <Compile Include="Login\Login.cs">
       <SubType>Form</SubType>
@@ -207,6 +225,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Abm Recorrido\Modif_Recorrido.resx">
       <DependentUpon>Modif_Recorrido.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GenerarViaje\Generar_Viaje.resx">
+      <DependentUpon>Generar_Viaje.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GenerarViaje\Listado_Viajes.resx">
+      <DependentUpon>Listado_Viajes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GenerarViaje\Seleccionar_Micro.resx">
+      <DependentUpon>Seleccionar_Micro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GenerarViaje\Seleccionar_Recorrido.resx">
+      <DependentUpon>Seleccionar_Recorrido.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Login\Login.resx">
       <DependentUpon>Login.cs</DependentUpon>

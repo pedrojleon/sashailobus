@@ -138,7 +138,7 @@ namespace FrbaBus.Abm_Recorrido
 
             sp_recorrido_modif = new SqlCommand("SASHAILO.sp_modif_recorrido", conn.miConexion); // Lo inicializo
             sp_recorrido_modif.CommandType = CommandType.StoredProcedure; // Defino que tipo de comando es
-            SqlParameter ID_RECORRIDO = sp_recorrido_modif.Parameters.Add("@p_id_recorrido", SqlDbType.Int, 32);
+            SqlParameter ID_RECORRIDO = sp_recorrido_modif.Parameters.Add("@p_id_recorrido", SqlDbType.BigInt);
             SqlParameter ID_CIUDAD_ORIGEN = sp_recorrido_modif.Parameters.Add("@p_id_ciudad_origen", SqlDbType.Int);
             SqlParameter ID_CIUDAD_DESTINO = sp_recorrido_modif.Parameters.Add("@p_id_ciudad_destino", SqlDbType.Int);
             SqlParameter PRECIO_KG = sp_recorrido_modif.Parameters.Add("@p_base_kg", SqlDbType.Decimal);

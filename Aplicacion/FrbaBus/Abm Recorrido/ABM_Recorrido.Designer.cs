@@ -30,13 +30,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ABM_Recorrido));
             this.listado_recorridos = new System.Windows.Forms.DataGridView();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.b_buscar = new System.Windows.Forms.Button();
-            this.combo_destino = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.combo_origen = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.b_nuevo = new System.Windows.Forms.Button();
             this.id_recorrido = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.habilitado = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CiudadOrigen = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -46,6 +39,13 @@
             this.PrecioBaseKg = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.acciones = new System.Windows.Forms.DataGridViewImageColumn();
             this.modificacion = new System.Windows.Forms.DataGridViewImageColumn();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.b_buscar = new System.Windows.Forms.Button();
+            this.combo_destino = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.combo_origen = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.b_nuevo = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.listado_recorridos)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -74,74 +74,6 @@
             this.listado_recorridos.Size = new System.Drawing.Size(663, 240);
             this.listado_recorridos.TabIndex = 3;
             this.listado_recorridos.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.listado_recorridos_CellContentClick);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.b_buscar);
-            this.groupBox1.Controls.Add(this.combo_destino);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.combo_origen);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(24, 15);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(663, 54);
-            this.groupBox1.TabIndex = 4;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Filtros de Búsqueda";
-            // 
-            // b_buscar
-            // 
-            this.b_buscar.Location = new System.Drawing.Point(513, 20);
-            this.b_buscar.Name = "b_buscar";
-            this.b_buscar.Size = new System.Drawing.Size(75, 23);
-            this.b_buscar.TabIndex = 4;
-            this.b_buscar.Text = "Buscar";
-            this.b_buscar.UseVisualStyleBackColor = true;
-            this.b_buscar.Click += new System.EventHandler(this.b_buscar_Click);
-            // 
-            // combo_destino
-            // 
-            this.combo_destino.FormattingEnabled = true;
-            this.combo_destino.Location = new System.Drawing.Point(300, 22);
-            this.combo_destino.Name = "combo_destino";
-            this.combo_destino.Size = new System.Drawing.Size(153, 21);
-            this.combo_destino.TabIndex = 3;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(248, 25);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(46, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Destino:";
-            // 
-            // combo_origen
-            // 
-            this.combo_origen.FormattingEnabled = true;
-            this.combo_origen.Location = new System.Drawing.Point(76, 22);
-            this.combo_origen.Name = "combo_origen";
-            this.combo_origen.Size = new System.Drawing.Size(153, 21);
-            this.combo_origen.TabIndex = 1;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(29, 25);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(41, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Origen:";
-            // 
-            // b_nuevo
-            // 
-            this.b_nuevo.Location = new System.Drawing.Point(591, 337);
-            this.b_nuevo.Name = "b_nuevo";
-            this.b_nuevo.Size = new System.Drawing.Size(96, 23);
-            this.b_nuevo.TabIndex = 5;
-            this.b_nuevo.Text = "Nuevo Recorrido";
-            this.b_nuevo.UseVisualStyleBackColor = true;
-            this.b_nuevo.Click += new System.EventHandler(this.b_nuevo_Click);
             // 
             // id_recorrido
             // 
@@ -208,6 +140,75 @@
             this.modificacion.Name = "modificacion";
             this.modificacion.ReadOnly = true;
             this.modificacion.Width = 32;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.b_buscar);
+            this.groupBox1.Controls.Add(this.combo_destino);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.combo_origen);
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Location = new System.Drawing.Point(24, 15);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(663, 54);
+            this.groupBox1.TabIndex = 4;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Filtros de Búsqueda";
+            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // b_buscar
+            // 
+            this.b_buscar.Location = new System.Drawing.Point(513, 20);
+            this.b_buscar.Name = "b_buscar";
+            this.b_buscar.Size = new System.Drawing.Size(75, 23);
+            this.b_buscar.TabIndex = 4;
+            this.b_buscar.Text = "Buscar";
+            this.b_buscar.UseVisualStyleBackColor = true;
+            this.b_buscar.Click += new System.EventHandler(this.b_buscar_Click);
+            // 
+            // combo_destino
+            // 
+            this.combo_destino.FormattingEnabled = true;
+            this.combo_destino.Location = new System.Drawing.Point(300, 22);
+            this.combo_destino.Name = "combo_destino";
+            this.combo_destino.Size = new System.Drawing.Size(153, 21);
+            this.combo_destino.TabIndex = 3;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(248, 25);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(46, 13);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "Destino:";
+            // 
+            // combo_origen
+            // 
+            this.combo_origen.FormattingEnabled = true;
+            this.combo_origen.Location = new System.Drawing.Point(76, 22);
+            this.combo_origen.Name = "combo_origen";
+            this.combo_origen.Size = new System.Drawing.Size(153, 21);
+            this.combo_origen.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(29, 25);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(41, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Origen:";
+            // 
+            // b_nuevo
+            // 
+            this.b_nuevo.Location = new System.Drawing.Point(591, 337);
+            this.b_nuevo.Name = "b_nuevo";
+            this.b_nuevo.Size = new System.Drawing.Size(96, 23);
+            this.b_nuevo.TabIndex = 5;
+            this.b_nuevo.Text = "Nuevo Recorrido";
+            this.b_nuevo.UseVisualStyleBackColor = true;
+            this.b_nuevo.Click += new System.EventHandler(this.b_nuevo_Click);
             // 
             // ABM_Recorrido
             // 
