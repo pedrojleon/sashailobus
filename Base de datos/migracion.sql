@@ -763,7 +763,8 @@ GO
 
 CREATE PROCEDURE SASHAILO.listado_recorridos
     	@p_id_ciudad_origen int, 
-    	@p_id_ciudad_destino int
+    	@p_id_ciudad_destino int,
+	    @p_m_habilitado char(1)
 AS
 
 	SELECT ID_RECORRIDO, ori.NOMBRE_CIUDAD, dest.NOMBRE_CIUDAD, ts.DESCRIPCION, re.PRECIO_BASE_PASAJE, re.PRECIO_BASE_KG, re.HABILITADO
@@ -773,6 +774,7 @@ AS
 	JOIN SASHAILO.Tipo_Servicio ts on ts.ID_TIPO_SERVICIO = re.ID_TIPO_SERVICIO
 	WHERE (@p_id_ciudad_origen is null or ori.ID_CIUDAD = @p_id_ciudad_origen)
 	and (@p_id_ciudad_destino is null or dest.ID_CIUDAD = @p_id_ciudad_destino)
+	and (@p_m_habilitado is null or re.HABILITADO = @p_m_habilitado)
 	;
 		
 GO
@@ -903,6 +905,38 @@ AS
 		
 GO
 
+CREATE PROCEDURE SASHAILO.get_micros_para_viaje
+    	@p_id_tipo_servicio int, 
+    	@p_id_marca int,
+    	@p_f_salida datetime, 
+    	@p_f_llegada_estimada datetime
+AS
+
+	SELECT mi.ID_MICRO, mi.PATENTE, ma.DESCRIPCION, mi.MODELO, ts.DESCRIPCION, 
+		   mi.CANT_BUTACAS, mi.CANT_KG
+	FROM SASHAILO.Micro mi
+	JOIN SASHAILO.Marca_Micro ma on ma.ID_MARCA=mi.ID_MARCA
+	JOIN SASHAILO.Tipo_Servicio ts on ts.ID_TIPO_SERVICIO=mi.ID_TIPO_SERVICIO
+	WHERE 
+	(@p_id_tipo_servicio is null or mi.ID_TIPO_SERVICIO = @p_id_tipo_servicio) and
+	(@p_id_marca is null or ma.ID_MARCA = @p_id_marca) and
+	(mi.FUERA_DE_SERVICIO = 'N') and
+	(mi.FIN_VIDA_UTIL = 'N') and
+	NOT EXISTS (SELECT 1 from SASHAILO.Viaje vi
+				WHERE 
+				(
+				  (@p_f_salida >=  vi.F_SALIDA and @p_f_salida <=  vi.F_LLEGADA_ESTIMADA)
+					OR
+				  (@p_f_llegada_estimada >=  vi.F_SALIDA and @p_f_llegada_estimada <=  vi.F_LLEGADA_ESTIMADA)
+				) 
+				AND
+				vi.ID_MICRO = mi.ID_MICRO
+				
+				)
+	;
+		
+GO
+
 CREATE PROCEDURE SASHAILO.alta_micro
     	@p_patente varchar(7),
     	@p_id_marca int, 
@@ -1008,6 +1042,52 @@ BEGIN
 	
 	COMMIT TRANSACTION  
 END
+GO
+
+CREATE PROCEDURE SASHAILO.sp_alta_viaje
+	@p_id_recorrido numeric(18,0),
+	@p_id_micro INT,
+	@p_f_salida datetime,
+	@p_f_llegada_estim datetime,
+	@p_f_llegada datetime,
+	@hayErr int OUT,
+    @errores varchar(200) OUT
+AS
+	SET @hayErr = 0
+	SET @errores = ''
+	
+	BEGIN TRANSACTION
+	INSERT INTO SASHAILO.Viaje(ID_RECORRIDO, ID_MICRO, F_SALIDA, F_LLEGADA_ESTIMADA, F_LLEGADA)
+	VALUES (@p_id_recorrido, @p_id_micro, @p_f_salida, @p_f_llegada_estim, @p_f_llegada)
+	
+	IF @@error != 0 BEGIN
+		ROLLBACK TRANSACTION
+		SET @hayErr = 1
+		SET @errores = 'Errores al insertar el Viaje'
+	END
+	
+	COMMIT TRANSACTION
+	
+GO
+
+CREATE PROCEDURE SASHAILO.listado_viajes
+    	@p_id_ciudad_origen int, 
+    	@p_id_ciudad_destino int
+AS
+
+	select cio.NOMBRE_CIUDAD ORIGEN, cid.NOMBRE_CIUDAD DESTINO, mi.PATENTE, mi.CANT_BUTACAS, mi.CANT_KG,
+	ts.DESCRIPCION, vi.F_SALIDA, vi.F_LLEGADA_ESTIMADA, vi.F_LLEGADA 
+	from SASHAILO.Viaje vi
+	join SASHAILO.Recorrido re on vi.ID_RECORRIDO = re.ID_RECORRIDO
+	join SASHAILO.Micro mi on mi.ID_MICRO = vi.ID_MICRO
+	join SASHAILO.Ciudad cio on cio.ID_CIUDAD = re.ID_CIUDAD_ORIGEN
+	join SASHAILO.Ciudad cid on cid.ID_CIUDAD = re.ID_CIUDAD_DESTINO
+	join SASHAILO.Tipo_Servicio ts on ts.ID_TIPO_SERVICIO = mi.ID_TIPO_SERVICIO
+	WHERE 
+	(@p_id_ciudad_origen is null or re.ID_CIUDAD_ORIGEN = @p_id_ciudad_origen) and 
+	(@p_id_ciudad_destino is null or re.ID_CIUDAD_DESTINO = @p_id_ciudad_destino)
+	;
+		
 GO
 
 CREATE PROCEDURE SASHAILO.alta_butaca
