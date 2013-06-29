@@ -924,14 +924,12 @@ AS
 	(mi.FIN_VIDA_UTIL = 'N') and
 	NOT EXISTS (SELECT 1 from SASHAILO.Viaje vi
 				WHERE 
+				vi.ID_MICRO = mi.ID_MICRO AND
 				(
 				  (@p_f_salida >=  vi.F_SALIDA and @p_f_salida <=  vi.F_LLEGADA_ESTIMADA)
 					OR
 				  (@p_f_llegada_estimada >=  vi.F_SALIDA and @p_f_llegada_estimada <=  vi.F_LLEGADA_ESTIMADA)
-				) 
-				AND
-				vi.ID_MICRO = mi.ID_MICRO
-				
+				)				
 				)
 	;
 		
@@ -1086,6 +1084,88 @@ AS
 	WHERE 
 	(@p_id_ciudad_origen is null or re.ID_CIUDAD_ORIGEN = @p_id_ciudad_origen) and 
 	(@p_id_ciudad_destino is null or re.ID_CIUDAD_DESTINO = @p_id_ciudad_destino)
+	;
+		
+GO
+
+CREATE FUNCTION SASHAILO.F_CANT_BUTACAS_MICRO(@id_micro int)
+ RETURNS int
+ AS
+ BEGIN
+   declare @cant_butacas int
+   select @cant_butacas = (select mi.CANT_BUTACAS from SASHAILO.Micro mi where mi.ID_MICRO = @id_micro)
+   return @cant_butacas
+ END
+ GO
+
+CREATE FUNCTION SASHAILO.F_CANT_BUTACAS_DISP(@id_viaje int)
+ RETURNS int
+ AS
+ BEGIN
+   declare @id_micro int
+   declare @cant_butacas_micro int
+   declare @cant_butacas_vendidas int
+   select @id_micro = (SELECT vi.ID_MICRO FROM SASHAILO.Viaje vi where vi.ID_VIAJE = @id_viaje)
+   select @cant_butacas_micro = (select mi.CANT_BUTACAS from SASHAILO.Micro mi where mi.ID_MICRO = @id_micro)
+   select @cant_butacas_vendidas = (select COUNT(1) from SASHAILO.Pasaje_Encomienda pe where pe.ID_VIAJE = @id_viaje and pe.ID_TIPO_PASAJE = 1)
+   
+   return (@cant_butacas_micro - @cant_butacas_vendidas)
+   
+ END
+ GO
+
+ CREATE FUNCTION SASHAILO.F_CANT_KG_DISP(@id_viaje int)
+ RETURNS numeric(18,0)
+ AS
+ BEGIN
+   declare @id_micro int
+   declare @cant_kg_micro numeric(18,0)
+   declare @cant_kg_vendidos numeric(18,0)
+   select @id_micro = (SELECT vi.ID_MICRO FROM SASHAILO.Viaje vi where vi.ID_VIAJE = @id_viaje)
+   select @cant_kg_micro = (select mi.CANT_KG from SASHAILO.Micro mi where mi.ID_MICRO = @id_micro)
+   select @cant_kg_vendidos = (select SUM(pe.KG) from SASHAILO.Pasaje_Encomienda pe where pe.ID_VIAJE = @id_viaje and pe.ID_TIPO_PASAJE = 2)
+   
+   return (@cant_kg_micro - @cant_kg_vendidos)
+   
+ END
+ GO
+
+ CREATE FUNCTION SASHAILO.F_CANT_KG_MICRO(@id_micro int)
+ RETURNS numeric(18,0)
+ AS
+ BEGIN
+   declare @cant_kg numeric(18,0)
+   select @cant_kg = (select mi.CANT_KG from SASHAILO.Micro mi where mi.ID_MICRO = @id_micro)
+   return @cant_kg
+ END
+ GO
+
+CREATE PROCEDURE SASHAILO.get_viajes_disponibles
+    	@p_f_salida datetime,
+    	@p_id_ciudad_origen int,
+    	@p_id_ciudad_destino int
+AS
+
+	SELECT TOP 25 vi.ID_VIAJE, mi.PATENTE, ts.DESCRIPCION, vi.F_SALIDA, vi.F_LLEGADA_ESTIMADA,
+	       SASHAILO.F_CANT_BUTACAS_MICRO(mi.ID_MICRO) BUTACAS_MICRO, 
+	       SASHAILO.F_CANT_BUTACAS_DISP(vi.ID_VIAJE) BUTACAS_DISP,
+	       SASHAILO.F_CANT_KG_MICRO(mi.ID_MICRO) KG_MICRO,
+	       SASHAILO.F_CANT_KG_DISP(vi.ID_VIAJE) KG_DISP
+	FROM SASHAILO.Viaje vi
+	JOIN SASHAILO.Micro mi on mi.ID_MICRO = vi.ID_MICRO
+	JOIN SASHAILO.Recorrido re on re.ID_RECORRIDO = vi.ID_RECORRIDO
+	JOIN SASHAILO.Tipo_Servicio ts on ts.ID_TIPO_SERVICIO = re.ID_TIPO_SERVICIO
+	WHERE
+	vi.F_SALIDA >= @p_f_salida AND
+	YEAR(vi.F_SALIDA) = YEAR(@p_f_salida) AND
+	MONTH(vi.F_SALIDA) = MONTH(@p_f_salida) AND
+	DAY(vi.F_SALIDA) = DAY(@p_f_salida) AND
+	re.ID_CIUDAD_ORIGEN = @p_id_ciudad_origen AND
+	re.ID_CIUDAD_DESTINO = @p_id_ciudad_destino AND
+	mi.FIN_VIDA_UTIL = 'N' AND
+	mi.FUERA_DE_SERVICIO = 'N' AND
+    (SASHAILO.F_CANT_KG_DISP(vi.ID_VIAJE) > 0 or SASHAILO.F_CANT_BUTACAS_DISP(vi.ID_VIAJE) > 0)
+	ORDER BY BUTACAS_DISP DESC
 	;
 		
 GO
