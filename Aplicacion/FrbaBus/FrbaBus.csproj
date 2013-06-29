@@ -142,11 +142,11 @@
     <Compile Include="Canje de Ptos\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Compra de Pasajes\Form1.cs">
+    <Compile Include="Compra de Pasajes\Compra_Pasaje.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Compra de Pasajes\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Compra de Pasajes\Compra_Pasaje.Designer.cs">
+      <DependentUpon>Compra_Pasaje.cs</DependentUpon>
     </Compile>
     <Compile Include="Conexion.cs" />
     <Compile Include="Consulta Puntos Adquiridos\Form1.cs">
@@ -225,6 +225,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Abm Recorrido\Modif_Recorrido.resx">
       <DependentUpon>Modif_Recorrido.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Compra de Pasajes\Compra_Pasaje.resx">
+      <DependentUpon>Compra_Pasaje.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GenerarViaje\Generar_Viaje.resx">
       <DependentUpon>Generar_Viaje.cs</DependentUpon>
