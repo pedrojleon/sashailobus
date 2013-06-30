@@ -148,6 +148,12 @@
     <Compile Include="Compra de Pasajes\Compra_Pasaje.Designer.cs">
       <DependentUpon>Compra_Pasaje.cs</DependentUpon>
     </Compile>
+    <Compile Include="Compra de Pasajes\Nuevo_Pasaje.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compra de Pasajes\Nuevo_Pasaje.Designer.cs">
+      <DependentUpon>Nuevo_Pasaje.cs</DependentUpon>
+    </Compile>
     <Compile Include="Conexion.cs" />
     <Compile Include="Consulta Puntos Adquiridos\Form1.cs">
       <SubType>Form</SubType>
@@ -228,6 +234,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Compra de Pasajes\Compra_Pasaje.resx">
       <DependentUpon>Compra_Pasaje.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Compra de Pasajes\Nuevo_Pasaje.resx">
+      <DependentUpon>Nuevo_Pasaje.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GenerarViaje\Generar_Viaje.resx">
       <DependentUpon>Generar_Viaje.cs</DependentUpon>

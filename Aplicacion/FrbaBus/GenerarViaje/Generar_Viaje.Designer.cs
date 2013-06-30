@@ -30,6 +30,17 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Generar_Viaje));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cant_kg = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.cant_butacas = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.servicio = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.modelo = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.marca = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.patente = new System.Windows.Forms.Label();
             this.icono_cruz_micro = new System.Windows.Forms.PictureBox();
             this.label_micro = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -45,17 +56,6 @@
             this.label8 = new System.Windows.Forms.Label();
             this.icono_mas = new System.Windows.Forms.PictureBox();
             this.b_guardar = new System.Windows.Forms.Button();
-            this.patente = new System.Windows.Forms.Label();
-            this.marca = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.modelo = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.cant_kg = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.cant_butacas = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.servicio = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.icono_cruz_micro)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.icono_mas_micro)).BeginInit();
@@ -97,6 +97,116 @@
             this.groupBox1.TabIndex = 50;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Información del Viaje";
+            // 
+            // cant_kg
+            // 
+            this.cant_kg.AutoSize = true;
+            this.cant_kg.ForeColor = System.Drawing.Color.Green;
+            this.cant_kg.Location = new System.Drawing.Point(280, 170);
+            this.cant_kg.Name = "cant_kg";
+            this.cant_kg.Size = new System.Drawing.Size(10, 13);
+            this.cant_kg.TabIndex = 73;
+            this.cant_kg.Text = "-";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label7.Location = new System.Drawing.Point(227, 170);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(25, 13);
+            this.label7.TabIndex = 72;
+            this.label7.Text = "KG:";
+            // 
+            // cant_butacas
+            // 
+            this.cant_butacas.AutoSize = true;
+            this.cant_butacas.ForeColor = System.Drawing.Color.Green;
+            this.cant_butacas.Location = new System.Drawing.Point(280, 146);
+            this.cant_butacas.Name = "cant_butacas";
+            this.cant_butacas.Size = new System.Drawing.Size(10, 13);
+            this.cant_butacas.TabIndex = 71;
+            this.cant_butacas.Text = "-";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label10.Location = new System.Drawing.Point(227, 146);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(49, 13);
+            this.label10.TabIndex = 70;
+            this.label10.Text = "Butacas:";
+            // 
+            // servicio
+            // 
+            this.servicio.AutoSize = true;
+            this.servicio.ForeColor = System.Drawing.Color.Green;
+            this.servicio.Location = new System.Drawing.Point(280, 123);
+            this.servicio.Name = "servicio";
+            this.servicio.Size = new System.Drawing.Size(10, 13);
+            this.servicio.TabIndex = 69;
+            this.servicio.Text = "-";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label12.Location = new System.Drawing.Point(227, 123);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(48, 13);
+            this.label12.TabIndex = 68;
+            this.label12.Text = "Servicio:";
+            // 
+            // modelo
+            // 
+            this.modelo.AutoSize = true;
+            this.modelo.ForeColor = System.Drawing.Color.Green;
+            this.modelo.Location = new System.Drawing.Point(161, 170);
+            this.modelo.Name = "modelo";
+            this.modelo.Size = new System.Drawing.Size(10, 13);
+            this.modelo.TabIndex = 67;
+            this.modelo.Text = "-";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label6.Location = new System.Drawing.Point(108, 170);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(45, 13);
+            this.label6.TabIndex = 66;
+            this.label6.Text = "Modelo:";
+            // 
+            // marca
+            // 
+            this.marca.AutoSize = true;
+            this.marca.ForeColor = System.Drawing.Color.Green;
+            this.marca.Location = new System.Drawing.Point(161, 146);
+            this.marca.Name = "marca";
+            this.marca.Size = new System.Drawing.Size(10, 13);
+            this.marca.TabIndex = 65;
+            this.marca.Text = "-";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label4.Location = new System.Drawing.Point(108, 146);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(40, 13);
+            this.label4.TabIndex = 64;
+            this.label4.Text = "Marca:";
+            // 
+            // patente
+            // 
+            this.patente.AutoSize = true;
+            this.patente.ForeColor = System.Drawing.Color.Green;
+            this.patente.Location = new System.Drawing.Point(161, 123);
+            this.patente.Name = "patente";
+            this.patente.Size = new System.Drawing.Size(10, 13);
+            this.patente.TabIndex = 63;
+            this.patente.Text = "-";
             // 
             // icono_cruz_micro
             // 
@@ -241,116 +351,6 @@
             this.b_guardar.Text = "Guardar";
             this.b_guardar.UseVisualStyleBackColor = true;
             this.b_guardar.Click += new System.EventHandler(this.b_guardar_Click);
-            // 
-            // patente
-            // 
-            this.patente.AutoSize = true;
-            this.patente.ForeColor = System.Drawing.Color.Green;
-            this.patente.Location = new System.Drawing.Point(161, 123);
-            this.patente.Name = "patente";
-            this.patente.Size = new System.Drawing.Size(10, 13);
-            this.patente.TabIndex = 63;
-            this.patente.Text = "-";
-            // 
-            // marca
-            // 
-            this.marca.AutoSize = true;
-            this.marca.ForeColor = System.Drawing.Color.Green;
-            this.marca.Location = new System.Drawing.Point(161, 146);
-            this.marca.Name = "marca";
-            this.marca.Size = new System.Drawing.Size(10, 13);
-            this.marca.TabIndex = 65;
-            this.marca.Text = "-";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.label4.Location = new System.Drawing.Point(108, 146);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(40, 13);
-            this.label4.TabIndex = 64;
-            this.label4.Text = "Marca:";
-            // 
-            // modelo
-            // 
-            this.modelo.AutoSize = true;
-            this.modelo.ForeColor = System.Drawing.Color.Green;
-            this.modelo.Location = new System.Drawing.Point(161, 170);
-            this.modelo.Name = "modelo";
-            this.modelo.Size = new System.Drawing.Size(10, 13);
-            this.modelo.TabIndex = 67;
-            this.modelo.Text = "-";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.label6.Location = new System.Drawing.Point(108, 170);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(45, 13);
-            this.label6.TabIndex = 66;
-            this.label6.Text = "Modelo:";
-            // 
-            // cant_kg
-            // 
-            this.cant_kg.AutoSize = true;
-            this.cant_kg.ForeColor = System.Drawing.Color.Green;
-            this.cant_kg.Location = new System.Drawing.Point(280, 170);
-            this.cant_kg.Name = "cant_kg";
-            this.cant_kg.Size = new System.Drawing.Size(10, 13);
-            this.cant_kg.TabIndex = 73;
-            this.cant_kg.Text = "-";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.label7.Location = new System.Drawing.Point(227, 170);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(25, 13);
-            this.label7.TabIndex = 72;
-            this.label7.Text = "KG:";
-            // 
-            // cant_butacas
-            // 
-            this.cant_butacas.AutoSize = true;
-            this.cant_butacas.ForeColor = System.Drawing.Color.Green;
-            this.cant_butacas.Location = new System.Drawing.Point(280, 146);
-            this.cant_butacas.Name = "cant_butacas";
-            this.cant_butacas.Size = new System.Drawing.Size(10, 13);
-            this.cant_butacas.TabIndex = 71;
-            this.cant_butacas.Text = "-";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.label10.Location = new System.Drawing.Point(227, 146);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(49, 13);
-            this.label10.TabIndex = 70;
-            this.label10.Text = "Butacas:";
-            // 
-            // servicio
-            // 
-            this.servicio.AutoSize = true;
-            this.servicio.ForeColor = System.Drawing.Color.Green;
-            this.servicio.Location = new System.Drawing.Point(280, 123);
-            this.servicio.Name = "servicio";
-            this.servicio.Size = new System.Drawing.Size(10, 13);
-            this.servicio.TabIndex = 69;
-            this.servicio.Text = "-";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.label12.Location = new System.Drawing.Point(227, 123);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(48, 13);
-            this.label12.TabIndex = 68;
-            this.label12.Text = "Servicio:";
             // 
             // Generar_Viaje
             // 
