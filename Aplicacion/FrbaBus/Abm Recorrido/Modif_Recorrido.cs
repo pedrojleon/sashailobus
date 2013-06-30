@@ -80,7 +80,10 @@ namespace FrbaBus.Abm_Recorrido
 
             Conexion cn = new Conexion();
 
-            SqlDataReader consulta = cn.consultar("select ID_CIUDAD_ORIGEN, ID_CIUDAD_DESTINO, PRECIO_BASE_KG, PRECIO_BASE_PASAJE, ID_TIPO_SERVICIO from SASHAILO.Recorrido where ID_RECORRIDO=" + id_recorrido + "");
+            SqlDataReader consulta = cn.consultar("select rc.ID_CIUDAD_ORIGEN, rc.ID_CIUDAD_DESTINO, rc.PRECIO_BASE_KG, rc.PRECIO_BASE_PASAJE, re.ID_TIPO_SERVICIO "
+                                                + "from SASHAILO.Recorrido re " 
+                                                + "join SASHAILO.Recorrido_Ciudades rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES "
+                                                + "where re.ID_RECORRIDO=" + id_recorrido + "");
             if (consulta.Read())
             {
                 int id_ciudad_o = consulta.GetInt32(0);
@@ -198,7 +201,9 @@ namespace FrbaBus.Abm_Recorrido
 
             Conexion cn = new Conexion();
 
-            SqlDataReader consulta = cn.consultar("SELECT 1 FROM SASHAILO.Recorrido where ID_CIUDAD_ORIGEN="+id_c_o+" and ID_CIUDAD_DESTINO="+id_c_d+" and ID_TIPO_SERVICIO="+id_t_s+" and ID_RECORRIDO<>"+this.id_recorrido+"");
+            SqlDataReader consulta = cn.consultar("SELECT 1 FROM SASHAILO.Recorrido re "
+                                                + "JOIN SASHAILO.Recorrido_Ciudades rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES "
+                                                + "where rc.ID_CIUDAD_ORIGEN=" + id_c_o + " and rc.ID_CIUDAD_DESTINO=" + id_c_d + " and re.ID_TIPO_SERVICIO=" + id_t_s + " and re.ID_RECORRIDO<>" + this.id_recorrido + "");
             if (consulta.Read())
             {
                 cn.desconectar();

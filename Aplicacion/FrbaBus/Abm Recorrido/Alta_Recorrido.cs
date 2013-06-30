@@ -63,12 +63,13 @@ namespace FrbaBus.Abm_Recorrido
             int id_ciudad_destino = ((ComboboxItem)destino.SelectedItem).Value;
 
             Conexion cn = new Conexion();
-            SqlDataReader consulta = cn.consultar("select ID_TIPO_SERVICIO, DESCRIPCION " +
-                                                 " from SASHAILO.Tipo_Servicio " +
-                                                 " where ID_TIPO_SERVICIO not in (select ID_TIPO_SERVICIO " + 
-							                                                    " from SASHAILO.Recorrido " +
-							                                                    " where ID_CIUDAD_ORIGEN = "+id_ciudad_origen+" " +
-						                                                    " and ID_CIUDAD_DESTINO = "+id_ciudad_destino+") order by 1");
+            SqlDataReader consulta = cn.consultar("select ts.ID_TIPO_SERVICIO, ts.DESCRIPCION " +
+                                                 " from SASHAILO.Tipo_Servicio ts " +
+                                                 " where ID_TIPO_SERVICIO not in (select re.ID_TIPO_SERVICIO " + 
+							                                                    " from SASHAILO.Recorrido re " +
+                                                                                " join SASHAILO.Recorrido_Ciudades rc on rc.id_recorrido_ciudades = re.id_recorrido_ciudades " +
+							                                                    " where rc.ID_CIUDAD_ORIGEN = "+id_ciudad_origen+" " +
+						                                                        " and rc.ID_CIUDAD_DESTINO = "+id_ciudad_destino+") order by 1");
             //cargo el combo de tipo de servicio
             while (consulta.Read())
             {
@@ -87,7 +88,7 @@ namespace FrbaBus.Abm_Recorrido
 
             //evaluo los precios base
             cn = new Conexion();
-            consulta = cn.consultar("select top 1 PRECIO_BASE_KG, PRECIO_BASE_PASAJE from SASHAILO.Recorrido "+ 
+            consulta = cn.consultar("select top 1 PRECIO_BASE_KG, PRECIO_BASE_PASAJE from SASHAILO.Recorrido_Ciudades " + 
                                     "where ID_CIUDAD_ORIGEN = "+id_ciudad_origen+" and ID_CIUDAD_DESTINO = "+id_ciudad_destino+"");
 
             if (consulta.Read())  //hay precios cargados

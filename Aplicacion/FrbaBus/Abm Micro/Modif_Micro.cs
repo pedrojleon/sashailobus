@@ -30,7 +30,13 @@ namespace FrbaBus.Abm_Micro
             llenarComboMarca();
 
             Conexion cn = new Conexion();
-            SqlDataReader consulta = cn.consultar("select PATENTE, ID_MARCA, MODELO, ID_TIPO_SERVICIO, F_ALTA, CANT_KG, FUERA_DE_SERVICIO, F_REINICIO_SERVICIO, FIN_VIDA_UTIL from SASHAILO.Micro WHERE ID_MICRO = "+id_micro+"");
+            SqlDataReader consulta = cn.consultar("select PATENTE, ID_MARCA, MODELO, ID_TIPO_SERVICIO, F_ALTA, CANT_KG, " +
+                                                         "CASE SASHAILO.F_GET_ESTADO_MICRO(" + this.id_micro + ") WHEN 2 THEN 'S' ELSE 'N' END FUERA_DE_SERVICIO, " +
+                                                         "CASE SASHAILO.F_GET_ESTADO_MICRO(" + this.id_micro + ") WHEN 2 THEN (select top 1 FECHA_REINICIO from SASHAILO.Log_Estado_Micro where id_micro = " + this.id_micro + " order by id_log desc) " +
+										                                                     "ELSE NULL END F_REINICIO_SERVICIO, " +
+                                                         "CASE SASHAILO.F_GET_ESTADO_MICRO(" + this.id_micro + ") WHEN 3 THEN 'S' ELSE 'N' END FIN_VIDA_UTIL " +
+                                                   "from SASHAILO.Micro " +
+                                                   "WHERE ID_MICRO = " + this.id_micro);
             while (consulta.Read())
             {
                 string v_patente = consulta.GetString(0);
@@ -196,6 +202,7 @@ namespace FrbaBus.Abm_Micro
 
             Conexion conn = new Conexion();
             SqlCommand sp_modif;
+            Funciones func = new Funciones();
 
             sp_modif = new SqlCommand("SASHAILO.modif_micro", conn.miConexion); // Lo inicializo
             sp_modif.CommandType = CommandType.StoredProcedure; // Defino que tipo de comando es
@@ -206,6 +213,7 @@ namespace FrbaBus.Abm_Micro
             SqlParameter ID_TIPO_SERVICIO = sp_modif.Parameters.Add("@p_id_tipo_servicio", SqlDbType.Int);
             SqlParameter M_FUERA_SERVICIO = sp_modif.Parameters.Add("@p_m_fuera_servicio", SqlDbType.Char, 1);
             SqlParameter F_FUERA_SERVICIO = sp_modif.Parameters.Add("@p_f_fuera_servicio", SqlDbType.DateTime);
+            SqlParameter FECHA = sp_modif.Parameters.Add("@p_fecha", SqlDbType.DateTime);
             SqlParameter F_REINICIO_SERVICIO = sp_modif.Parameters.Add("@p_f_reinicio_servicio", SqlDbType.DateTime);
             SqlParameter M_BAJA_DEFINITIVA = sp_modif.Parameters.Add("@p_m_baja_definitiva", SqlDbType.Char, 1);
             SqlParameter F_BAJA_DEFINITIVA = sp_modif.Parameters.Add("@p_f_baja_definitiva", SqlDbType.DateTime);
@@ -219,6 +227,7 @@ namespace FrbaBus.Abm_Micro
             MODELO.Value = modelo.Text.Trim();
             ID_TIPO_SERVICIO.Value = ((ComboboxItem)combo_servicio.SelectedItem).Value;
             M_FUERA_SERVICIO.Value = (fuera_servicio.Checked) ? 'S' : 'N';
+            FECHA.Value = func.getFechaActual();
             if (fuera_servicio.Checked){
                 F_FUERA_SERVICIO.Value = Convert.ToDateTime(ConfigurationSettings.AppSettings["fechaActual"]);
                 F_REINICIO_SERVICIO.Value = Convert.ToDateTime(d_f_r_servivio.Text.Trim() + "/" + m_f_r_servivio.Text.Trim() + "/" + a_f_r_servivio.Text.Trim());

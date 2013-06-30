@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Security.Cryptography;
 using System.Data.SqlClient;
+using System.Configuration;
 
 namespace FrbaBus
 {
@@ -46,6 +47,12 @@ namespace FrbaBus
             {
                 e.Handled = true;
             }
+        }
+
+        public DateTime getFechaActual()
+        {
+            DateTime fecha_actual = Convert.ToDateTime(ConfigurationSettings.AppSettings["fechaActual"]);
+            return fecha_actual;
         }
 
     }

@@ -162,16 +162,19 @@ namespace FrbaBus.Abm_Micro
                 String fin_vida_util = (listado_micros.Rows[e.RowIndex].Cells["fin_vida_util"].Value.ToString().Equals("N")) ? "S" : "N";
                 Conexion conn = new Conexion();
                 SqlCommand sp;
+                Funciones func = new Funciones();
                 sp = new SqlCommand("SASHAILO.fin_vida_util_micro", conn.miConexion); // Lo inicializo
                 sp.CommandType = CommandType.StoredProcedure; // Defino que tipo de comando es
                 SqlParameter ID_MICRO = sp.Parameters.Add("@p_id_micro", SqlDbType.Int);
                 SqlParameter M_BAJA_DEFINITIVA = sp.Parameters.Add("@p_m_baja_definitiva", SqlDbType.Char, 1);
                 SqlParameter F_BAJA_DEFINITIVA = sp.Parameters.Add("@p_f_baja_definitiva", SqlDbType.DateTime);
+                SqlParameter FECHA = sp.Parameters.Add("@p_fecha", SqlDbType.DateTime);
                 SqlParameter HAY_ERROR = sp.Parameters.Add("@hayErr", SqlDbType.Int);
                 SqlParameter ERRORES = sp.Parameters.Add("@errores", SqlDbType.VarChar, 200);
 
                 ID_MICRO.Value = id_micro;
                 M_BAJA_DEFINITIVA.Value = fin_vida_util;
+                FECHA.Value = func.getFechaActual();
                 if (fin_vida_util.Equals("S"))
                     F_BAJA_DEFINITIVA.Value = Convert.ToDateTime(ConfigurationSettings.AppSettings["fechaActual"]);
                 else
