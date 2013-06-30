@@ -144,6 +144,7 @@ CREATE TABLE SASHAILO.Cliente(
 	TELEFONO numeric(18,0),
 	MAIL nvarchar(255),
 	F_NACIMIENTO datetime,
+	SEXO char(1),
 	PUNTOS int DEFAULT 0,
 	HABILITADO char(1) not null DEFAULT 'S',
 	PRIMARY KEY(ID_CLIENTE)
@@ -273,6 +274,16 @@ CREATE TABLE SASHAILO.Historial_Puntos(
 	PUNTOS int not null,
 	FECHA datetime not null,
 	PRIMARY KEY (ID_HISTORIAL_PUNTOS)
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Pasaje_Encomienda_Temporal(
+	ID_PE_TEMPORAL int PRIMARY KEY NOT NULL IDENTITY,
+	ID_VIAJE int FOREIGN KEY REFERENCES SASHAILO.Viaje(ID_VIAJE),
+	ID_BUTACA int FOREIGN KEY REFERENCES SASHAILO.Butaca(ID_BUTACA),
+	ID_CLIENTE int FOREIGN KEY REFERENCES SASHAILO.Cliente(ID_CLIENTE),
+	KG numeric(18,0)
 ) 
 
 GO
@@ -804,6 +815,43 @@ AS
 
 GO
 
+CREATE PROCEDURE SASHAILO.sp_cliente_am
+	@p_id_cliente INT,
+	@p_nombre nvarchar(255),
+	@p_apellido nvarchar(255),
+	@p_dni numeric(18,0),
+	@p_direccion nvarchar(255),
+	@p_telefono numeric(18,0),
+	@p_mail nvarchar(255),
+	@p_f_nacimiento datetime,
+	@p_sexo char(1),
+	@p_id_cliente_gen int OUT,
+	@hayErr int OUT,
+    @errores varchar(200) OUT
+AS
+	SET @hayErr = 0
+	SET @errores = ''
+
+	IF(@p_id_cliente is null) BEGIN
+		INSERT INTO SASHAILO.Cliente(NOMBRE, APELLIDO, DNI, DIRECCION, TELEFONO, MAIL, F_NACIMIENTO, SEXO)
+		VALUES (@p_nombre, @p_apellido, @p_dni, @p_direccion, @p_telefono, @p_mail, @p_f_nacimiento, @p_sexo)
+		SET @p_id_cliente_gen = SCOPE_IDENTITY()
+	END
+	ELSE BEGIN
+		UPDATE SASHAILO.Cliente SET NOMBRE = @p_nombre,
+									APELLIDO = @p_apellido,
+									DNI = @p_dni,
+									DIRECCION = @p_direccion,
+									TELEFONO = @p_telefono,
+									MAIL = @p_mail,
+									F_NACIMIENTO = @p_f_nacimiento,
+									SEXO = @p_sexo 
+		WHERE ID_CLIENTE = @p_id_cliente
+		SET @p_id_cliente_gen = @p_id_cliente
+	END
+
+GO
+
 CREATE PROCEDURE SASHAILO.sp_modif_recorrido
 	@p_id_recorrido numeric(18,0),
 	@p_id_ciudad_origen INT,
@@ -933,6 +981,27 @@ AS
 				)
 	;
 		
+GO
+
+CREATE PROCEDURE SASHAILO.sp_alta_butaca_provisoria
+	@p_id_viaje INT,
+	@p_id_butaca INT,
+	@p_id_cliente INT,
+	@p_id_generado INT OUT
+AS
+
+	INSERT INTO SASHAILO.Pasaje_Encomienda_Temporal(ID_VIAJE, ID_BUTACA, ID_CLIENTE)
+	VALUES (@p_id_viaje, @p_id_butaca, @p_id_cliente)
+	SET @p_id_generado = SCOPE_IDENTITY()
+	
+GO
+
+CREATE PROCEDURE SASHAILO.sp_baja_butaca_provisoria
+	@p_id INT
+AS
+
+	DELETE FROM SASHAILO.Pasaje_Encomienda_Temporal WHERE ID_PE_TEMPORAL = @p_id
+	
 GO
 
 CREATE PROCEDURE SASHAILO.alta_micro
@@ -1123,7 +1192,7 @@ CREATE FUNCTION SASHAILO.F_CANT_BUTACAS_DISP(@id_viaje int)
    declare @cant_kg_vendidos numeric(18,0)
    select @id_micro = (SELECT vi.ID_MICRO FROM SASHAILO.Viaje vi where vi.ID_VIAJE = @id_viaje)
    select @cant_kg_micro = (select mi.CANT_KG from SASHAILO.Micro mi where mi.ID_MICRO = @id_micro)
-   select @cant_kg_vendidos = (select SUM(pe.KG) from SASHAILO.Pasaje_Encomienda pe where pe.ID_VIAJE = @id_viaje and pe.ID_TIPO_PASAJE = 2)
+   select @cant_kg_vendidos = (select ISNULL(SUM(pe.KG),0) from SASHAILO.Pasaje_Encomienda pe where pe.ID_VIAJE = @id_viaje and pe.ID_TIPO_PASAJE = 2)
    
    return (@cant_kg_micro - @cant_kg_vendidos)
    
@@ -1168,6 +1237,82 @@ AS
 	ORDER BY BUTACAS_DISP DESC
 	;
 		
+GO
+
+CREATE PROCEDURE SASHAILO.get_butacas_disponibles
+    	@p_id_viaje int,
+    	@p_id_micro int
+AS
+
+	SELECT bu.ID_BUTACA, bu.NRO_BUTACA, bu.ID_TIPO_BUTACA, tb.DESCRIPCION, bu.NRO_PISO, mi.PATENTE
+	FROM SASHAILO.Micro mi
+	JOIN SASHAILO.Butaca bu on bu.ID_MICRO = mi.ID_MICRO
+	JOIN SASHAILO.Tipo_Butaca tb on tb.ID_TIPO_BUTACA = bu.ID_TIPO_BUTACA
+	WHERE mi.ID_MICRO = @p_id_micro
+	AND bu.ID_BUTACA not in (SELECT pe.ID_BUTACA
+							 FROM SASHAILO.Pasaje_Encomienda pe
+							 WHERE pe.ID_VIAJE = @p_id_viaje)
+	AND bu.ID_BUTACA not in (SELECT pet.ID_BUTACA
+							 FROM SASHAILO.Pasaje_Encomienda_Temporal pet
+							 WHERE pet.ID_VIAJE = @p_id_viaje)	
+	;
+		
+GO
+
+CREATE PROCEDURE SASHAILO.sp_evalua_cliente_en_viaje
+	@p_id_cliente INT,
+	@p_id_viaje INT,
+	@hayError INT OUT,
+	@errores varchar(255) OUT
+AS
+	SET @hayError = 0
+	SET @errores = ''
+	
+	DECLARE @cantidad INT
+	SELECT @cantidad = (SELECT COUNT(1) FROM SASHAILO.Pasaje_Encomienda pe WHERE pe.ID_VIAJE = @p_id_viaje AND pe.ID_CLIENTE = @p_id_cliente)
+	IF @cantidad > 0 BEGIN
+		SET @hayError = 1
+		SET @errores = 'El Cliente ingresado ya tiene un Pasaje para el Viaje seleccionado'
+		RETURN
+	END
+	
+	SELECT @cantidad = (SELECT COUNT(1) FROM SASHAILO.Pasaje_Encomienda_Temporal pet WHERE pet.ID_VIAJE = @p_id_viaje AND pet.ID_CLIENTE = @p_id_cliente)
+	IF @cantidad > 0 BEGIN
+		SET @hayError = 1
+		SET @errores = 'El Cliente ingresado ya se encuentra en la lista de Pasajes a comprar para el Viaje seleccionado'
+		RETURN
+	END
+	
+	DECLARE @fecha_salida datetime
+	DECLARE @fecha_llegada_estim datetime
+	SELECT @fecha_salida = (SELECT vi.F_SALIDA FROM SASHAILO.Viaje vi WHERE vi.ID_VIAJE = @p_id_viaje)
+	SELECT @fecha_llegada_estim = (SELECT vi.F_LLEGADA_ESTIMADA FROM SASHAILO.Viaje vi WHERE vi.ID_VIAJE = @p_id_viaje)
+	SELECT @cantidad = (SELECT COUNT(1) from SASHAILO.Pasaje_Encomienda pe 
+						JOIN SASHAILO.Viaje vi on vi.ID_VIAJE = pe.ID_VIAJE
+						WHERE pe.ID_CLIENTE = @p_id_cliente
+						AND (vi.F_SALIDA BETWEEN @fecha_salida AND @fecha_llegada_estim 
+						     OR 
+							 vi.F_LLEGADA BETWEEN @fecha_salida AND @fecha_llegada_estim)
+						)
+	IF @cantidad > 0 BEGIN
+		SET @hayError = 1
+		SET @errores = 'El Cliente ingresado tiene Pasaje/s cuyas fechas se superponen con las del Viaje seleccionado'
+		RETURN
+	END		
+	
+	SELECT @cantidad = (SELECT COUNT(1) from SASHAILO.Pasaje_Encomienda_Temporal pet
+						JOIN SASHAILO.Viaje vi on vi.ID_VIAJE = pet.ID_VIAJE
+						WHERE pet.ID_CLIENTE = @p_id_cliente
+						AND (vi.F_SALIDA BETWEEN @fecha_salida AND @fecha_llegada_estim 
+						     OR 
+							 vi.F_LLEGADA BETWEEN @fecha_salida AND @fecha_llegada_estim)
+						)
+	IF @cantidad > 0 BEGIN
+		SET @hayError = 1
+		SET @errores = 'El Cliente ingresado está en una lista de Pasajes a comprar cuya fecha de viaje se superponen con la del Viaje seleccionado'
+		RETURN
+	END							
+     
 GO
 
 CREATE PROCEDURE SASHAILO.alta_butaca
