@@ -69,6 +69,18 @@ CREATE TABLE SASHAILO.Ciudad(
 
 GO
 
+CREATE TABLE SASHAILO.Recorrido_Ciudades(
+	ID_RECORRIDO_CIUDADES int not null IDENTITY,
+	ID_CIUDAD_ORIGEN int FOREIGN KEY REFERENCES SASHAILO.Ciudad(ID_CIUDAD),
+	ID_CIUDAD_DESTINO int FOREIGN KEY REFERENCES SASHAILO.Ciudad(ID_CIUDAD),
+	PRECIO_BASE_KG decimal(10,2),
+	PRECIO_BASE_PASAJE decimal(10,2),
+	PRIMARY KEY (ID_RECORRIDO_CIUDADES)
+) 
+
+GO
+
+
 CREATE TABLE SASHAILO.Tipo_Servicio(
 	ID_TIPO_SERVICIO int PRIMARY KEY NOT NULL IDENTITY,
 	DESCRIPCION nvarchar(255),
@@ -77,13 +89,23 @@ CREATE TABLE SASHAILO.Tipo_Servicio(
 
 GO
 
-CREATE TABLE SASHAILO.Recorrido(
+/*CREATE TABLE SASHAILO.Recorrido(
 	ID_RECORRIDO numeric(18,0) PRIMARY KEY NOT NULL,
 	CODIGO_RECORRIDO nvarchar(15),
 	ID_CIUDAD_ORIGEN int FOREIGN KEY REFERENCES SASHAILO.Ciudad(ID_CIUDAD),
 	ID_CIUDAD_DESTINO int FOREIGN KEY REFERENCES SASHAILO.Ciudad(ID_CIUDAD),
 	PRECIO_BASE_KG decimal(10,2),
 	PRECIO_BASE_PASAJE decimal(10,2),
+	ID_TIPO_SERVICIO int FOREIGN KEY REFERENCES SASHAILO.Tipo_Servicio(ID_TIPO_SERVICIO),
+	HABILITADO char(1) not null DEFAULT 'S'
+) 
+
+GO*/
+
+CREATE TABLE SASHAILO.Recorrido(
+	ID_RECORRIDO numeric(18,0) PRIMARY KEY NOT NULL,
+	CODIGO_RECORRIDO nvarchar(15),
+	ID_RECORRIDO_CIUDADES int FOREIGN KEY REFERENCES SASHAILO.Recorrido_Ciudades(ID_RECORRIDO_CIUDADES),
 	ID_TIPO_SERVICIO int FOREIGN KEY REFERENCES SASHAILO.Tipo_Servicio(ID_TIPO_SERVICIO),
 	HABILITADO char(1) not null DEFAULT 'S'
 ) 
@@ -110,16 +132,30 @@ CREATE TABLE SASHAILO.Micro(
 	ID_MARCA int FOREIGN KEY REFERENCES SASHAILO.Marca_Micro(ID_MARCA),
 	MODELO varchar(25) not null,
 	ID_TIPO_SERVICIO int FOREIGN KEY REFERENCES SASHAILO.Tipo_Servicio(ID_TIPO_SERVICIO),
-	FUERA_DE_SERVICIO char(1) not null DEFAULT 'N',
-	FIN_VIDA_UTIL char(1) not null DEFAULT 'N',
-	F_FUERA_SERVICIO smalldatetime,
-	F_REINICIO_SERVICIO smalldatetime,
-	F_FIN_VIDA_UTIL smalldatetime,
 	F_ALTA smalldatetime,
 	CANT_BUTACAS int,
 	CANT_KG numeric(18,0),
 	UNIQUE(PATENTE),
 	PRIMARY KEY(ID_MICRO)
+)
+
+GO
+
+CREATE TABLE SASHAILO.Estado_Micro(
+	ID_ESTADO int not null,
+	D_ESTADO varchar(50),
+	PRIMARY KEY(ID_ESTADO)
+)
+
+GO
+
+CREATE TABLE SASHAILO.Log_Estado_Micro(
+	ID_LOG int not null IDENTITY,
+	ID_MICRO int FOREIGN KEY REFERENCES SASHAILO.Micro(ID_MICRO),
+	ID_ESTADO int FOREIGN KEY REFERENCES SASHAILO.Estado_Micro(ID_ESTADO),
+	FECHA datetime,
+	FECHA_REINICIO datetime,
+	PRIMARY KEY(ID_LOG)
 )
 
 GO
@@ -231,7 +267,7 @@ CREATE TABLE SASHAILO.Compra(
 
 GO
 
-CREATE TABLE SASHAILO.Pasaje_Encomienda(
+/*CREATE TABLE SASHAILO.Pasaje_Encomienda(
 	ID_PASAJE_ENCOMIENDA numeric(18,0) PRIMARY KEY NOT NULL,
 	ID_COMPRA int,
 	ID_CLIENTE int FOREIGN KEY REFERENCES SASHAILO.Cliente(ID_CLIENTE),
@@ -242,11 +278,34 @@ CREATE TABLE SASHAILO.Pasaje_Encomienda(
 	KG numeric(18,0)
 ) 
 
+GO*/
+
+CREATE TABLE SASHAILO.Pasaje(
+	ID_PASAJE numeric(18,0) PRIMARY KEY NOT NULL,
+	ID_COMPRA int,
+	ID_CLIENTE int FOREIGN KEY REFERENCES SASHAILO.Cliente(ID_CLIENTE),
+	ID_VIAJE int FOREIGN KEY REFERENCES SASHAILO.Viaje(ID_VIAJE),
+	ID_BUTACA int FOREIGN KEY REFERENCES SASHAILO.Butaca(ID_BUTACA),
+	PRECIO numeric(18,2),
+) 
+
+GO
+
+CREATE TABLE SASHAILO.Encomienda(
+	ID_ENCOMIENDA numeric(18,0) PRIMARY KEY NOT NULL,
+	ID_COMPRA int,
+	ID_CLIENTE int FOREIGN KEY REFERENCES SASHAILO.Cliente(ID_CLIENTE),
+	ID_VIAJE int FOREIGN KEY REFERENCES SASHAILO.Viaje(ID_VIAJE),
+	KG numeric(18,0),
+	PRECIO numeric(18,2)
+) 
+
 GO
 
 CREATE TABLE SASHAILO.Devolucion(
 	ID_DEVOLUCION int not null IDENTITY,
-	ID_PASAJE_ENCOMIENDA numeric(18,0) FOREIGN KEY REFERENCES SASHAILO.Pasaje_Encomienda(ID_PASAJE_ENCOMIENDA),
+	ID_PASAJE numeric(18,0) FOREIGN KEY REFERENCES SASHAILO.Pasaje(ID_PASAJE),
+	ID_ENCOMIENDA numeric(18,0) FOREIGN KEY REFERENCES SASHAILO.Encomienda(ID_ENCOMIENDA),
 	F_DEVOLUCION datetime not null,
 	MOTIVO nvarchar(255),
 	PRIMARY KEY (ID_DEVOLUCION)
@@ -267,10 +326,22 @@ CREATE TABLE SASHAILO.Llegada(
 
 GO
 
-CREATE TABLE SASHAILO.Historial_Puntos(
+/*CREATE TABLE SASHAILO.Historial_Puntos(
 	ID_HISTORIAL_PUNTOS int not null IDENTITY,
 	ID_CLIENTE int FOREIGN KEY REFERENCES SASHAILO.Cliente(ID_CLIENTE),
 	ID_PASAJE_ENCOMIENDA numeric(18,0) FOREIGN KEY REFERENCES SASHAILO.Pasaje_Encomienda(ID_PASAJE_ENCOMIENDA),
+	PUNTOS int not null,
+	FECHA datetime not null,
+	PRIMARY KEY (ID_HISTORIAL_PUNTOS)
+) 
+
+GO*/
+
+CREATE TABLE SASHAILO.Historial_Puntos(
+	ID_HISTORIAL_PUNTOS int not null IDENTITY,
+	ID_CLIENTE int FOREIGN KEY REFERENCES SASHAILO.Cliente(ID_CLIENTE),
+	ID_PASAJE numeric(18,0) FOREIGN KEY REFERENCES SASHAILO.Pasaje(ID_PASAJE),
+	ID_ENCOMIENDA numeric(18,0) FOREIGN KEY REFERENCES SASHAILO.Encomienda(ID_ENCOMIENDA),
 	PUNTOS int not null,
 	FECHA datetime not null,
 	PRIMARY KEY (ID_HISTORIAL_PUNTOS)
@@ -319,6 +390,17 @@ values ('Pasaje');
 GO
 INSERT INTO SASHAILO.Tipo_Pasaje(DESCRIPCION)
 values ('Encomienda');
+GO
+
+-- ESTADO MICRO
+INSERT INTO SASHAILO.Estado_Micro(ID_ESTADO, D_ESTADO)
+values (1, 'En uso');
+GO
+INSERT INTO SASHAILO.Estado_Micro(ID_ESTADO, D_ESTADO)
+values (2, 'Fuera de Servicio');
+GO
+INSERT INTO SASHAILO.Estado_Micro(ID_ESTADO, D_ESTADO)
+values (3, 'Fin de Vida Útil');
 GO
 
 -- TIPO TARJETA
@@ -454,16 +536,22 @@ GO
 INSERT INTO SASHAILO.Tipo_Servicio (DESCRIPCION, ADICIONAL) VALUES ('Ejecutivo', 2.0)
 GO
 
-INSERT INTO SASHAILO.Recorrido(ID_CIUDAD_ORIGEN,ID_CIUDAD_DESTINO,PRECIO_BASE_KG,PRECIO_BASE_PASAJE,ID_TIPO_SERVICIO, ID_RECORRIDO)
-select distinct ci_o.ID_CIUDAD, ci_d.ID_CIUDAD,(select max(ma2.Recorrido_Precio_BaseKG) 
-                                                from gd_esquema.Maestra ma2 
-                                                where ma2.Recorrido_Ciudad_Origen = ma.Recorrido_Ciudad_Origen
-                                                and ma2.Recorrido_Ciudad_Destino = ma.Recorrido_Ciudad_Destino
-                                                and ma2.Recorrido_Precio_BaseKG <> 0), 
- ma.Recorrido_Precio_BasePasaje, ts.ID_TIPO_SERVICIO, ma.Recorrido_Codigo
+-- grabo las tuplas origen destino de los recorridos
+INSERT INTO SASHAILO.Recorrido_Ciudades(ID_CIUDAD_ORIGEN, ID_CIUDAD_DESTINO, PRECIO_BASE_KG, PRECIO_BASE_PASAJE)
+SELECT distinct ci_o.ID_CIUDAD, ci_d.ID_CIUDAD, 
+       (select max(ma2.Recorrido_Precio_BaseKG) from gd_esquema.Maestra ma2 where ma2.Recorrido_Ciudad_Origen = ma.Recorrido_Ciudad_Origen and ma2.Recorrido_Ciudad_Destino = ma.Recorrido_Ciudad_Destino) BASE_KG, 
+       (select max(ma3.Recorrido_Precio_BasePasaje) from gd_esquema.Maestra ma3 where ma3.Recorrido_Ciudad_Origen = ma.Recorrido_Ciudad_Origen and ma3.Recorrido_Ciudad_Destino = ma.Recorrido_Ciudad_Destino) BASE_PASAJE
+FROM gd_esquema.Maestra ma
+JOIN SASHAILO.Ciudad ci_o on ci_o.NOMBRE_CIUDAD = ma.Recorrido_Ciudad_Origen
+JOIN SASHAILO.Ciudad ci_d on ci_d.NOMBRE_CIUDAD = ma.Recorrido_Ciudad_Destino
+GO
+
+INSERT INTO SASHAILO.Recorrido(ID_RECORRIDO, ID_RECORRIDO_CIUDADES, ID_TIPO_SERVICIO)
+select distinct ma.Recorrido_Codigo, rc.ID_RECORRIDO_CIUDADES, ts.ID_TIPO_SERVICIO
 from gd_esquema.Maestra ma
 join SASHAILO.Ciudad ci_o on ci_o.NOMBRE_CIUDAD = ma.Recorrido_Ciudad_Origen
 join SASHAILO.Ciudad ci_d on ci_d.NOMBRE_CIUDAD = ma.Recorrido_Ciudad_Destino
+join SASHAILO.Recorrido_Ciudades rc on (rc.ID_CIUDAD_ORIGEN = ci_o.ID_CIUDAD and rc.ID_CIUDAD_DESTINO = ci_d.ID_CIUDAD)
 join SASHAILO.Tipo_Servicio ts on ts.DESCRIPCION = ma.Tipo_Servicio
 where ma.Recorrido_Precio_BaseKG = 0
 GO
@@ -778,10 +866,11 @@ CREATE PROCEDURE SASHAILO.listado_recorridos
 	    @p_m_habilitado char(1)
 AS
 
-	SELECT ID_RECORRIDO, ori.NOMBRE_CIUDAD, dest.NOMBRE_CIUDAD, ts.DESCRIPCION, re.PRECIO_BASE_PASAJE, re.PRECIO_BASE_KG, re.HABILITADO
+	SELECT ID_RECORRIDO, ori.NOMBRE_CIUDAD, dest.NOMBRE_CIUDAD, ts.DESCRIPCION, rc.PRECIO_BASE_PASAJE, rc.PRECIO_BASE_KG, re.HABILITADO
 	FROM SASHAILO.Recorrido re
-	JOIN SASHAILO.Ciudad ori on ori.ID_CIUDAD = re.ID_CIUDAD_ORIGEN
-	JOIN SASHAILO.Ciudad dest on dest.ID_CIUDAD = re.ID_CIUDAD_DESTINO
+	JOIN SASHAILO.Recorrido_Ciudades rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES
+	JOIN SASHAILO.Ciudad ori on ori.ID_CIUDAD = rc.ID_CIUDAD_ORIGEN
+	JOIN SASHAILO.Ciudad dest on dest.ID_CIUDAD = rc.ID_CIUDAD_DESTINO
 	JOIN SASHAILO.Tipo_Servicio ts on ts.ID_TIPO_SERVICIO = re.ID_TIPO_SERVICIO
 	WHERE (@p_id_ciudad_origen is null or ori.ID_CIUDAD = @p_id_ciudad_origen)
 	and (@p_id_ciudad_destino is null or dest.ID_CIUDAD = @p_id_ciudad_destino)
@@ -807,11 +896,21 @@ AS
 	select @id_recorrido = (select MAX(ID_RECORRIDO)+1 from SASHAILO.Recorrido)
 	select @cod_recorrido = (SELECT upper(SUBSTRING(master.dbo.fn_varbintohexstr(HashBytes('MD5', CAST(@id_recorrido as varchar(10)))), 3, 15)))
 	
-	INSERT INTO SASHAILO.Recorrido(ID_RECORRIDO, CODIGO_RECORRIDO, ID_CIUDAD_ORIGEN, ID_CIUDAD_DESTINO, PRECIO_BASE_KG, PRECIO_BASE_PASAJE, ID_TIPO_SERVICIO)
-	VALUES (@id_recorrido, @cod_recorrido, @p_id_ciudad_origen, @p_id_ciudad_destino, @p_base_kg, @p_base_pasaje, @p_id_tipo_servicio)
+	DECLARE @existe_recorrido_ciudades int
+	select @existe_recorrido_ciudades = (select COUNT(1) from SASHAILO.Recorrido_Ciudades rc where rc.ID_CIUDAD_ORIGEN = @p_id_ciudad_origen and rc.ID_CIUDAD_DESTINO = @p_id_ciudad_destino)
+	DECLARE @id_recorrido_ciudades int
+	IF @existe_recorrido_ciudades > 0 BEGIN
+		select @id_recorrido_ciudades = (select ID_RECORRIDO_CIUDADES from SASHAILO.Recorrido_Ciudades rc where rc.ID_CIUDAD_ORIGEN = @p_id_ciudad_origen and rc.ID_CIUDAD_DESTINO = @p_id_ciudad_destino)
+		update SASHAILO.Recorrido_Ciudades set PRECIO_BASE_KG = @p_base_kg, PRECIO_BASE_PASAJE = @p_base_pasaje WHERE ID_RECORRIDO_CIUDADES = @id_recorrido_ciudades
+	END
+	ELSE BEGIN
+		insert into SASHAILO.Recorrido_Ciudades(ID_CIUDAD_ORIGEN, ID_CIUDAD_DESTINO, PRECIO_BASE_KG, PRECIO_BASE_PASAJE)
+		values(@p_id_ciudad_origen, @p_id_ciudad_destino, @p_base_kg, @p_base_pasaje)
+		SET @id_recorrido_ciudades = SCOPE_IDENTITY()
+	END
 	
-	UPDATE SASHAILO.Recorrido SET PRECIO_BASE_KG = @p_base_kg, PRECIO_BASE_PASAJE = @p_base_pasaje
-	WHERE ID_CIUDAD_ORIGEN = @p_id_ciudad_origen AND ID_CIUDAD_DESTINO = @p_id_ciudad_destino
+	INSERT INTO SASHAILO.Recorrido(ID_RECORRIDO, CODIGO_RECORRIDO, ID_RECORRIDO_CIUDADES, ID_TIPO_SERVICIO)
+	VALUES (@id_recorrido, @cod_recorrido, @id_recorrido_ciudades, @p_id_tipo_servicio)
 
 GO
 
@@ -865,12 +964,21 @@ AS
 	SET @hayErr = 0
 	SET @errores = ''
 	
-	UPDATE SASHAILO.Recorrido SET ID_CIUDAD_ORIGEN = @p_id_ciudad_origen, ID_CIUDAD_DESTINO = @p_id_ciudad_destino,
-	                              PRECIO_BASE_KG = @p_base_kg, PRECIO_BASE_PASAJE = @p_base_pasaje, ID_TIPO_SERVICIO = @p_id_tipo_servicio
-	WHERE ID_RECORRIDO = @p_id_recorrido
+	DECLARE @existe_recorrido_ciudades int
+	select @existe_recorrido_ciudades = (select COUNT(1) from SASHAILO.Recorrido_Ciudades rc where rc.ID_CIUDAD_ORIGEN = @p_id_ciudad_origen and rc.ID_CIUDAD_DESTINO = @p_id_ciudad_destino)
+	DECLARE @id_recorrido_ciudades int
+	IF @existe_recorrido_ciudades > 0 BEGIN
+		select @id_recorrido_ciudades = (select ID_RECORRIDO_CIUDADES from SASHAILO.Recorrido_Ciudades rc where rc.ID_CIUDAD_ORIGEN = @p_id_ciudad_origen and rc.ID_CIUDAD_DESTINO = @p_id_ciudad_destino)
+		update SASHAILO.Recorrido_Ciudades set PRECIO_BASE_KG = @p_base_kg, PRECIO_BASE_PASAJE = @p_base_pasaje WHERE ID_RECORRIDO_CIUDADES = @id_recorrido_ciudades
+	END
+	ELSE BEGIN
+		insert into SASHAILO.Recorrido_Ciudades(ID_CIUDAD_ORIGEN, ID_CIUDAD_DESTINO, PRECIO_BASE_KG, PRECIO_BASE_PASAJE)
+		values(@p_id_ciudad_origen, @p_id_ciudad_destino, @p_base_kg, @p_base_pasaje)
+		SET @id_recorrido_ciudades = SCOPE_IDENTITY()
+	END
 	
-	UPDATE SASHAILO.Recorrido SET PRECIO_BASE_KG = @p_base_kg, PRECIO_BASE_PASAJE = @p_base_pasaje
-	WHERE ID_CIUDAD_ORIGEN = @p_id_ciudad_origen AND ID_CIUDAD_DESTINO = @p_id_ciudad_destino
+	UPDATE SASHAILO.Recorrido SET ID_RECORRIDO_CIUDADES = @id_recorrido_ciudades, ID_TIPO_SERVICIO = @p_id_tipo_servicio
+	WHERE ID_RECORRIDO = @p_id_recorrido
 
 GO
 
@@ -935,14 +1043,29 @@ BEGIN
 END
 GO
 
+CREATE FUNCTION SASHAILO.F_GET_ESTADO_MICRO(@id_micro int)
+ RETURNS int
+ AS
+ BEGIN
+   declare @id_estado int
+   select @id_estado = (select TOP 1 lem.ID_ESTADO from SASHAILO.Micro mi
+						join SASHAILO.Log_Estado_Micro lem on lem.ID_MICRO = mi.ID_MICRO
+						where mi.ID_MICRO = @id_micro
+						order by lem.ID_LOG DESC)
+   return @id_estado
+ END
+ GO
+
 CREATE PROCEDURE SASHAILO.listado_micros
     	@p_id_marca int, 
     	@p_id_tipo_servicio int, 
     	@p_patente varchar(7)
 AS
 
-	SELECT ID_MICRO, PATENTE, ma.DESCRIPCION, MODELO, ts.DESCRIPCION, 
-		   CANT_BUTACAS, CANT_KG, FUERA_DE_SERVICIO, FIN_VIDA_UTIL
+	SELECT mi.ID_MICRO, mi.PATENTE, ma.DESCRIPCION, mi.MODELO, ts.DESCRIPCION, 
+		   CANT_BUTACAS, CANT_KG, 
+		   CASE SASHAILO.F_GET_ESTADO_MICRO(mi.ID_MICRO) WHEN 2 THEN 'S' ELSE 'N' END FUERA_DE_SERVICIO, 
+		   CASE SASHAILO.F_GET_ESTADO_MICRO(mi.ID_MICRO) WHEN 3 THEN 'S' ELSE 'N' END FIN_VIDA_UTIL
 	FROM SASHAILO.Micro mi
 	JOIN SASHAILO.Marca_Micro ma on ma.ID_MARCA=mi.ID_MARCA
 	JOIN SASHAILO.Tipo_Servicio ts on ts.ID_TIPO_SERVICIO=mi.ID_TIPO_SERVICIO
@@ -968,18 +1091,17 @@ AS
 	WHERE 
 	(@p_id_tipo_servicio is null or mi.ID_TIPO_SERVICIO = @p_id_tipo_servicio) and
 	(@p_id_marca is null or ma.ID_MARCA = @p_id_marca) and
-	(mi.FUERA_DE_SERVICIO = 'N') and
-	(mi.FIN_VIDA_UTIL = 'N') and
-	NOT EXISTS (SELECT 1 from SASHAILO.Viaje vi
-				WHERE 
-				vi.ID_MICRO = mi.ID_MICRO AND
-				(
-				  (@p_f_salida >=  vi.F_SALIDA and @p_f_salida <=  vi.F_LLEGADA_ESTIMADA)
-					OR
-				  (@p_f_llegada_estimada >=  vi.F_SALIDA and @p_f_llegada_estimada <=  vi.F_LLEGADA_ESTIMADA)
-				)				
-				)
-	;
+	(SASHAILO.F_GET_ESTADO_MICRO(mi.ID_MICRO) = 1) and
+	 NOT EXISTS (SELECT 1 from SASHAILO.Viaje vi
+				 WHERE 
+				 vi.ID_MICRO = mi.ID_MICRO AND
+				 (
+				   (@p_f_salida >=  vi.F_SALIDA and @p_f_salida <=  vi.F_LLEGADA_ESTIMADA)
+				    	OR
+				   (@p_f_llegada_estimada >=  vi.F_SALIDA and @p_f_llegada_estimada <=  vi.F_LLEGADA_ESTIMADA)
+				 )				
+				 )
+	 ;
 		
 GO
 
@@ -1024,11 +1146,23 @@ BEGIN
 	
 	BEGIN TRANSACTION	
 	/*grabo el micro*/
-	INSERT INTO SASHAILO.Micro (PATENTE, ID_MARCA, MODELO, ID_TIPO_SERVICIO, FUERA_DE_SERVICIO, CANT_BUTACAS, CANT_KG, F_ALTA) 
-	VALUES (@p_patente, @p_id_marca, @p_modelo, @p_id_tipo_servicio, @p_m_fuera_servicio, @p_cant_butacas, @p_cant_kg, @p_f_alta)
-	IF @@error != 0
+	INSERT INTO SASHAILO.Micro (PATENTE, ID_MARCA, MODELO, ID_TIPO_SERVICIO, CANT_BUTACAS, CANT_KG, F_ALTA) 
+	VALUES (@p_patente, @p_id_marca, @p_modelo, @p_id_tipo_servicio, @p_cant_butacas, @p_cant_kg, @p_f_alta)
+	IF @@error != 0 BEGIN
 		ROLLBACK TRANSACTION
-	SET @id_micro_generado = SCOPE_IDENTITY()	
+	END
+	ELSE BEGIN
+		SET @id_micro_generado = SCOPE_IDENTITY()
+	END
+	
+	DECLARE @id_estado int
+	SET @id_estado = 1
+	IF @p_m_fuera_servicio = 'S' BEGIN
+		SET @id_estado = 2
+	END
+
+	INSERT INTO SASHAILO.Log_Estado_Micro (ID_MICRO, ID_ESTADO, FECHA) 
+	VALUES (@id_micro_generado, @id_estado, @p_f_alta)
 
 	
 	COMMIT TRANSACTION  
@@ -1042,6 +1176,7 @@ CREATE PROCEDURE SASHAILO.modif_micro
     	@p_modelo varchar(25),
     	@p_id_tipo_servicio int, 
     	@p_m_fuera_servicio char(1),
+    	@p_fecha datetime,
     	@p_f_fuera_servicio datetime,
     	@p_f_reinicio_servicio datetime,
     	@p_m_baja_definitiva char(1),
@@ -1071,13 +1206,41 @@ BEGIN
 	                          ID_MARCA = @p_id_marca, 
 	                          MODELO = @p_modelo, 
 	                          ID_TIPO_SERVICIO = @p_id_tipo_servicio, 
-	                          FUERA_DE_SERVICIO = @p_m_fuera_servicio,
-	                          F_FUERA_SERVICIO = @p_f_fuera_servicio,
-	                          F_REINICIO_SERVICIO = @p_f_reinicio_servicio,
-	                          FIN_VIDA_UTIL = @p_m_baja_definitiva,
-	                          F_FIN_VIDA_UTIL = @p_f_baja_definitiva,
+	                          --FUERA_DE_SERVICIO = @p_m_fuera_servicio,
+	                          --F_FUERA_SERVICIO = @p_f_fuera_servicio,
+	                          --F_REINICIO_SERVICIO = @p_f_reinicio_servicio,
+	                         -- FIN_VIDA_UTIL = @p_m_baja_definitiva,
+	                         -- F_FIN_VIDA_UTIL = @p_f_baja_definitiva,
 	                          CANT_KG = @p_cant_kg
 	WHERE ID_MICRO = @p_id_micro
+	
+	DECLARE @id_estado_actual int
+	DECLARE @id_estado_update int
+	DECLARE @v_f_fuera_servicio datetime
+	DECLARE @v_f_reinicio datetime
+	DECLARE @v_f_fin_vida datetime
+	SELECT @id_estado_actual = (SELECT SASHAILO.F_GET_ESTADO_MICRO(@p_id_micro))
+	SET @id_estado_update = 1
+	SET @v_f_fuera_servicio = null
+	SET @v_f_reinicio = null
+	SET @v_f_fin_vida = null
+	IF @p_m_fuera_servicio = 'S' BEGIN
+		SET @id_estado_update = 2
+		SET @v_f_fuera_servicio = @p_f_fuera_servicio
+		SET @v_f_reinicio = @p_f_reinicio_servicio
+		SET @v_f_fin_vida = null
+	END
+	IF @p_m_baja_definitiva = 'S' BEGIN
+		SET @id_estado_update = 3
+		SET @v_f_fuera_servicio = null
+		SET @v_f_reinicio = null
+		SET @v_f_fin_vida = @p_f_baja_definitiva
+	END
+	
+	IF @id_estado_actual <> @id_estado_update BEGIN
+		insert into SASHAILO.Log_Estado_Micro(ID_MICRO, ID_ESTADO, FECHA, FECHA_REINICIO)
+		values(@p_id_micro, @id_estado_update, @p_fecha, @v_f_reinicio);
+	END
 	
 	IF @@error != 0
 		ROLLBACK TRANSACTION
@@ -1090,6 +1253,7 @@ CREATE PROCEDURE SASHAILO.fin_vida_util_micro
     	@p_id_micro int,
     	@p_m_baja_definitiva char(1),
     	@p_f_baja_definitiva datetime,
+    	@p_fecha datetime,
     	@hayErr int OUT,
 		@errores varchar(200) OUT
     	
@@ -1098,11 +1262,18 @@ BEGIN
 	SET @hayErr = 0
 	SET @errores = ''
 	
+	DECLARE @id_estado int
+	IF @p_m_baja_definitiva = 'S' BEGIN
+		SET @id_estado = 3
+	END
+	ELSE BEGIN
+		SET @id_estado = 1
+	END
+	
 	BEGIN TRANSACTION	
-	/*actualizo el micro*/
-	UPDATE SASHAILO.Micro SET FIN_VIDA_UTIL = @p_m_baja_definitiva,
-	                          F_FIN_VIDA_UTIL = @p_f_baja_definitiva
-	WHERE ID_MICRO = @p_id_micro
+		/*actualizo el micro*/
+		INSERT INTO SASHAILO.Log_Estado_Micro(ID_MICRO, ID_ESTADO, FECHA)
+		VALUES(@p_id_micro, @id_estado, @p_fecha)
 	
 	IF @@error != 0
 		ROLLBACK TRANSACTION
@@ -1146,13 +1317,14 @@ AS
 	ts.DESCRIPCION, vi.F_SALIDA, vi.F_LLEGADA_ESTIMADA, vi.F_LLEGADA 
 	from SASHAILO.Viaje vi
 	join SASHAILO.Recorrido re on vi.ID_RECORRIDO = re.ID_RECORRIDO
+	join SASHAILO.Recorrido_Ciudades rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES
 	join SASHAILO.Micro mi on mi.ID_MICRO = vi.ID_MICRO
-	join SASHAILO.Ciudad cio on cio.ID_CIUDAD = re.ID_CIUDAD_ORIGEN
-	join SASHAILO.Ciudad cid on cid.ID_CIUDAD = re.ID_CIUDAD_DESTINO
+	join SASHAILO.Ciudad cio on cio.ID_CIUDAD = rc.ID_CIUDAD_ORIGEN
+	join SASHAILO.Ciudad cid on cid.ID_CIUDAD = rc.ID_CIUDAD_DESTINO
 	join SASHAILO.Tipo_Servicio ts on ts.ID_TIPO_SERVICIO = mi.ID_TIPO_SERVICIO
 	WHERE 
-	(@p_id_ciudad_origen is null or re.ID_CIUDAD_ORIGEN = @p_id_ciudad_origen) and 
-	(@p_id_ciudad_destino is null or re.ID_CIUDAD_DESTINO = @p_id_ciudad_destino)
+	(@p_id_ciudad_origen is null or rc.ID_CIUDAD_ORIGEN = @p_id_ciudad_origen) and 
+	(@p_id_ciudad_destino is null or rc.ID_CIUDAD_DESTINO = @p_id_ciudad_destino)
 	;
 		
 GO
@@ -1176,7 +1348,7 @@ CREATE FUNCTION SASHAILO.F_CANT_BUTACAS_DISP(@id_viaje int)
    declare @cant_butacas_vendidas int
    select @id_micro = (SELECT vi.ID_MICRO FROM SASHAILO.Viaje vi where vi.ID_VIAJE = @id_viaje)
    select @cant_butacas_micro = (select mi.CANT_BUTACAS from SASHAILO.Micro mi where mi.ID_MICRO = @id_micro)
-   select @cant_butacas_vendidas = (select COUNT(1) from SASHAILO.Pasaje_Encomienda pe where pe.ID_VIAJE = @id_viaje and pe.ID_TIPO_PASAJE = 1)
+   select @cant_butacas_vendidas = (select COUNT(1) from SASHAILO.Pasaje pa where pa.ID_VIAJE = @id_viaje)
    
    return (@cant_butacas_micro - @cant_butacas_vendidas)
    
@@ -1192,7 +1364,7 @@ CREATE FUNCTION SASHAILO.F_CANT_BUTACAS_DISP(@id_viaje int)
    declare @cant_kg_vendidos numeric(18,0)
    select @id_micro = (SELECT vi.ID_MICRO FROM SASHAILO.Viaje vi where vi.ID_VIAJE = @id_viaje)
    select @cant_kg_micro = (select mi.CANT_KG from SASHAILO.Micro mi where mi.ID_MICRO = @id_micro)
-   select @cant_kg_vendidos = (select ISNULL(SUM(pe.KG),0) from SASHAILO.Pasaje_Encomienda pe where pe.ID_VIAJE = @id_viaje and pe.ID_TIPO_PASAJE = 2)
+   select @cant_kg_vendidos = (select ISNULL(SUM(en.KG),0) from SASHAILO.Encomienda en where en.ID_VIAJE = @id_viaje)
    
    return (@cant_kg_micro - @cant_kg_vendidos)
    
@@ -1223,16 +1395,16 @@ AS
 	FROM SASHAILO.Viaje vi
 	JOIN SASHAILO.Micro mi on mi.ID_MICRO = vi.ID_MICRO
 	JOIN SASHAILO.Recorrido re on re.ID_RECORRIDO = vi.ID_RECORRIDO
+	JOIN SASHAILO.Recorrido_Ciudades rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES
 	JOIN SASHAILO.Tipo_Servicio ts on ts.ID_TIPO_SERVICIO = re.ID_TIPO_SERVICIO
 	WHERE
 	vi.F_SALIDA >= @p_f_salida AND
 	YEAR(vi.F_SALIDA) = YEAR(@p_f_salida) AND
 	MONTH(vi.F_SALIDA) = MONTH(@p_f_salida) AND
 	DAY(vi.F_SALIDA) = DAY(@p_f_salida) AND
-	re.ID_CIUDAD_ORIGEN = @p_id_ciudad_origen AND
-	re.ID_CIUDAD_DESTINO = @p_id_ciudad_destino AND
-	mi.FIN_VIDA_UTIL = 'N' AND
-	mi.FUERA_DE_SERVICIO = 'N' AND
+	rc.ID_CIUDAD_ORIGEN = @p_id_ciudad_origen AND
+	rc.ID_CIUDAD_DESTINO = @p_id_ciudad_destino AND
+        (SASHAILO.F_GET_ESTADO_MICRO(mi.ID_MICRO) = 1) AND
     (SASHAILO.F_CANT_KG_DISP(vi.ID_VIAJE) > 0 or SASHAILO.F_CANT_BUTACAS_DISP(vi.ID_VIAJE) > 0)
 	ORDER BY BUTACAS_DISP DESC
 	;
@@ -1249,9 +1421,9 @@ AS
 	JOIN SASHAILO.Butaca bu on bu.ID_MICRO = mi.ID_MICRO
 	JOIN SASHAILO.Tipo_Butaca tb on tb.ID_TIPO_BUTACA = bu.ID_TIPO_BUTACA
 	WHERE mi.ID_MICRO = @p_id_micro
-	AND bu.ID_BUTACA not in (SELECT pe.ID_BUTACA
-							 FROM SASHAILO.Pasaje_Encomienda pe
-							 WHERE pe.ID_VIAJE = @p_id_viaje)
+	AND bu.ID_BUTACA not in (SELECT pa.ID_BUTACA
+							 FROM SASHAILO.Pasaje pa
+							 WHERE pa.ID_VIAJE = @p_id_viaje)
 	AND bu.ID_BUTACA not in (SELECT pet.ID_BUTACA
 							 FROM SASHAILO.Pasaje_Encomienda_Temporal pet
 							 WHERE pet.ID_VIAJE = @p_id_viaje)	
@@ -1269,14 +1441,14 @@ AS
 	SET @errores = ''
 	
 	DECLARE @cantidad INT
-	SELECT @cantidad = (SELECT COUNT(1) FROM SASHAILO.Pasaje_Encomienda pe WHERE pe.ID_VIAJE = @p_id_viaje AND pe.ID_CLIENTE = @p_id_cliente)
+	SELECT @cantidad = (SELECT COUNT(1) FROM SASHAILO.Pasaje pa WHERE pa.ID_VIAJE = @p_id_viaje AND pa.ID_CLIENTE = @p_id_cliente)
 	IF @cantidad > 0 BEGIN
 		SET @hayError = 1
 		SET @errores = 'El Cliente ingresado ya tiene un Pasaje para el Viaje seleccionado'
 		RETURN
 	END
 	
-	SELECT @cantidad = (SELECT COUNT(1) FROM SASHAILO.Pasaje_Encomienda_Temporal pet WHERE pet.ID_VIAJE = @p_id_viaje AND pet.ID_CLIENTE = @p_id_cliente)
+	SELECT @cantidad = (SELECT COUNT(1) FROM SASHAILO.Pasaje_Encomienda_Temporal pet WHERE pet.ID_VIAJE = @p_id_viaje AND pet.ID_CLIENTE = @p_id_cliente AND pet.ID_BUTACA is not null)
 	IF @cantidad > 0 BEGIN
 		SET @hayError = 1
 		SET @errores = 'El Cliente ingresado ya se encuentra en la lista de Pasajes a comprar para el Viaje seleccionado'
@@ -1287,9 +1459,9 @@ AS
 	DECLARE @fecha_llegada_estim datetime
 	SELECT @fecha_salida = (SELECT vi.F_SALIDA FROM SASHAILO.Viaje vi WHERE vi.ID_VIAJE = @p_id_viaje)
 	SELECT @fecha_llegada_estim = (SELECT vi.F_LLEGADA_ESTIMADA FROM SASHAILO.Viaje vi WHERE vi.ID_VIAJE = @p_id_viaje)
-	SELECT @cantidad = (SELECT COUNT(1) from SASHAILO.Pasaje_Encomienda pe 
-						JOIN SASHAILO.Viaje vi on vi.ID_VIAJE = pe.ID_VIAJE
-						WHERE pe.ID_CLIENTE = @p_id_cliente
+	SELECT @cantidad = (SELECT COUNT(1) from SASHAILO.Pasaje pa
+						JOIN SASHAILO.Viaje vi on vi.ID_VIAJE = pa.ID_VIAJE
+						WHERE pa.ID_CLIENTE = @p_id_cliente
 						AND (vi.F_SALIDA BETWEEN @fecha_salida AND @fecha_llegada_estim 
 						     OR 
 							 vi.F_LLEGADA BETWEEN @fecha_salida AND @fecha_llegada_estim)
@@ -1303,6 +1475,7 @@ AS
 	SELECT @cantidad = (SELECT COUNT(1) from SASHAILO.Pasaje_Encomienda_Temporal pet
 						JOIN SASHAILO.Viaje vi on vi.ID_VIAJE = pet.ID_VIAJE
 						WHERE pet.ID_CLIENTE = @p_id_cliente
+						AND pet.ID_BUTACA is not null
 						AND (vi.F_SALIDA BETWEEN @fecha_salida AND @fecha_llegada_estim 
 						     OR 
 							 vi.F_LLEGADA BETWEEN @fecha_salida AND @fecha_llegada_estim)
@@ -1350,6 +1523,12 @@ join SASHAILO.Marca_Micro mm on mm.DESCRIPCION = ma.Micro_Marca
 join SASHAILO.Tipo_Servicio ts on ts.DESCRIPCION = ma.Tipo_Servicio
 GO
 
+--pongo los micros como activos
+INSERT INTO SASHAILO.Log_Estado_Micro(ID_MICRO, ID_ESTADO, FECHA)
+SELECT mi.ID_MICRO, 1, mi.F_ALTA FROM SASHAILO.Micro mi
+GO
+
+-- inserto butacas
 BEGIN
 
 	SET NOCOUNT ON;
@@ -1407,6 +1586,7 @@ END
 
 GO
 
+-- actualizo cantidad de butacas
 BEGIN
 
 	SET NOCOUNT ON;
@@ -1448,7 +1628,7 @@ SELECT DISTINCT Recorrido_Codigo, mi.id_micro, FechaSalida, Fecha_LLegada_Estima
 from gd_esquema.Maestra ma join SASHAILO.Micro mi on mi.patente = ma.Micro_Patente
 GO
 
-INSERT INTO SASHAILO.Pasaje_Encomienda(ID_PASAJE_ENCOMIENDA, ID_CLIENTE, ID_VIAJE, ID_BUTACA, ID_TIPO_PASAJE, PRECIO, KG)
+/*INSERT INTO SASHAILO.Pasaje_Encomienda(ID_PASAJE_ENCOMIENDA, ID_CLIENTE, ID_VIAJE, ID_BUTACA, ID_TIPO_PASAJE, PRECIO, KG)
 select case ma.Pasaje_Codigo when 0 then ma.Paquete_Codigo else ma.Pasaje_Codigo end Codigo,
 	cli.ID_CLIENTE, vi.ID_VIAJE, bu.ID_BUTACA, 
 	case ma.Pasaje_Codigo when 0 then 2 else 1 end Tipo_Pasaje,
@@ -1465,9 +1645,44 @@ select case ma.Pasaje_Codigo when 0 then ma.Paquete_Codigo else ma.Pasaje_Codigo
 							   vi.F_LLEGADA_ESTIMADA = ma.Fecha_LLegada_Estimada and 
 							   vi.F_LLEGADA = ma.FechaLLegada and 
 							   vi.ID_MICRO = mi.ID_MICRO)
-GO
+GO*/
 
-BEGIN
+-- cargo los pasajes
+INSERT INTO SASHAILO.Pasaje(ID_PASAJE, ID_CLIENTE, ID_VIAJE, ID_BUTACA, PRECIO)
+select ma.Pasaje_Codigo Codigo,
+	   cli.ID_CLIENTE, vi.ID_VIAJE, bu.ID_BUTACA, 
+	   ma.Pasaje_Precio PRECIO
+from gd_esquema.Maestra ma
+join SASHAILO.Cliente cli on cli.DNI = ma.Cli_Dni
+join SASHAILO.Micro mi on ma.Micro_Patente = mi.PATENTE
+left join SASHAILO.Butaca bu on (bu.ID_MICRO = mi.ID_MICRO and
+							bu.NRO_BUTACA = ma.Butaca_Nro and 
+							Pasaje_Codigo <>0)
+join SASHAILO.Viaje vi on (vi.ID_RECORRIDO = ma.Recorrido_Codigo and 
+						   vi.F_SALIDA = ma.FechaSalida and 
+						   vi.F_LLEGADA_ESTIMADA = ma.Fecha_LLegada_Estimada and 
+						   vi.F_LLEGADA = ma.FechaLLegada and 
+						   vi.ID_MICRO = mi.ID_MICRO)
+WHERE ma.Pasaje_Codigo<>0	
+GO						   
+
+-- cargo las encomiendas
+INSERT INTO SASHAILO.Encomienda(ID_ENCOMIENDA, ID_CLIENTE, ID_VIAJE, KG, PRECIO)
+select ma.Paquete_Codigo Codigo,
+	   cli.ID_CLIENTE, vi.ID_VIAJE, ma.Paquete_KG, 
+	   ma.Paquete_Precio PRECIO
+from gd_esquema.Maestra ma
+join SASHAILO.Cliente cli on cli.DNI = ma.Cli_Dni
+join SASHAILO.Micro mi on ma.Micro_Patente = mi.PATENTE
+join SASHAILO.Viaje vi on (vi.ID_RECORRIDO = ma.Recorrido_Codigo and 
+						   vi.F_SALIDA = ma.FechaSalida and 
+						   vi.F_LLEGADA_ESTIMADA = ma.Fecha_LLegada_Estimada and 
+						   vi.F_LLEGADA = ma.FechaLLegada and 
+						   vi.ID_MICRO = mi.ID_MICRO)
+WHERE ma.Pasaje_Codigo=0	
+GO	
+
+/*BEGIN
 
 	SET NOCOUNT ON;
 
@@ -1499,42 +1714,123 @@ BEGIN
 
 END
 
+GO*/
+
+BEGIN
+
+	SET NOCOUNT ON;
+
+	DECLARE @id_pasaje numeric(18,0)
+	DECLARE @contador int
+	SET @contador = 0;
+	DECLARE curr_pasajes CURSOR FOR 
+	SELECT ID_PASAJE FROM SASHAILO.Pasaje
+
+	BEGIN TRANSACTION;
+
+	OPEN curr_pasajes 
+	FETCH curr_pasajes INTO @id_pasaje
+
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+		
+		SET @contador = @contador + 1;
+		
+		UPDATE SASHAILO.Pasaje SET ID_COMPRA = @contador WHERE ID_PASAJE = @id_pasaje
+		
+		FETCH curr_pasajes INTO @id_pasaje
+	END
+
+	COMMIT TRANSACTION;
+
+	CLOSE curr_pasajes
+	DEALLOCATE curr_pasajes
+
+END
+
+GO
+
+BEGIN
+
+	SET NOCOUNT ON;
+
+	DECLARE @id_encomienda numeric(18,0)
+	DECLARE @contador int
+	SET @contador = (select MAX(ID_COMPRA) from SASHAILO.Pasaje);
+	DECLARE curr_encomiendas CURSOR FOR 
+	SELECT ID_ENCOMIENDA FROM SASHAILO.Encomienda
+
+	BEGIN TRANSACTION;
+
+	OPEN curr_encomiendas 
+	FETCH curr_encomiendas INTO @id_encomienda
+
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+		
+		SET @contador = @contador + 1;
+		
+		UPDATE SASHAILO.Encomienda SET ID_COMPRA = @contador WHERE ID_ENCOMIENDA = @id_encomienda
+		
+		FETCH curr_encomiendas INTO @id_encomienda
+	END
+
+	COMMIT TRANSACTION;
+
+	CLOSE curr_encomiendas
+	DEALLOCATE curr_encomiendas
+
+END
+
 GO
 
 --inserto las compras de los pasajes
 INSERT INTO SASHAILO.Compra(ID_COMPRA, F_COMPRA, IMPORTE, ID_CLIENTE, ID_MEDIO_PAGO)
-SELECT PE.ID_COMPRA, MA.Pasaje_FechaCompra, pe.PRECIO, pe.ID_CLIENTE, 1
-FROM SASHAILO.Pasaje_Encomienda pe
-JOIN gd_esquema.Maestra ma on ma.Pasaje_Codigo = pe.ID_PASAJE_ENCOMIENDA 
+SELECT Pa.ID_COMPRA, MA.Pasaje_FechaCompra, pa.PRECIO, pa.ID_CLIENTE, 1
+FROM SASHAILO.Pasaje pa
+JOIN gd_esquema.Maestra ma on ma.Pasaje_Codigo = pa.ID_PASAJE 
 GO
 
 --inserto las compras de los paquetes
 INSERT INTO SASHAILO.Compra(ID_COMPRA, F_COMPRA, IMPORTE, ID_CLIENTE, ID_MEDIO_PAGO)
-SELECT PE.ID_COMPRA, MA.Paquete_FechaCompra, pe.PRECIO, pe.ID_CLIENTE, 1
-FROM SASHAILO.Pasaje_Encomienda pe
-JOIN gd_esquema.Maestra ma on ma.Paquete_Codigo = pe.ID_PASAJE_ENCOMIENDA 
+SELECT en.ID_COMPRA, MA.Paquete_FechaCompra, en.PRECIO, en.ID_CLIENTE, 1
+FROM SASHAILO.Encomienda en
+JOIN gd_esquema.Maestra ma on ma.Paquete_Codigo = en.ID_ENCOMIENDA 
 GO
 
---creo la fk
-ALTER TABLE SASHAILO.Pasaje_Encomienda
-ADD CONSTRAINT fk_id_compra
+--creo las fk a compra
+ALTER TABLE SASHAILO.Pasaje
+ADD CONSTRAINT fk_pasaje_id_compra
+FOREIGN KEY (ID_COMPRA)
+REFERENCES SASHAILO.Compra(ID_COMPRA)
+GO
+
+ALTER TABLE SASHAILO.Encomienda
+ADD CONSTRAINT fk_encomienda_id_compra
 FOREIGN KEY (ID_COMPRA)
 REFERENCES SASHAILO.Compra(ID_COMPRA)
 GO
 
 -- lleno el historial de puntos
-INSERT INTO SASHAILO.Historial_Puntos(ID_CLIENTE, ID_PASAJE_ENCOMIENDA, PUNTOS, FECHA)
-SELECT id_cliente, id_pasaje_encomienda, round (pe.PRECIO/5,0) as PUNTOS, vi.F_SALIDA
-FROM SASHAILO.Pasaje_Encomienda pe
-JOIN SASHAILO.Viaje vi on vi.ID_VIAJE = pe.ID_VIAJE
+INSERT INTO SASHAILO.Historial_Puntos(ID_CLIENTE, ID_PASAJE, PUNTOS, FECHA)
+SELECT id_cliente, id_pasaje, round (pa.PRECIO/5,0) as PUNTOS, vi.F_SALIDA
+FROM SASHAILO.Pasaje pa
+JOIN SASHAILO.Viaje vi on vi.ID_VIAJE = pa.ID_VIAJE
+GO
+
+INSERT INTO SASHAILO.Historial_Puntos(ID_CLIENTE, ID_ENCOMIENDA, PUNTOS, FECHA)
+SELECT id_cliente, id_encomienda, round (en.PRECIO/5,0) as PUNTOS, vi.F_SALIDA
+FROM SASHAILO.Encomienda en
+JOIN SASHAILO.Viaje vi on vi.ID_VIAJE = en.ID_VIAJE
 GO
 
 -- lleno la tabla de llegada a destino
 INSERT INTO SASHAILO.Llegada(PATENTE, ID_MICRO, F_LLEGADA, ID_VIAJE, ID_CIUDAD_ORIGEN, ID_CIUDAD_DESTINO)
-SELECT mi.PATENTE, mi.ID_MICRO, vi.F_LLEGADA, vi.ID_VIAJE, re.ID_CIUDAD_ORIGEN, re.ID_CIUDAD_DESTINO
+SELECT mi.PATENTE, mi.ID_MICRO, vi.F_LLEGADA, vi.ID_VIAJE, rc.ID_CIUDAD_ORIGEN, rc.ID_CIUDAD_DESTINO
 FROM SASHAILO.Viaje vi
 join SASHAILO.Micro mi on mi.ID_MICRO = vi.ID_MICRO
 join SASHAILO.Recorrido re on re.ID_RECORRIDO = vi.ID_RECORRIDO
+join SASHAILO.Recorrido_Ciudades rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES
 GO
 
 --actualizo los puntos de los clientes
