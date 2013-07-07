@@ -154,7 +154,9 @@ CREATE TABLE SASHAILO.Log_Estado_Micro(
 	ID_MICRO int FOREIGN KEY REFERENCES SASHAILO.Micro(ID_MICRO),
 	ID_ESTADO int FOREIGN KEY REFERENCES SASHAILO.Estado_Micro(ID_ESTADO),
 	FECHA datetime,
+	FECHA_F_SERVICIO datetime,
 	FECHA_REINICIO datetime,
+	FECHA_BAJA_DEF datetime,
 	PRIMARY KEY(ID_LOG)
 )
 
@@ -220,14 +222,6 @@ CREATE TABLE SASHAILO.Viaje(
 
 GO
 
-CREATE TABLE SASHAILO.Tipo_Pasaje(
-	ID_TIPO_PASAJE int not null IDENTITY,
-	DESCRIPCION nvarchar(30),
-	PRIMARY KEY (ID_TIPO_PASAJE)
-) 
-
-GO
-
 CREATE TABLE SASHAILO.Tipo_Tarjeta(
 	ID_TIPO_TARJETA int not null IDENTITY,
 	DESCRIPCION nvarchar(30) not null,
@@ -286,6 +280,7 @@ CREATE TABLE SASHAILO.Pasaje(
 	ID_CLIENTE int FOREIGN KEY REFERENCES SASHAILO.Cliente(ID_CLIENTE),
 	ID_VIAJE int FOREIGN KEY REFERENCES SASHAILO.Viaje(ID_VIAJE),
 	ID_BUTACA int FOREIGN KEY REFERENCES SASHAILO.Butaca(ID_BUTACA),
+	DISCAPACIDAD char(1) not null DEFAULT 'N',
 	PRECIO numeric(18,2),
 ) 
 
@@ -384,14 +379,6 @@ INSERT INTO SASHAILO.Rol(NOMBRE)
 values ('Cliente');
 GO
 
--- TIPO PASAJE
-INSERT INTO SASHAILO.Tipo_Pasaje(DESCRIPCION)
-values ('Pasaje');
-GO
-INSERT INTO SASHAILO.Tipo_Pasaje(DESCRIPCION)
-values ('Encomienda');
-GO
-
 -- ESTADO MICRO
 INSERT INTO SASHAILO.Estado_Micro(ID_ESTADO, D_ESTADO)
 values (1, 'En uso');
@@ -418,6 +405,21 @@ GO
 INSERT INTO SASHAILO.Medio_Pago(DESCRIPCION)
 values ('Tarjeta');
 GO
+
+--TARJETAS
+INSERT INTO SASHAILO.Tarjeta_Credito(NRO_TARJETA, VENCIMIENTO, CODIGO_SEGURIDAD, ID_TIPO_TARJETA)
+VALUES('0394878374678374', '1213', '321', 1)
+GO
+INSERT INTO SASHAILO.Tarjeta_Credito(NRO_TARJETA, VENCIMIENTO, CODIGO_SEGURIDAD, ID_TIPO_TARJETA)
+VALUES('3894895094895712', '1113', '674', 1)
+GO
+INSERT INTO SASHAILO.Tarjeta_Credito(NRO_TARJETA, VENCIMIENTO, CODIGO_SEGURIDAD, ID_TIPO_TARJETA)
+VALUES('9998887376711123', '1213', '934', 2)
+GO
+INSERT INTO SASHAILO.Tarjeta_Credito(NRO_TARJETA, VENCIMIENTO, CODIGO_SEGURIDAD, ID_TIPO_TARJETA)
+VALUES('0011929283674653', '1113', '713', 2)
+GO
+
 --FUNCIONES
 INSERT INTO SASHAILO.Funcion(DESCRIPCION)
 values ('ABM de Rol');
@@ -1118,7 +1120,82 @@ AS
 	
 GO
 
-CREATE PROCEDURE SASHAILO.sp_baja_butaca_provisoria
+CREATE PROCEDURE SASHAILO.sp_alta_compra_pasaje
+	@p_id_cliente INT,
+	@p_id_compra INT,
+	@p_id_viaje INT,
+	@p_id_butaca INT,
+	@p_precio NUMERIC(18,2),
+	@p_discapacidad CHAR(1),
+	@p_id_pasaje_gen NUMERIC(18,0) OUT,
+	@hayErr int OUT,
+    @errores varchar(200) OUT
+AS
+	SET @hayErr = 0
+	SET @errores = ''
+	
+	BEGIN TRANSACTION
+	
+	SELECT @p_id_pasaje_gen = (MAX(ID_PASAJE) + 1) FROM SASHAILO.Pasaje
+
+	INSERT INTO SASHAILO.Pasaje(ID_PASAJE, ID_COMPRA, ID_CLIENTE, ID_VIAJE, ID_BUTACA, PRECIO, DISCAPACIDAD)
+	VALUES (@p_id_pasaje_gen, @p_id_compra, @p_id_cliente, @p_id_viaje, @p_id_butaca, @p_precio, @p_discapacidad)
+	IF @@error != 0 BEGIN
+		ROLLBACK TRANSACTION
+		SET @hayErr = 1
+		RETURN
+	END
+	
+	DELETE FROM SASHAILO.Pasaje_Encomienda_Temporal WHERE ID_CLIENTE = @p_id_cliente AND ID_VIAJE = @p_id_viaje AND ID_BUTACA = @p_id_butaca
+	
+	COMMIT TRANSACTION
+GO
+
+CREATE PROCEDURE SASHAILO.sp_alta_compra_encomienda
+	@p_id_cliente INT,
+	@p_id_compra INT,
+	@p_id_viaje INT,
+	@p_precio NUMERIC(18,2),
+	@p_kg NUMERIC(18,0),
+	@p_id_provisorio INT,
+	@p_id_encomienda_gen NUMERIC(18,0) OUT,
+	@hayErr int OUT,
+    @errores varchar(200) OUT
+AS
+	SET @hayErr = 0
+	SET @errores = ''
+	
+	BEGIN TRANSACTION
+	
+	SELECT @p_id_encomienda_gen = (MAX(ID_ENCOMIENDA) + 1) FROM SASHAILO.Encomienda
+
+	INSERT INTO SASHAILO.Encomienda(ID_ENCOMIENDA, ID_COMPRA, ID_CLIENTE, ID_VIAJE, KG, PRECIO)
+	VALUES (@p_id_encomienda_gen, @p_id_compra, @p_id_cliente, @p_id_viaje, @p_kg, @p_precio)
+	IF @@error != 0 BEGIN
+		ROLLBACK TRANSACTION
+		SET @hayErr = 1
+		RETURN
+	END
+	
+	DELETE FROM SASHAILO.Pasaje_Encomienda_Temporal WHERE ID_PE_TEMPORAL = @p_id_provisorio
+	
+	COMMIT TRANSACTION
+GO
+
+CREATE PROCEDURE SASHAILO.sp_alta_encomienda_provisoria
+	@p_id_viaje INT,
+	@p_id_cliente INT,
+	@p_kilos NUMERIC(18,0),
+	@p_id_generado INT OUT
+AS
+
+	INSERT INTO SASHAILO.Pasaje_Encomienda_Temporal(ID_VIAJE, KG, ID_CLIENTE)
+	VALUES (@p_id_viaje, @p_kilos, @p_id_cliente)
+	SET @p_id_generado = SCOPE_IDENTITY()
+	
+GO
+
+CREATE PROCEDURE SASHAILO.sp_baja_butaca_encomienda_provisoria
 	@p_id INT
 AS
 
@@ -1169,6 +1246,41 @@ BEGIN
 END
 GO
 
+CREATE PROCEDURE SASHAILO.sp_alta_compra
+	@p_id_cliente INT,
+	@p_f_compra DATETIME,
+	@p_importe NUMERIC(18,2),
+	@p_id_medio_pago INT,
+	@p_nro_tarjeta NVARCHAR(16),
+	@p_id_compra_gen int OUT,
+	@hayErr int OUT,
+    @errores varchar(200) OUT
+AS
+	SET @hayErr = 0
+	SET @errores = ''
+	
+	BEGIN TRANSACTION
+	
+	DECLARE @id_tarjeta INT
+	IF @p_id_medio_pago = 1 BEGIN
+		SET @id_tarjeta = NULL;
+	END
+	ELSE BEGIN
+		SELECT @id_tarjeta = ID_TARJETA FROM SASHAILO.Tarjeta_Credito WHERE NRO_TARJETA = @p_nro_tarjeta
+	END
+	
+	SELECT @p_id_compra_gen = (MAX(ID_COMPRA) + 1) FROM SASHAILO.Compra
+
+	INSERT INTO SASHAILO.Compra(ID_COMPRA, F_COMPRA, IMPORTE, ID_CLIENTE, ID_MEDIO_PAGO, ID_TARJETA)
+	VALUES (@p_id_compra_gen, @p_f_compra, @p_importe, @p_id_cliente, @p_id_medio_pago, @id_tarjeta)
+	IF @@error != 0 BEGIN
+		ROLLBACK TRANSACTION
+		SET @hayErr = 1
+		RETURN
+	END
+	COMMIT TRANSACTION
+GO
+
 CREATE PROCEDURE SASHAILO.modif_micro
     	@p_id_micro int,
     	@p_patente varchar(7),
@@ -1214,38 +1326,43 @@ BEGIN
 	                          CANT_KG = @p_cant_kg
 	WHERE ID_MICRO = @p_id_micro
 	
-	DECLARE @id_estado_actual int
-	DECLARE @id_estado_update int
-	DECLARE @v_f_fuera_servicio datetime
-	DECLARE @v_f_reinicio datetime
-	DECLARE @v_f_fin_vida datetime
-	SELECT @id_estado_actual = (SELECT SASHAILO.F_GET_ESTADO_MICRO(@p_id_micro))
-	SET @id_estado_update = 1
-	SET @v_f_fuera_servicio = null
-	SET @v_f_reinicio = null
-	SET @v_f_fin_vida = null
-	IF @p_m_fuera_servicio = 'S' BEGIN
-		SET @id_estado_update = 2
-		SET @v_f_fuera_servicio = @p_f_fuera_servicio
-		SET @v_f_reinicio = @p_f_reinicio_servicio
-		SET @v_f_fin_vida = null
-	END
-	IF @p_m_baja_definitiva = 'S' BEGIN
-		SET @id_estado_update = 3
-		SET @v_f_fuera_servicio = null
-		SET @v_f_reinicio = null
-		SET @v_f_fin_vida = @p_f_baja_definitiva
+	IF @p_m_baja_definitiva = 'N' and @p_m_fuera_servicio = 'N' BEGIN
+		insert into SASHAILO.Log_Estado_Micro(ID_MICRO, ID_ESTADO, FECHA)
+		values(@p_id_micro, 1, @p_fecha);
+		COMMIT TRANSACTION
+		RETURN
 	END
 	
-	IF @id_estado_actual <> @id_estado_update BEGIN
-		insert into SASHAILO.Log_Estado_Micro(ID_MICRO, ID_ESTADO, FECHA, FECHA_REINICIO)
-		values(@p_id_micro, @id_estado_update, @p_fecha, @v_f_reinicio);
+	DECLARE @id_estado_update int
+	DECLARE @id_estado_actual int
+	SELECT @id_estado_actual = (SELECT SASHAILO.F_GET_ESTADO_MICRO(@p_id_micro))
+	
+	IF @p_m_fuera_servicio = 'S' BEGIN
+		IF @p_f_fuera_servicio = @p_fecha BEGIN
+			SET @id_estado_update = 2
+		END
+		IF @p_f_fuera_servicio > @p_fecha BEGIN
+			SET @id_estado_update = 1
+		END
+		insert into SASHAILO.Log_Estado_Micro(ID_MICRO, ID_ESTADO, FECHA, FECHA_F_SERVICIO, FECHA_REINICIO, FECHA_BAJA_DEF)
+		values(@p_id_micro, @id_estado_update, @p_fecha, @p_f_fuera_servicio, @p_f_reinicio_servicio, @p_f_baja_definitiva);
 	END
+	IF @p_m_baja_definitiva = 'S' BEGIN
+		IF @p_f_baja_definitiva = @p_fecha BEGIN
+			SET @id_estado_update = 3
+		END
+		IF @p_f_baja_definitiva > @p_fecha BEGIN
+			SET @id_estado_update = 1
+		END
+		insert into SASHAILO.Log_Estado_Micro(ID_MICRO, ID_ESTADO, FECHA, FECHA_F_SERVICIO, FECHA_REINICIO, FECHA_BAJA_DEF)
+		values(@p_id_micro, @id_estado_update, @p_fecha, @p_f_fuera_servicio, @p_f_reinicio_servicio, @p_f_baja_definitiva);
+	END	
 	
 	IF @@error != 0
 		ROLLBACK TRANSACTION
 	
-	COMMIT TRANSACTION  
+	COMMIT TRANSACTION 
+	 
 END
 GO
 
@@ -1272,8 +1389,8 @@ BEGIN
 	
 	BEGIN TRANSACTION	
 		/*actualizo el micro*/
-		INSERT INTO SASHAILO.Log_Estado_Micro(ID_MICRO, ID_ESTADO, FECHA)
-		VALUES(@p_id_micro, @id_estado, @p_fecha)
+		INSERT INTO SASHAILO.Log_Estado_Micro(ID_MICRO, ID_ESTADO, FECHA, FECHA_BAJA_DEF)
+		VALUES(@p_id_micro, @id_estado, @p_fecha, @p_f_baja_definitiva)
 	
 	IF @@error != 0
 		ROLLBACK TRANSACTION
@@ -1584,6 +1701,84 @@ BEGIN
 
 END
 
+GO
+
+CREATE PROCEDURE SASHAILO.evaluar_micros
+	@p_f_actual datetime
+AS
+	
+	BEGIN TRANSACTION
+
+	DECLARE @id_micro int
+	DECLARE curr_micros CURSOR FOR 
+	select distinct ID_MICRO from SASHAILO.Micro order by 1
+		
+	OPEN curr_micros 
+	FETCH curr_micros INTO @id_micro
+	
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+		
+		DECLARE @id_estado int
+		DECLARE @f_f_servicio datetime
+		DECLARE @f_r_servicio datetime
+		DECLARE @f_b_definitiva datetime
+		select @id_estado = ID_ESTADO,
+		       @f_f_servicio = FECHA_F_SERVICIO,
+			   @f_r_servicio = FECHA_REINICIO,
+			   @f_b_definitiva = FECHA_BAJA_DEF
+		from SASHAILO.Log_Estado_Micro
+		where ID_MICRO = @id_micro
+				
+		if @p_f_actual = @f_b_definitiva and @id_estado <> 3 begin
+			insert into SASHAILO.Log_Estado_Micro(ID_MICRO, ID_ESTADO, FECHA, FECHA_F_SERVICIO, FECHA_REINICIO, FECHA_BAJA_DEF)
+			values(@id_micro, 3, @p_f_actual, null, null, @p_f_actual);
+		end
+		
+		if @p_f_actual > @f_b_definitiva and @id_estado <> 3 begin
+			insert into SASHAILO.Log_Estado_Micro(ID_MICRO, ID_ESTADO, FECHA, FECHA_F_SERVICIO, FECHA_REINICIO, FECHA_BAJA_DEF)
+			values(@id_micro, 3, @p_f_actual, null, null, @f_b_definitiva);
+		end
+		
+		if @p_f_actual >= @f_f_servicio and @id_estado <> 2 begin
+			insert into SASHAILO.Log_Estado_Micro(ID_MICRO, ID_ESTADO, FECHA, FECHA_F_SERVICIO, FECHA_REINICIO, FECHA_BAJA_DEF)
+			values(@id_micro, 2, @p_f_actual, @f_f_servicio, @f_r_servicio, null);
+		end
+		
+		if @p_f_actual >= @f_r_servicio and @id_estado <> 1 begin
+			insert into SASHAILO.Log_Estado_Micro(ID_MICRO, ID_ESTADO, FECHA, FECHA_F_SERVICIO, FECHA_REINICIO, FECHA_BAJA_DEF)
+			values(@id_micro, 1, @p_f_actual, null, null, null);
+		end
+		
+		
+		FETCH curr_micros INTO @id_micro	
+	END
+	
+	CLOSE curr_micros
+	DEALLOCATE curr_micros
+	
+	COMMIT TRANSACTION
+	
+GO
+
+CREATE PROCEDURE SASHAILO.sp_get_kg_disponibles_en_viaje
+	@p_id_viaje INT,
+	@p_kilos NUMERIC(18,0) OUT
+AS
+
+	DECLARE @kg_micro NUMERIC(18,0)
+	DECLARE @kg_comprados NUMERIC(18,0)
+	DECLARE @kg_temporales NUMERIC(18,0)
+	
+	SELECT @kg_micro = mi.CANT_KG from SASHAILO.Viaje vi
+								  join SASHAILO.Micro mi on mi.ID_MICRO = vi.ID_MICRO
+								  where vi.ID_VIAJE = @p_id_viaje
+								  
+	SELECT @kg_comprados = ISNULL(SUM(KG),0) from SASHAILO.Encomienda en where en.ID_VIAJE = @p_id_viaje								  
+	SELECT @kg_temporales = ISNULL(SUM(KG),0) from SASHAILO.Pasaje_Encomienda_Temporal pet where pet.ID_VIAJE = @p_id_viaje
+	
+	SET @p_kilos = @kg_micro - @kg_comprados - @kg_temporales
+	
 GO
 
 -- actualizo cantidad de butacas
