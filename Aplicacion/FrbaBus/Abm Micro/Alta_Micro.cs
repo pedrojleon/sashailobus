@@ -22,6 +22,7 @@ namespace FrbaBus.Abm_Micro
             setearFechaActual();
             llenarComboTipoServicio(combo_servicio);
             llenarComboMarca();
+
         }
 
         private void setearFechaActual(){
@@ -397,6 +398,9 @@ namespace FrbaBus.Abm_Micro
         private Boolean butacasRepetidas()
         {
             int[] nros_butacas = new int[200];
+            for (int i = 0; i < 200; i++ ){
+                nros_butacas[i] = -1;
+            }
             int nro_butaca;
             Boolean rtado = false;
             int c = 0;

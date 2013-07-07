@@ -30,11 +30,7 @@ namespace FrbaBus.Abm_Micro
             llenarComboMarca();
 
             Conexion cn = new Conexion();
-            SqlDataReader consulta = cn.consultar("select PATENTE, ID_MARCA, MODELO, ID_TIPO_SERVICIO, F_ALTA, CANT_KG, " +
-                                                         "CASE SASHAILO.F_GET_ESTADO_MICRO(" + this.id_micro + ") WHEN 2 THEN 'S' ELSE 'N' END FUERA_DE_SERVICIO, " +
-                                                         "CASE SASHAILO.F_GET_ESTADO_MICRO(" + this.id_micro + ") WHEN 2 THEN (select top 1 FECHA_REINICIO from SASHAILO.Log_Estado_Micro where id_micro = " + this.id_micro + " order by id_log desc) " +
-										                                                     "ELSE NULL END F_REINICIO_SERVICIO, " +
-                                                         "CASE SASHAILO.F_GET_ESTADO_MICRO(" + this.id_micro + ") WHEN 3 THEN 'S' ELSE 'N' END FIN_VIDA_UTIL " +
+            SqlDataReader consulta = cn.consultar("select PATENTE, ID_MARCA, MODELO, ID_TIPO_SERVICIO, F_ALTA, CANT_KG " +
                                                    "from SASHAILO.Micro " +
                                                    "WHERE ID_MICRO = " + this.id_micro);
             while (consulta.Read())
@@ -46,19 +42,6 @@ namespace FrbaBus.Abm_Micro
                 string f_alta = consulta.GetDateTime(4).ToString();
                 f_alta = f_alta.Substring(0, 10);
                 decimal v_cant_kg = consulta.GetDecimal(5);
-                string m_fuera_servicio = consulta.GetString(6);
-                string fin_vida_util = consulta.GetString(8);
-                if (m_fuera_servicio.Equals("S")){
-                    string f_reinicio = consulta.GetDateTime(7).ToString();
-                    f_reinicio = f_reinicio.Substring(0, 10);
-                    string[] arr_f_reinicio = f_reinicio.Split('/');
-                    string d_f_reinicio = arr_f_reinicio[0];
-                    string m_f_reinicio = arr_f_reinicio[1];
-                    string a_f_reinicio = arr_f_reinicio[2];
-                    d_f_r_servivio.Text = d_f_reinicio.Trim();
-                    m_f_r_servivio.Text = m_f_reinicio.Trim();
-                    a_f_r_servivio.Text = a_f_reinicio.Trim();
-                }
 
                 patente.Text = v_patente.Trim();
                 modelo.Text = v_modelo.Trim();
@@ -66,9 +49,79 @@ namespace FrbaBus.Abm_Micro
                 cant_kg.Text = v_cant_kg.ToString().Trim();
                 seleccionarEnCombo(combo_marca, id_marca);
                 seleccionarEnCombo(combo_servicio, id_tipo_servicio);
-                fuera_servicio.Checked = (m_fuera_servicio.Trim().Equals("S"));
-                baja_definitiva.Checked = (fin_vida_util.Trim().Equals("S"));
 
+                evaluarFechasEstadoMicro(this.id_micro);
+
+            }
+            cn.desconectar();
+
+        }
+
+        public void evaluarFechasEstadoMicro(int id_micro)
+        {
+
+            Conexion cn = new Conexion();
+            SqlDataReader consulta = cn.consultar("select top 1 ID_LOG, ID_ESTADO, FECHA_F_SERVICIO, FECHA_REINICIO, FECHA_BAJA_DEF " +
+                                                  "from SASHAILO.Log_Estado_Micro " +
+                                                  "WHERE ID_MICRO = " + this.id_micro +
+                                                  " order by 1 desc");
+            while (consulta.Read())
+            {
+                int id_estado = consulta.GetInt32(1);
+                DateTime v_f_f_servicio;
+                Boolean null_f_f_servicio = true;
+                DateTime v_f_reinicio_servicio;
+                Boolean null_f_reinicio_servicio = true;
+                DateTime v_f_baja_def;
+                Boolean null_f_baja_def = true;
+                if (!consulta.IsDBNull(2)){
+                    null_f_f_servicio = false;
+                }
+                if (!consulta.IsDBNull(3)){
+                    null_f_reinicio_servicio = false;
+                }
+                if (!consulta.IsDBNull(4)){
+                    null_f_baja_def = false;
+                }
+
+                if (!null_f_f_servicio) {
+                    v_f_f_servicio = consulta.GetDateTime(2);
+                    fuera_servicio.Checked = true;
+                    label_fs_1.Visible = true;
+                    label_fs_2.Visible = true;
+                    f_fuera_servicio.Visible = true;
+                    f_reinicio_servicio.Visible = true;
+                    f_fuera_servicio.Value = v_f_f_servicio.Date;
+                    f_reinicio_servicio.Value = v_f_f_servicio;
+                }
+                if (!null_f_reinicio_servicio)
+                {
+                    v_f_reinicio_servicio = consulta.GetDateTime(3);
+                    f_reinicio_servicio.Value = v_f_reinicio_servicio.Date;
+                }
+                if (!null_f_baja_def)
+                {
+                    v_f_baja_def = consulta.GetDateTime(4);
+                    baja_definitiva.Checked = true;
+                    label_bd.Visible = true;
+                    f_baja_def.Visible = true;
+                    f_baja_def.Value = v_f_baja_def.Date;
+                }
+
+                if (id_estado == 1) {
+                    label_estado_actual.Text = "Operativo";
+                    label_estado_actual.ForeColor=System.Drawing.Color.Green;
+                }
+                if (id_estado == 2)
+                {
+                    label_estado_actual.Text = "Fuera de Servicio";
+                    label_estado_actual.ForeColor = System.Drawing.Color.Red;
+                }
+                if (id_estado == 3)
+                {
+                    label_estado_actual.Text = "Dado de baja";
+                    label_estado_actual.ForeColor = System.Drawing.Color.Blue;
+                }
 
             }
             cn.desconectar();
@@ -179,6 +232,7 @@ namespace FrbaBus.Abm_Micro
         private void b_guardar_Click(object sender, EventArgs e)
         {
             string str_errores = "";
+            string error_fechas = "";
             if (!validarPatente())
                 str_errores = "La patente debe tener el formato ABC-123\n";
             if (patenteDuplicada())
@@ -191,8 +245,14 @@ namespace FrbaBus.Abm_Micro
                 str_errores = str_errores + "Debe seleccionar un tipo de servicio\n";
             if (cant_kg.Text.Trim().Equals(""))
                 str_errores = str_errores + "Debe ingresar la cantidad de kg\n";
-            if (fuera_servicio.Checked && !fechaReinicioServicioValida())
-                str_errores = str_errores + "La fecha de reinicio de servivio no es válida\n";
+            if (fuera_servicio.Checked){
+                error_fechas = fechasFueraServicioValidas();
+                str_errores = str_errores + error_fechas;
+            }
+            if (baja_definitiva.Checked){
+                error_fechas = fechaBajaDefinitivaValida();
+                str_errores = str_errores + error_fechas;
+            }
 
             if (!str_errores.Equals(""))
             {
@@ -229,15 +289,15 @@ namespace FrbaBus.Abm_Micro
             M_FUERA_SERVICIO.Value = (fuera_servicio.Checked) ? 'S' : 'N';
             FECHA.Value = func.getFechaActual();
             if (fuera_servicio.Checked){
-                F_FUERA_SERVICIO.Value = Convert.ToDateTime(ConfigurationSettings.AppSettings["fechaActual"]);
-                F_REINICIO_SERVICIO.Value = Convert.ToDateTime(d_f_r_servivio.Text.Trim() + "/" + m_f_r_servivio.Text.Trim() + "/" + a_f_r_servivio.Text.Trim());
+                F_FUERA_SERVICIO.Value = f_fuera_servicio.Value.Date;
+                F_REINICIO_SERVICIO.Value = f_reinicio_servicio.Value.Date;
             }else{
                 F_FUERA_SERVICIO.Value = DBNull.Value;
                 F_REINICIO_SERVICIO.Value = DBNull.Value;
             }
             M_BAJA_DEFINITIVA.Value = (baja_definitiva.Checked) ? 'S' : 'N';
             if (baja_definitiva.Checked){
-                F_BAJA_DEFINITIVA.Value = Convert.ToDateTime(ConfigurationSettings.AppSettings["fechaActual"]);
+                F_BAJA_DEFINITIVA.Value = f_baja_def.Value.Date;
             }else{
                 F_BAJA_DEFINITIVA.Value = DBNull.Value;
             }
@@ -272,23 +332,29 @@ namespace FrbaBus.Abm_Micro
 
         }
 
-        private Boolean fechaReinicioServicioValida() {
-            Boolean rtado = true;
-
-            if (d_f_r_servivio.Text.Trim().Length != 2 || d_f_r_servivio.Text.Trim().Length != 2 || a_f_r_servivio.Text.Trim().Length != 4)
-                return false;
-
-            int dia = Convert.ToInt32(d_f_r_servivio.Text.Trim());
-            int mes = Convert.ToInt32(m_f_r_servivio.Text.Trim());
-            int anio = Convert.ToInt32(a_f_r_servivio.Text.Trim());
-
-            if (dia > 31 || mes > 12)
-                return false;
-
+        private string fechasFueraServicioValidas()
+        {
+            string rtado = "";
             DateTime f_actual = Convert.ToDateTime(ConfigurationSettings.AppSettings["fechaActual"]);
-            DateTime f_reinicio = Convert.ToDateTime(d_f_r_servivio.Text.Trim() + "/" + m_f_r_servivio.Text.Trim() + "/" + a_f_r_servivio.Text.Trim());
-            if (f_reinicio <= f_actual)
-                return false;
+            DateTime f_fuera = f_fuera_servicio.Value.Date;
+            DateTime f_reinicio = f_reinicio_servicio.Value.Date;
+
+            if (f_fuera < f_actual)
+                rtado = "La fecha de fuera de servicio no puede ser previa a la actual\n";
+            if (f_reinicio <= f_fuera)
+                rtado = "La fecha de reinicio de servicio no puede ser previa o igual a la de fuera de servicio\n";
+
+            return rtado;
+        }
+
+        private string fechaBajaDefinitivaValida()
+        {
+            string rtado = "";
+            DateTime f_actual = Convert.ToDateTime(ConfigurationSettings.AppSettings["fechaActual"]);
+            DateTime f_baja = f_baja_def.Value.Date;
+
+            if (f_baja < f_actual)
+                rtado = "La fecha de baja definitiva no puede ser previa a la actual\n";
 
             return rtado;
         }
@@ -345,6 +411,51 @@ namespace FrbaBus.Abm_Micro
         {
             Funciones func = new Funciones();
             func.soloNumeros(e);
+        }
+
+        private void fuera_servicio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (fuera_servicio.Checked)
+            {
+                //deschequeo la baja definitiva
+                baja_definitiva.Checked = false;
+                f_baja_def.Visible = false;
+                label_bd.Visible = false;
+                //muestro los controles de fuera de servicio
+                label_fs_1.Visible = true;
+                label_fs_2.Visible = true;
+                f_fuera_servicio.Visible = true;
+                f_reinicio_servicio.Visible = true;
+            }
+            else {
+                //oculto los controles de fuera de servicio
+                label_fs_1.Visible = false;
+                label_fs_2.Visible = false;
+                f_fuera_servicio.Visible = false;
+                f_reinicio_servicio.Visible = false;
+            }
+        }
+
+        private void baja_definitiva_CheckedChanged(object sender, EventArgs e)
+        {
+            if (baja_definitiva.Checked)
+            {
+                //deschequeo la fuera de servicio
+                fuera_servicio.Checked = false;
+                f_fuera_servicio.Visible = false;
+                f_reinicio_servicio.Visible = false;
+                label_fs_1.Visible = false;
+                label_fs_2.Visible = false;
+                //muestro los controles de fuera de servicio
+                label_bd.Visible = true;
+                f_baja_def.Visible = true;
+            }
+            else
+            {
+                //oculto los controles de fuera de servicio
+                label_bd.Visible = false;
+                f_baja_def.Visible = false;
+            }
         }
 
     }

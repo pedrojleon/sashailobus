@@ -148,6 +148,18 @@
     <Compile Include="Compra de Pasajes\Compra_Pasaje.Designer.cs">
       <DependentUpon>Compra_Pasaje.cs</DependentUpon>
     </Compile>
+    <Compile Include="Compra de Pasajes\Finalizar_Compra.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compra de Pasajes\Finalizar_Compra.Designer.cs">
+      <DependentUpon>Finalizar_Compra.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Compra de Pasajes\Nueva_Encomienda.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Compra de Pasajes\Nueva_Encomienda.Designer.cs">
+      <DependentUpon>Nueva_Encomienda.cs</DependentUpon>
+    </Compile>
     <Compile Include="Compra de Pasajes\Nuevo_Pasaje.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -234,6 +246,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Compra de Pasajes\Compra_Pasaje.resx">
       <DependentUpon>Compra_Pasaje.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Compra de Pasajes\Finalizar_Compra.resx">
+      <DependentUpon>Finalizar_Compra.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Compra de Pasajes\Nueva_Encomienda.resx">
+      <DependentUpon>Nueva_Encomienda.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Compra de Pasajes\Nuevo_Pasaje.resx">
       <DependentUpon>Nuevo_Pasaje.cs</DependentUpon>

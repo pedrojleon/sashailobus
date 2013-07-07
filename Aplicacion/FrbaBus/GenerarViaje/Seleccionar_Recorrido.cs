@@ -140,7 +140,7 @@ namespace FrbaBus.GenerarViaje
                 Int32 id_recorrido = Convert.ToInt32(listado_recorridos.Rows[e.RowIndex].Cells["id_recorrido"].Value.ToString());
                 String query = "select re.ID_RECORRIDO, re.CODIGO_RECORRIDO, ci_o.NOMBRE_CIUDAD, ci_d.NOMBRE_CIUDAD, ts.DESCRIPCION, ts.ID_TIPO_SERVICIO " +
                                "from SASHAILO.Recorrido re " +
-                               "join SASHAILO.Recorrido_Ciudad rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES " +
+                               "join SASHAILO.Recorrido_Ciudades rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES " +
                                "join SASHAILO.Ciudad ci_o on ci_o.ID_CIUDAD = rc.ID_CIUDAD_ORIGEN " +
                                "join SASHAILO.Ciudad ci_d on ci_d.ID_CIUDAD = rc.ID_CIUDAD_DESTINO " +
                                "join SASHAILO.Tipo_Servicio ts on ts.ID_TIPO_SERVICIO = re.ID_TIPO_SERVICIO " +

@@ -49,7 +49,6 @@
             this.KG = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FueraServicio = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FinVidaUtil = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.acciones = new System.Windows.Forms.DataGridViewImageColumn();
             this.modificacion = new System.Windows.Forms.DataGridViewImageColumn();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.listado_micros)).BeginInit();
@@ -57,7 +56,7 @@
             // 
             // b_nuevo
             // 
-            this.b_nuevo.Location = new System.Drawing.Point(632, 336);
+            this.b_nuevo.Location = new System.Drawing.Point(600, 340);
             this.b_nuevo.Name = "b_nuevo";
             this.b_nuevo.Size = new System.Drawing.Size(96, 23);
             this.b_nuevo.TabIndex = 8;
@@ -76,7 +75,7 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(35, 13);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(693, 54);
+            this.groupBox1.Size = new System.Drawing.Size(661, 54);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Filtros de Búsqueda";
@@ -99,7 +98,7 @@
             // 
             // b_buscar
             // 
-            this.b_buscar.Location = new System.Drawing.Point(580, 20);
+            this.b_buscar.Location = new System.Drawing.Point(559, 19);
             this.b_buscar.Name = "b_buscar";
             this.b_buscar.Size = new System.Drawing.Size(75, 23);
             this.b_buscar.TabIndex = 7;
@@ -157,7 +156,6 @@
             this.KG,
             this.FueraServicio,
             this.FinVidaUtil,
-            this.acciones,
             this.modificacion});
             this.listado_micros.Location = new System.Drawing.Point(35, 78);
             this.listado_micros.MultiSelect = false;
@@ -165,7 +163,7 @@
             this.listado_micros.ReadOnly = true;
             this.listado_micros.RowHeadersWidth = 30;
             this.listado_micros.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.listado_micros.Size = new System.Drawing.Size(693, 240);
+            this.listado_micros.Size = new System.Drawing.Size(661, 240);
             this.listado_micros.TabIndex = 6;
             this.listado_micros.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.listado_micros_CellContentClick);
             // 
@@ -237,14 +235,6 @@
             this.FinVidaUtil.ReadOnly = true;
             this.FinVidaUtil.Width = 50;
             // 
-            // acciones
-            // 
-            this.acciones.HeaderText = "";
-            this.acciones.MinimumWidth = 32;
-            this.acciones.Name = "acciones";
-            this.acciones.ReadOnly = true;
-            this.acciones.Width = 32;
-            // 
             // modificacion
             // 
             this.modificacion.HeaderText = "";
@@ -257,7 +247,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(757, 371);
+            this.ClientSize = new System.Drawing.Size(729, 375);
             this.Controls.Add(this.b_nuevo);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.listado_micros);
@@ -293,7 +283,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn KG;
         private System.Windows.Forms.DataGridViewTextBoxColumn FueraServicio;
         private System.Windows.Forms.DataGridViewTextBoxColumn FinVidaUtil;
-        private System.Windows.Forms.DataGridViewImageColumn acciones;
         private System.Windows.Forms.DataGridViewImageColumn modificacion;
     }
 }

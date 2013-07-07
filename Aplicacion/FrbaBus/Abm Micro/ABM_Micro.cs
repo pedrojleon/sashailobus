@@ -18,6 +18,31 @@ namespace FrbaBus.Abm_Micro
             InitializeComponent();
             cargarComboMarcas();
             cargarComboServicios();
+            evaluarEstadosMicros();
+        }
+
+        public void evaluarEstadosMicros()
+        {
+
+            Conexion conn = new Conexion();
+            SqlCommand sp;
+
+            sp = new SqlCommand("SASHAILO.evaluar_micros", conn.miConexion); // Lo inicializo
+            sp.CommandType = CommandType.StoredProcedure; // Defino que tipo de comando es
+            SqlParameter F_ACTUAL = sp.Parameters.Add("@p_f_actual", SqlDbType.DateTime);
+
+            F_ACTUAL.Value = Convert.ToDateTime(ConfigurationSettings.AppSettings["fechaActual"]);
+
+            try
+            {
+                sp.ExecuteNonQuery();
+                conn.desconectar();
+            }
+            catch (Exception error)
+            {
+                conn.desconectar();
+            }
+
         }
 
         private void cargarComboMarcas()
@@ -107,16 +132,7 @@ namespace FrbaBus.Abm_Micro
                     string fin_vidautil = DR[8].ToString().Trim();
                     listado_micros.Rows[i].Cells["fin_vida_util"].Value = fin_vidautil;
 
-                    DataGridViewImageCell iconColumn = (DataGridViewImageCell)listado_micros.Rows[i].Cells["acciones"];
-                    if (fin_vidautil.Equals("N")){
-                        iconColumn.Value = FrbaBus.Properties.Resources.deny_ico;
-                        iconColumn.ToolTipText = "Marcar como Fin de vida útil";
-                    }else {
-                        iconColumn.Value = FrbaBus.Properties.Resources.accept_ico;
-                        iconColumn.ToolTipText = "Marcar como útil";
-                    }
-
-                    iconColumn = (DataGridViewImageCell)listado_micros.Rows[i].Cells["modificacion"];
+                    DataGridViewImageCell iconColumn = (DataGridViewImageCell)listado_micros.Rows[i].Cells["modificacion"];
                     iconColumn.Value = FrbaBus.Properties.Resources.edit_ico;
                     iconColumn.ToolTipText = "Editar";
 
@@ -156,7 +172,7 @@ namespace FrbaBus.Abm_Micro
 
         private void listado_micros_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == 10)
+            if (false && e.ColumnIndex == 10)
             {
                 Int32 id_micro = Convert.ToInt32(listado_micros.Rows[e.RowIndex].Cells["id_micro"].Value.ToString());
                 String fin_vida_util = (listado_micros.Rows[e.RowIndex].Cells["fin_vida_util"].Value.ToString().Equals("N")) ? "S" : "N";
@@ -212,7 +228,7 @@ namespace FrbaBus.Abm_Micro
 
             }
 
-            if (e.ColumnIndex == 11)
+            if (e.ColumnIndex == 10)
             {
                 Modif_Micro modificacion = new Modif_Micro();
                 Int32 id_micro = Convert.ToInt32(listado_micros.Rows[e.RowIndex].Cells["id_micro"].Value.ToString());

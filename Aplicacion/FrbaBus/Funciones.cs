@@ -55,5 +55,19 @@ namespace FrbaBus
             return fecha_actual;
         }
 
+        public int getEdad(DateTime f_nac)
+        {
+            DateTime fecha_actual = Convert.ToDateTime(ConfigurationSettings.AppSettings["fechaActual"]);
+            f_nac = f_nac.Date;
+            int anios = fecha_actual.Year - f_nac.Year;
+
+            if (fecha_actual.Month < f_nac.Month)
+                anios = anios - 1;
+            else if (fecha_actual.Month == f_nac.Month && fecha_actual.Day < f_nac.Day)
+                anios = anios - 1;
+
+            return anios;
+        }
+
     }
 }

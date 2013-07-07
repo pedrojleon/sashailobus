@@ -157,6 +157,7 @@
             // fuera_servicio
             // 
             this.fuera_servicio.AutoSize = true;
+            this.fuera_servicio.Enabled = false;
             this.fuera_servicio.Location = new System.Drawing.Point(37, 298);
             this.fuera_servicio.Name = "fuera_servicio";
             this.fuera_servicio.Size = new System.Drawing.Size(109, 17);

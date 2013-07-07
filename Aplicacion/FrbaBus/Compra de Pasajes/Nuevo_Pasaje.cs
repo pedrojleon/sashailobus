@@ -18,11 +18,13 @@ namespace FrbaBus.Compra_de_Pasajes
         public Butaca butaca;
         public Cliente cliente;
         public Pasaje pasaje;
+        public bool yaExisteDiscapacitado;
 
-        public Nuevo_Pasaje(Compra_Pasaje.Viaje viaje)
+        public Nuevo_Pasaje(Compra_Pasaje.Viaje viaje, bool hay_discapacitado)
         {
             this.viaje = viaje;
             this.pasaje = null;
+            this.yaExisteDiscapacitado = hay_discapacitado;
             InitializeComponent();
             cargarCombosSexo();
             listado_butacas.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -68,6 +70,9 @@ namespace FrbaBus.Compra_de_Pasajes
             public Cliente cliente { get; set; }
             public Butaca butaca { get; set; }
             public int id_provisorio { get; set; }
+            public Boolean pas_discapacitado { get; set; }
+            public decimal precio { get; set; }
+            public int id_pasaje_gen { get; set; }
 
             public override string ToString()
             {
@@ -238,9 +243,9 @@ namespace FrbaBus.Compra_de_Pasajes
                 String v_sexo = (consulta.IsDBNull(1)) ? null : consulta.GetString(1);
                 String v_nombre = consulta.GetString(2);
                 String v_apellido = consulta.GetString(3);
-                String v_direccion = consulta.GetString(5);
-                decimal v_telefono = consulta.GetDecimal(6);
-                String v_mail = consulta.GetString(7);
+                String v_direccion = (consulta.IsDBNull(5)) ? null : consulta.GetString(5);
+                decimal v_telefono = (consulta.IsDBNull(6)) ? -1 : consulta.GetDecimal(6);
+                String v_mail = (consulta.IsDBNull(7)) ? null : consulta.GetString(7);
                 DateTime v_f_nac = consulta.GetDateTime(8);
 
                 Cliente cli = new Cliente();
@@ -260,7 +265,7 @@ namespace FrbaBus.Compra_de_Pasajes
                 apellido.Text = v_apellido;
                 email.Text = v_mail;
                 direccion.Text = v_direccion;
-                telefono.Text = v_telefono.ToString();
+                telefono.Text = (v_telefono == -1) ? "" : v_telefono.ToString();
                 f_nac.Value = v_f_nac;
                 if (v_sexo != null)
                 {
@@ -309,6 +314,8 @@ namespace FrbaBus.Compra_de_Pasajes
                 err = err + "Debe seleccionar el sexo del pasajero \n";
             if (fechaNacimientoMayorActual())
                 err = err + "La fecha de nacimiento no puede ser posterior a la fecha actual \n";
+            if (discapacidad.Checked && this.yaExisteDiscapacitado)
+                err = err + "Ya se ha ingresado un pasajero con discapacidad. Solo puede haber uno por compra. \n";
 
             String err_cliente = evaluaClienteEnViaje();
             err = (err_cliente.Trim().Equals("")) ? err : err + err_cliente + " \n";
@@ -327,6 +334,7 @@ namespace FrbaBus.Compra_de_Pasajes
             pas.cliente = this.cliente;
             pas.butaca = this.butaca;
             pas.id_provisorio = id_pasaje_provisorio;
+            pas.pas_discapacitado = discapacidad.Checked;
 
             this.pasaje = pas;
 

@@ -18,14 +18,19 @@ namespace FrbaBus.Compra_de_Pasajes
 
         public Viaje viaje;
         public List<Nuevo_Pasaje.Pasaje> lista_pasajes;
+        public List<Nueva_Encomienda.Encomienda> lista_encomiendas;
+        public bool hay_discapacitado;
 
         public Compra_Pasaje()
         {
             InitializeComponent();
             this.lista_pasajes = new List<Nuevo_Pasaje.Pasaje>();
+            this.lista_encomiendas = new List<Nueva_Encomienda.Encomienda>();
+            this.hay_discapacitado = false;
             cargarCombosCiudad();
             listado_de_viajes.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             listado_pasajes.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            listado_encomiendas.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
         }
 
         public class ComboboxItem
@@ -245,6 +250,7 @@ namespace FrbaBus.Compra_de_Pasajes
             icono_cruz.Visible = false;
             b_guardar.Enabled = true;
             eliminarPasajes();
+            eliminarEncomiendas();
         }
 
         private void icono_mas_Click(object sender, EventArgs e)
@@ -253,7 +259,7 @@ namespace FrbaBus.Compra_de_Pasajes
                 MessageBox.Show("Debe seleccionar un Viaje", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
-            Nuevo_Pasaje nuevo_pasaje = new Nuevo_Pasaje(this.viaje);
+            Nuevo_Pasaje nuevo_pasaje = new Nuevo_Pasaje(this.viaje, this.hay_discapacitado);
             nuevo_pasaje.Tag = this; //guardo en Tag una referencia a mi formulario
             nuevo_pasaje.ShowDialog();
 
@@ -263,6 +269,8 @@ namespace FrbaBus.Compra_de_Pasajes
             {
                 agregarATablaPasajes(pas);
                 this.lista_pasajes.Add(pas);
+                if (pas.pas_discapacitado)
+                    this.hay_discapacitado = true;
             }
         }
 
@@ -293,6 +301,28 @@ namespace FrbaBus.Compra_de_Pasajes
 
         }
 
+        private void agregarATablaEncomiendas(Nueva_Encomienda.Encomienda enco)
+        {
+
+            listado_encomiendas.Columns["encomendero"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            listado_encomiendas.Columns["enco_dni"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            listado_encomiendas.Columns["kilos"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            listado_encomiendas.Rows.Add();
+
+            int i = listado_encomiendas.RowCount - 1;
+
+            listado_encomiendas.Rows[i].Cells["id_encomienda_provisoria"].Value = enco.id_provisorio;
+            listado_encomiendas.Rows[i].Cells["encomendero"].Value = enco.cliente.nombre + " " + enco.cliente.apellido;
+            listado_encomiendas.Rows[i].Cells["enco_dni"].Value = enco.cliente.dni;
+            listado_encomiendas.Rows[i].Cells["kilos"].Value = enco.cant_kg;
+
+            DataGridViewImageCell iconColumn = (DataGridViewImageCell)listado_encomiendas.Rows[i].Cells["eliminar"];
+            iconColumn.Value = FrbaBus.Properties.Resources.deny_ico;
+            iconColumn.ToolTipText = "Eliminar Encomienda";
+
+        }
+
         private void listado_pasajes_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex == 7)
@@ -301,7 +331,7 @@ namespace FrbaBus.Compra_de_Pasajes
                 Int32 id_provisorio = Convert.ToInt32(listado_pasajes.Rows[fila].Cells["id_pasaje_provisorio"].Value.ToString());
 
                 //elimino la butaca temporal que tiene guardada
-                bajaButacaTemporal(id_provisorio);
+                bajaButacaoEncomiendaTemporal(id_provisorio);
 
                 //saco la fila de la tabla
                 listado_pasajes.Rows.RemoveAt(fila);
@@ -312,12 +342,13 @@ namespace FrbaBus.Compra_de_Pasajes
             }
         }
 
-        public void bajaButacaTemporal(int id_temporal) {
+        public void bajaButacaoEncomiendaTemporal(int id_temporal)
+        {
 
             Conexion conn = new Conexion();
             SqlCommand sp_baja;
 
-            sp_baja = new SqlCommand("SASHAILO.sp_baja_butaca_provisoria", conn.miConexion); // Lo inicializo
+            sp_baja = new SqlCommand("SASHAILO.sp_baja_butaca_encomienda_provisoria", conn.miConexion); // Lo inicializo
             sp_baja.CommandType = CommandType.StoredProcedure; // Defino que tipo de comando es
             SqlParameter ID = sp_baja.Parameters.Add("@p_id", SqlDbType.Int);
 
@@ -337,6 +368,8 @@ namespace FrbaBus.Compra_de_Pasajes
             foreach(Nuevo_Pasaje.Pasaje pas in this.lista_pasajes){
                 if (pas.id_provisorio == id_temporal)
                 {
+                    if (pas.pas_discapacitado)
+                        this.hay_discapacitado = false;
                     this.lista_pasajes.Remove(pas);
                     break;
                 }
@@ -344,11 +377,25 @@ namespace FrbaBus.Compra_de_Pasajes
         
         }
 
+        public void sacarDeLaListaDeEncomiendas(int id_temporal)
+        {
+
+            foreach (Nueva_Encomienda.Encomienda enco in this.lista_encomiendas)
+            {
+                if (enco.id_provisorio == id_temporal)
+                {
+                    this.lista_encomiendas.Remove(enco);
+                    break;
+                }
+            }
+
+        }
+
         public void eliminarPasajes()
         {
             //elimino las butacas que tenia temporalmente guardadas
             foreach (Nuevo_Pasaje.Pasaje pas in this.lista_pasajes){
-                bajaButacaTemporal(pas.id_provisorio);
+                bajaButacaoEncomiendaTemporal(pas.id_provisorio);
             }
 
             //reseteo la lista de pasajes
@@ -357,7 +404,108 @@ namespace FrbaBus.Compra_de_Pasajes
             //vacio la tabla
             listado_pasajes.Rows.Clear();
 
+            this.hay_discapacitado = false;
 
+        }
+
+        public void eliminarEncomiendas()
+        {
+            //elimino las encomiendas que tenia temporalmente guardadas
+            foreach (Nueva_Encomienda.Encomienda enco in this.lista_encomiendas)
+            {
+                bajaButacaoEncomiendaTemporal(enco.id_provisorio);
+            }
+
+            //reseteo la lista de encomiendas
+            this.lista_encomiendas.Clear();
+
+            //vacio la tabla
+            listado_encomiendas.Rows.Clear();
+
+
+        }
+
+        private void Compra_Pasaje_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            //elimino las butacas temporales que tiene guardadas
+            int cant_pasajes = listado_pasajes.RowCount;
+            for (int fila = 0; fila < cant_pasajes; fila++) {
+                Int32 id_provisorio = Convert.ToInt32(listado_pasajes.Rows[fila].Cells["id_pasaje_provisorio"].Value.ToString());
+                bajaButacaoEncomiendaTemporal(id_provisorio);
+
+            }
+
+            //elimino las encomiendas temporales que tiene guardadas
+            int cant_encomiendas = listado_encomiendas.RowCount;
+            for (int fila = 0; fila < cant_encomiendas; fila++){
+                Int32 id_provisorio = Convert.ToInt32(listado_encomiendas.Rows[fila].Cells["id_encomienda_provisoria"].Value.ToString());
+                bajaButacaoEncomiendaTemporal(id_provisorio);
+            }
+         
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            if (this.viaje == null)
+            {
+                MessageBox.Show("Debe seleccionar un Viaje", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+            Nueva_Encomienda nueva_enco = new Nueva_Encomienda(this.viaje);
+            nueva_enco.Tag = this; //guardo en Tag una referencia a mi formulario
+            nueva_enco.ShowDialog();
+
+            Nueva_Encomienda.Encomienda enco = nueva_enco.encomienda;
+
+            if (enco != null)
+            {
+                agregarATablaEncomiendas(enco);
+                this.lista_encomiendas.Add(enco);
+            }
+        }
+
+        private void listado_encomiendas_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 4)
+            {
+                int fila = e.RowIndex;
+                Int32 id_provisorio = Convert.ToInt32(listado_encomiendas.Rows[fila].Cells["id_encomienda_provisoria"].Value.ToString());
+
+                //elimino la butaca temporal que tiene guardada
+                bajaButacaoEncomiendaTemporal(id_provisorio);
+
+                //saco la fila de la tabla
+                listado_encomiendas.Rows.RemoveAt(fila);
+
+                //saco la encomienda de la lista
+                sacarDeLaListaDeEncomiendas(id_provisorio);
+
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (this.viaje == null)
+            {
+                MessageBox.Show("Debe seleccionar un Viaje", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+            if (this.lista_pasajes.Count == 0 && this.lista_encomiendas.Count == 0)
+            {
+                MessageBox.Show("Debe seleccionar algún Pasaje o Encomienda", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+            Finalizar_Compra fin_compra = new Finalizar_Compra(this.viaje, this.lista_pasajes, this.lista_encomiendas);
+            fin_compra.Tag = this; //guardo en Tag una referencia a mi formulario
+            fin_compra.ShowDialog();
+
+            /*Nueva_Encomienda.Encomienda enco = nueva_enco.encomienda;
+
+            if (enco != null)
+            {
+                agregarATablaEncomiendas(enco);
+                this.lista_encomiendas.Add(enco);
+            }*/
         }
     }
 }
