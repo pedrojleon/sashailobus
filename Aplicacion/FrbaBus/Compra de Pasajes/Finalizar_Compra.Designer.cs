@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Finalizar_Compra));
             this.b_guardar = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.gb_cliente = new System.Windows.Forms.GroupBox();
             this.combo_sexo = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.f_nac = new System.Windows.Forms.DateTimePicker();
@@ -47,7 +47,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.nombre = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.gb_pago = new System.Windows.Forms.GroupBox();
             this.combo_vto = new System.Windows.Forms.ComboBox();
             this.label11 = new System.Windows.Forms.Label();
             this.c_cuotas = new System.Windows.Forms.ComboBox();
@@ -58,31 +58,31 @@
             this.n_tarjeta = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label19 = new System.Windows.Forms.Label();
-            this.label_cant_pasajes = new System.Windows.Forms.Label();
-            this.label_cant_encom = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
-            this.label_pas_discap = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label_cant_jubilados = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.label_cant_kg_totales = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
+            this.gb_compra = new System.Windows.Forms.GroupBox();
+            this.label_p_total = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
             this.label_p_kg = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
             this.label_p_pasaje = new System.Windows.Forms.Label();
             this.label24 = new System.Windows.Forms.Label();
-            this.label_p_total = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.groupBox2.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            this.label_cant_kg_totales = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label_cant_jubilados = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label_pas_discap = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label_cant_encom = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label_cant_pasajes = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.gb_cliente.SuspendLayout();
+            this.gb_pago.SuspendLayout();
+            this.gb_compra.SuspendLayout();
             this.SuspendLayout();
             // 
             // b_guardar
             // 
-            this.b_guardar.Location = new System.Drawing.Point(267, 447);
+            this.b_guardar.Location = new System.Drawing.Point(317, 478);
             this.b_guardar.Name = "b_guardar";
             this.b_guardar.Size = new System.Drawing.Size(75, 23);
             this.b_guardar.TabIndex = 3;
@@ -90,30 +90,30 @@
             this.b_guardar.UseVisualStyleBackColor = true;
             this.b_guardar.Click += new System.EventHandler(this.b_guardar_Click);
             // 
-            // groupBox2
+            // gb_cliente
             // 
-            this.groupBox2.Controls.Add(this.combo_sexo);
-            this.groupBox2.Controls.Add(this.label9);
-            this.groupBox2.Controls.Add(this.f_nac);
-            this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Controls.Add(this.email);
-            this.groupBox2.Controls.Add(this.label7);
-            this.groupBox2.Controls.Add(this.telefono);
-            this.groupBox2.Controls.Add(this.label4);
-            this.groupBox2.Controls.Add(this.direccion);
-            this.groupBox2.Controls.Add(this.label5);
-            this.groupBox2.Controls.Add(this.dni);
-            this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Controls.Add(this.apellido);
-            this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Controls.Add(this.nombre);
-            this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Location = new System.Drawing.Point(22, 153);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(568, 137);
-            this.groupBox2.TabIndex = 2;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Datos del Cliente";
+            this.gb_cliente.Controls.Add(this.combo_sexo);
+            this.gb_cliente.Controls.Add(this.label9);
+            this.gb_cliente.Controls.Add(this.f_nac);
+            this.gb_cliente.Controls.Add(this.label6);
+            this.gb_cliente.Controls.Add(this.email);
+            this.gb_cliente.Controls.Add(this.label7);
+            this.gb_cliente.Controls.Add(this.telefono);
+            this.gb_cliente.Controls.Add(this.label4);
+            this.gb_cliente.Controls.Add(this.direccion);
+            this.gb_cliente.Controls.Add(this.label5);
+            this.gb_cliente.Controls.Add(this.dni);
+            this.gb_cliente.Controls.Add(this.label3);
+            this.gb_cliente.Controls.Add(this.apellido);
+            this.gb_cliente.Controls.Add(this.label2);
+            this.gb_cliente.Controls.Add(this.nombre);
+            this.gb_cliente.Controls.Add(this.label1);
+            this.gb_cliente.Location = new System.Drawing.Point(70, 179);
+            this.gb_cliente.Name = "gb_cliente";
+            this.gb_cliente.Size = new System.Drawing.Size(568, 137);
+            this.gb_cliente.TabIndex = 2;
+            this.gb_cliente.TabStop = false;
+            this.gb_cliente.Text = "Datos del Cliente";
             // 
             // combo_sexo
             // 
@@ -247,24 +247,24 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Nombre:";
             // 
-            // groupBox1
+            // gb_pago
             // 
-            this.groupBox1.Controls.Add(this.combo_vto);
-            this.groupBox1.Controls.Add(this.label11);
-            this.groupBox1.Controls.Add(this.c_cuotas);
-            this.groupBox1.Controls.Add(this.label10);
-            this.groupBox1.Controls.Add(this.codigo_seguridad);
-            this.groupBox1.Controls.Add(this.c_tipo_pago);
-            this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Controls.Add(this.n_tarjeta);
-            this.groupBox1.Controls.Add(this.label12);
-            this.groupBox1.Controls.Add(this.label14);
-            this.groupBox1.Location = new System.Drawing.Point(22, 313);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(568, 101);
-            this.groupBox1.TabIndex = 4;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Detalles del Pago";
+            this.gb_pago.Controls.Add(this.combo_vto);
+            this.gb_pago.Controls.Add(this.label11);
+            this.gb_pago.Controls.Add(this.c_cuotas);
+            this.gb_pago.Controls.Add(this.label10);
+            this.gb_pago.Controls.Add(this.codigo_seguridad);
+            this.gb_pago.Controls.Add(this.c_tipo_pago);
+            this.gb_pago.Controls.Add(this.label8);
+            this.gb_pago.Controls.Add(this.n_tarjeta);
+            this.gb_pago.Controls.Add(this.label12);
+            this.gb_pago.Controls.Add(this.label14);
+            this.gb_pago.Location = new System.Drawing.Point(70, 339);
+            this.gb_pago.Name = "gb_pago";
+            this.gb_pago.Size = new System.Drawing.Size(568, 101);
+            this.gb_pago.TabIndex = 4;
+            this.gb_pago.TabStop = false;
+            this.gb_pago.Text = "Detalles del Pago";
             // 
             // combo_vto
             // 
@@ -359,126 +359,51 @@
             this.label14.TabIndex = 4;
             this.label14.Text = "Medio de Pago:";
             // 
-            // groupBox3
+            // gb_compra
             // 
-            this.groupBox3.Controls.Add(this.label_p_total);
-            this.groupBox3.Controls.Add(this.label21);
-            this.groupBox3.Controls.Add(this.label_p_kg);
-            this.groupBox3.Controls.Add(this.label22);
-            this.groupBox3.Controls.Add(this.label_p_pasaje);
-            this.groupBox3.Controls.Add(this.label24);
-            this.groupBox3.Controls.Add(this.label_cant_kg_totales);
-            this.groupBox3.Controls.Add(this.label20);
-            this.groupBox3.Controls.Add(this.label_cant_jubilados);
-            this.groupBox3.Controls.Add(this.label17);
-            this.groupBox3.Controls.Add(this.label_pas_discap);
-            this.groupBox3.Controls.Add(this.label16);
-            this.groupBox3.Controls.Add(this.label_cant_encom);
-            this.groupBox3.Controls.Add(this.label15);
-            this.groupBox3.Controls.Add(this.label_cant_pasajes);
-            this.groupBox3.Controls.Add(this.label19);
-            this.groupBox3.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.groupBox3.Location = new System.Drawing.Point(22, 14);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(568, 116);
-            this.groupBox3.TabIndex = 5;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Compra";
+            this.gb_compra.Controls.Add(this.label_p_total);
+            this.gb_compra.Controls.Add(this.label21);
+            this.gb_compra.Controls.Add(this.label_p_kg);
+            this.gb_compra.Controls.Add(this.label22);
+            this.gb_compra.Controls.Add(this.label_p_pasaje);
+            this.gb_compra.Controls.Add(this.label24);
+            this.gb_compra.Controls.Add(this.label_cant_kg_totales);
+            this.gb_compra.Controls.Add(this.label20);
+            this.gb_compra.Controls.Add(this.label_cant_jubilados);
+            this.gb_compra.Controls.Add(this.label17);
+            this.gb_compra.Controls.Add(this.label_pas_discap);
+            this.gb_compra.Controls.Add(this.label16);
+            this.gb_compra.Controls.Add(this.label_cant_encom);
+            this.gb_compra.Controls.Add(this.label15);
+            this.gb_compra.Controls.Add(this.label_cant_pasajes);
+            this.gb_compra.Controls.Add(this.label19);
+            this.gb_compra.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.gb_compra.Location = new System.Drawing.Point(70, 38);
+            this.gb_compra.Name = "gb_compra";
+            this.gb_compra.Size = new System.Drawing.Size(568, 116);
+            this.gb_compra.TabIndex = 5;
+            this.gb_compra.TabStop = false;
+            this.gb_compra.Text = "Compra";
             // 
-            // label19
+            // label_p_total
             // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(21, 23);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(107, 13);
-            this.label19.TabIndex = 4;
-            this.label19.Text = "Cantidad de Pasajes:";
+            this.label_p_total.AutoSize = true;
+            this.label_p_total.ForeColor = System.Drawing.Color.Green;
+            this.label_p_total.Location = new System.Drawing.Point(364, 80);
+            this.label_p_total.Name = "label_p_total";
+            this.label_p_total.Size = new System.Drawing.Size(10, 13);
+            this.label_p_total.TabIndex = 19;
+            this.label_p_total.Text = "-";
             // 
-            // label_cant_pasajes
+            // label21
             // 
-            this.label_cant_pasajes.AutoSize = true;
-            this.label_cant_pasajes.ForeColor = System.Drawing.Color.Green;
-            this.label_cant_pasajes.Location = new System.Drawing.Point(133, 23);
-            this.label_cant_pasajes.Name = "label_cant_pasajes";
-            this.label_cant_pasajes.Size = new System.Drawing.Size(10, 13);
-            this.label_cant_pasajes.TabIndex = 5;
-            this.label_cant_pasajes.Text = "-";
-            // 
-            // label_cant_encom
-            // 
-            this.label_cant_encom.AutoSize = true;
-            this.label_cant_encom.ForeColor = System.Drawing.Color.Green;
-            this.label_cant_encom.Location = new System.Drawing.Point(310, 23);
-            this.label_cant_encom.Name = "label_cant_encom";
-            this.label_cant_encom.Size = new System.Drawing.Size(10, 13);
-            this.label_cant_encom.TabIndex = 7;
-            this.label_cant_encom.Text = "-";
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(175, 23);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(134, 13);
-            this.label15.TabIndex = 6;
-            this.label15.Text = "Cantidad de Encomiendas:";
-            // 
-            // label_pas_discap
-            // 
-            this.label_pas_discap.AutoSize = true;
-            this.label_pas_discap.ForeColor = System.Drawing.Color.Green;
-            this.label_pas_discap.Location = new System.Drawing.Point(120, 51);
-            this.label_pas_discap.Name = "label_pas_discap";
-            this.label_pas_discap.Size = new System.Drawing.Size(10, 13);
-            this.label_pas_discap.TabIndex = 9;
-            this.label_pas_discap.Text = "-";
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(21, 51);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(96, 13);
-            this.label16.TabIndex = 8;
-            this.label16.Text = "P. Discapacitados:";
-            // 
-            // label_cant_jubilados
-            // 
-            this.label_cant_jubilados.AutoSize = true;
-            this.label_cant_jubilados.ForeColor = System.Drawing.Color.Green;
-            this.label_cant_jubilados.Location = new System.Drawing.Point(292, 51);
-            this.label_cant_jubilados.Name = "label_cant_jubilados";
-            this.label_cant_jubilados.Size = new System.Drawing.Size(10, 13);
-            this.label_cant_jubilados.TabIndex = 11;
-            this.label_cant_jubilados.Text = "-";
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(175, 51);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(117, 13);
-            this.label17.TabIndex = 10;
-            this.label17.Text = "Cantidad  de Jubilados:";
-            // 
-            // label_cant_kg_totales
-            // 
-            this.label_cant_kg_totales.AutoSize = true;
-            this.label_cant_kg_totales.ForeColor = System.Drawing.Color.Green;
-            this.label_cant_kg_totales.Location = new System.Drawing.Point(410, 23);
-            this.label_cant_kg_totales.Name = "label_cant_kg_totales";
-            this.label_cant_kg_totales.Size = new System.Drawing.Size(10, 13);
-            this.label_cant_kg_totales.TabIndex = 13;
-            this.label_cant_kg_totales.Text = "-";
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(347, 23);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(61, 13);
-            this.label20.TabIndex = 12;
-            this.label20.Text = "Kg Totales:";
+            this.label21.AutoSize = true;
+            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label21.Location = new System.Drawing.Point(201, 80);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(158, 13);
+            this.label21.TabIndex = 18;
+            this.label21.Text = "Precio Total de la Compra:";
             // 
             // label_p_kg
             // 
@@ -518,44 +443,119 @@
             this.label24.TabIndex = 14;
             this.label24.Text = "Precio del Pasaje:";
             // 
-            // label_p_total
+            // label_cant_kg_totales
             // 
-            this.label_p_total.AutoSize = true;
-            this.label_p_total.ForeColor = System.Drawing.Color.Green;
-            this.label_p_total.Location = new System.Drawing.Point(364, 80);
-            this.label_p_total.Name = "label_p_total";
-            this.label_p_total.Size = new System.Drawing.Size(10, 13);
-            this.label_p_total.TabIndex = 19;
-            this.label_p_total.Text = "-";
+            this.label_cant_kg_totales.AutoSize = true;
+            this.label_cant_kg_totales.ForeColor = System.Drawing.Color.Green;
+            this.label_cant_kg_totales.Location = new System.Drawing.Point(410, 23);
+            this.label_cant_kg_totales.Name = "label_cant_kg_totales";
+            this.label_cant_kg_totales.Size = new System.Drawing.Size(10, 13);
+            this.label_cant_kg_totales.TabIndex = 13;
+            this.label_cant_kg_totales.Text = "-";
             // 
-            // label21
+            // label20
             // 
-            this.label21.AutoSize = true;
-            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.Location = new System.Drawing.Point(201, 80);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(158, 13);
-            this.label21.TabIndex = 18;
-            this.label21.Text = "Precio Total de la Compra:";
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(347, 23);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(61, 13);
+            this.label20.TabIndex = 12;
+            this.label20.Text = "Kg Totales:";
+            // 
+            // label_cant_jubilados
+            // 
+            this.label_cant_jubilados.AutoSize = true;
+            this.label_cant_jubilados.ForeColor = System.Drawing.Color.Green;
+            this.label_cant_jubilados.Location = new System.Drawing.Point(292, 51);
+            this.label_cant_jubilados.Name = "label_cant_jubilados";
+            this.label_cant_jubilados.Size = new System.Drawing.Size(10, 13);
+            this.label_cant_jubilados.TabIndex = 11;
+            this.label_cant_jubilados.Text = "-";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(175, 51);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(117, 13);
+            this.label17.TabIndex = 10;
+            this.label17.Text = "Cantidad  de Jubilados:";
+            // 
+            // label_pas_discap
+            // 
+            this.label_pas_discap.AutoSize = true;
+            this.label_pas_discap.ForeColor = System.Drawing.Color.Green;
+            this.label_pas_discap.Location = new System.Drawing.Point(120, 51);
+            this.label_pas_discap.Name = "label_pas_discap";
+            this.label_pas_discap.Size = new System.Drawing.Size(10, 13);
+            this.label_pas_discap.TabIndex = 9;
+            this.label_pas_discap.Text = "-";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(21, 51);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(96, 13);
+            this.label16.TabIndex = 8;
+            this.label16.Text = "P. Discapacitados:";
+            // 
+            // label_cant_encom
+            // 
+            this.label_cant_encom.AutoSize = true;
+            this.label_cant_encom.ForeColor = System.Drawing.Color.Green;
+            this.label_cant_encom.Location = new System.Drawing.Point(310, 23);
+            this.label_cant_encom.Name = "label_cant_encom";
+            this.label_cant_encom.Size = new System.Drawing.Size(10, 13);
+            this.label_cant_encom.TabIndex = 7;
+            this.label_cant_encom.Text = "-";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(175, 23);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(134, 13);
+            this.label15.TabIndex = 6;
+            this.label15.Text = "Cantidad de Encomiendas:";
+            // 
+            // label_cant_pasajes
+            // 
+            this.label_cant_pasajes.AutoSize = true;
+            this.label_cant_pasajes.ForeColor = System.Drawing.Color.Green;
+            this.label_cant_pasajes.Location = new System.Drawing.Point(133, 23);
+            this.label_cant_pasajes.Name = "label_cant_pasajes";
+            this.label_cant_pasajes.Size = new System.Drawing.Size(10, 13);
+            this.label_cant_pasajes.TabIndex = 5;
+            this.label_cant_pasajes.Text = "-";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(21, 23);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(107, 13);
+            this.label19.TabIndex = 4;
+            this.label19.Text = "Cantidad de Pasajes:";
             // 
             // Finalizar_Compra
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(629, 510);
-            this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox1);
+            this.ClientSize = new System.Drawing.Size(718, 523);
+            this.Controls.Add(this.gb_compra);
+            this.Controls.Add(this.gb_pago);
             this.Controls.Add(this.b_guardar);
-            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.gb_cliente);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Finalizar_Compra";
             this.Text = "Finalizar Compra";
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
+            this.gb_cliente.ResumeLayout(false);
+            this.gb_cliente.PerformLayout();
+            this.gb_pago.ResumeLayout(false);
+            this.gb_pago.PerformLayout();
+            this.gb_compra.ResumeLayout(false);
+            this.gb_compra.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -563,7 +563,7 @@
         #endregion
 
         private System.Windows.Forms.Button b_guardar;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox gb_cliente;
         private System.Windows.Forms.ComboBox combo_sexo;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.DateTimePicker f_nac;
@@ -580,7 +580,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox nombre;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox gb_pago;
         private System.Windows.Forms.ComboBox c_tipo_pago;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox n_tarjeta;
@@ -591,7 +591,7 @@
         private System.Windows.Forms.TextBox codigo_seguridad;
         private System.Windows.Forms.ComboBox combo_vto;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox gb_compra;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Label label_cant_jubilados;
         private System.Windows.Forms.Label label17;

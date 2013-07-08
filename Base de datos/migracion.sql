@@ -1543,7 +1543,75 @@ AS
 							 WHERE pa.ID_VIAJE = @p_id_viaje)
 	AND bu.ID_BUTACA not in (SELECT pet.ID_BUTACA
 							 FROM SASHAILO.Pasaje_Encomienda_Temporal pet
-							 WHERE pet.ID_VIAJE = @p_id_viaje)	
+							 WHERE pet.ID_VIAJE = @p_id_viaje AND pet.ID_BUTACA is not null)	
+	;
+		
+GO
+
+CREATE PROCEDURE SASHAILO.top_destinos_mas_pasajes
+    	@p_f_desde datetime,
+    	@p_f_hasta datetime
+AS
+
+	select top 5 rc.ID_CIUDAD_DESTINO, ci.NOMBRE_CIUDAD, COUNT(1) CANT_PASAJES
+	from SASHAILO.Pasaje pa
+	join SASHAILO.Viaje vi on vi.ID_VIAJE = pa.ID_VIAJE
+	join SASHAILO.Recorrido re on re.ID_RECORRIDO = vi.ID_RECORRIDO
+	join SASHAILO.Recorrido_Ciudades rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES
+	join SASHAILO.Ciudad ci on ci.ID_CIUDAD = rc.ID_CIUDAD_DESTINO
+	join SASHAILO.Compra co on co.ID_COMPRA = pa.ID_COMPRA
+	where co.F_COMPRA >= @p_f_desde and co.F_COMPRA <= @p_f_hasta
+	     and pa.ID_PASAJE not in (select de.ID_PASAJE from SASHAILO.Devolucion de where de.ID_PASAJE is not null)
+	group by rc.ID_CIUDAD_DESTINO, ci.NOMBRE_CIUDAD 
+	order by cant_pasajes desc
+	;
+		
+GO
+
+CREATE PROCEDURE SASHAILO.top_destinos_micros_vacios
+    	@p_f_desde datetime,
+    	@p_f_hasta datetime
+AS
+
+	select top 5 rc.ID_CIUDAD_DESTINO, ci.NOMBRE_CIUDAD, COUNT(1) CANT_MICROS_VACIOS
+	from SASHAILO.Viaje vi
+	join SASHAILO.Recorrido re on re.ID_RECORRIDO = vi.ID_RECORRIDO
+	join SASHAILO.Recorrido_Ciudades rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES
+	join SASHAILO.Ciudad ci on ci.ID_CIUDAD = rc.ID_CIUDAD_DESTINO
+	where not exists (select 1 from SASHAILO.Pasaje pa where pa.ID_VIAJE = vi.ID_VIAJE)
+	      and vi.F_LLEGADA >= @p_f_desde and vi.F_LLEGADA <= @p_f_hasta
+	group by rc.ID_CIUDAD_DESTINO, ci.NOMBRE_CIUDAD
+	order by CANT_MICROS_VACIOS desc
+	;
+		
+GO
+
+CREATE PROCEDURE SASHAILO.top_clientes_puntos
+AS
+
+	select top 5 NOMBRE, APELLIDO, DNI, TELEFONO ,PUNTOS 
+	from SASHAILO.Cliente
+	order by PUNTOS desc
+	;
+		
+GO
+
+CREATE PROCEDURE SASHAILO.top_destinos_devueltos
+    	@p_f_desde datetime,
+    	@p_f_hasta datetime
+AS
+
+	select top 5 rc.ID_CIUDAD_DESTINO, ci.NOMBRE_CIUDAD, COUNT(1) CANT_DEVUELTOS
+	from SASHAILO.Pasaje pa
+	join SASHAILO.Viaje vi on vi.ID_VIAJE = pa.ID_VIAJE
+	join SASHAILO.Recorrido re on re.ID_RECORRIDO = vi.ID_RECORRIDO
+	join SASHAILO.Recorrido_Ciudades rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES
+	join SASHAILO.Ciudad ci on ci.ID_CIUDAD = rc.ID_CIUDAD_DESTINO
+	join SASHAILO.Compra co on co.ID_COMPRA = pa.ID_COMPRA
+	where pa.ID_PASAJE in (select de.id_pasaje from SASHAILO.Devolucion de where ID_PASAJE is not null)
+		  and co.F_COMPRA >= @p_f_desde and co.F_COMPRA <= @p_f_hasta
+	group by rc.ID_CIUDAD_DESTINO, ci.NOMBRE_CIUDAD
+	order by CANT_DEVUELTOS desc
 	;
 		
 GO

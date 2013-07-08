@@ -495,17 +495,14 @@ namespace FrbaBus.Compra_de_Pasajes
                 MessageBox.Show("Debe seleccionar algún Pasaje o Encomienda", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
+            
             Finalizar_Compra fin_compra = new Finalizar_Compra(this.viaje, this.lista_pasajes, this.lista_encomiendas);
             fin_compra.Tag = this; //guardo en Tag una referencia a mi formulario
             fin_compra.ShowDialog();
 
-            /*Nueva_Encomienda.Encomienda enco = nueva_enco.encomienda;
+            if(fin_compra.mostroComprobante)
+                Compra_Pasaje.ActiveForm.Close();
 
-            if (enco != null)
-            {
-                agregarATablaEncomiendas(enco);
-                this.lista_encomiendas.Add(enco);
-            }*/
         }
     }
 }

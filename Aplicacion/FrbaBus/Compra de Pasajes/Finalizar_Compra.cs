@@ -23,14 +23,19 @@ namespace FrbaBus.Compra_de_Pasajes
         public decimal precio_pasaje;
         public decimal precio_por_kg;
         public decimal precio_total;
+        public int id_compra_generada;
+        public bool mostroComprobante;
 
         public Finalizar_Compra(Compra_Pasaje.Viaje via, List<Nuevo_Pasaje.Pasaje> l_pasajes, List<Nueva_Encomienda.Encomienda> l_encomiendas)
         {
+
+            InitializeComponent();
+            //pruebaGroupbox();
             this.viaje = via;
             this.lista_pasajes = l_pasajes;
             this.lista_encomiendas = l_encomiendas;
             this.cliente = null;
-            InitializeComponent();
+            this.mostroComprobante = false;
             cargarDetallesCompra();
             cargarCombosSexo();
             cargarComboTipoPago();
@@ -38,6 +43,620 @@ namespace FrbaBus.Compra_de_Pasajes
             setearPreciosALosPasajes();
             setearPreciosALasEncomiendas();
             label_p_total.Text = getPrecioTotal();
+
+        }
+
+        public void mostrarComprobante()
+        {
+
+            gb_compra.Visible = false;
+            gb_cliente.Visible = false;
+            gb_pago.Visible = false;
+            b_guardar.Text = "Aceptar";
+            this.mostroComprobante = true;
+            this.Text = "Comprobante de la Compra";
+
+
+            Label label_a = new System.Windows.Forms.Label();
+            Label label_cod_compra = new System.Windows.Forms.Label();
+            Label label_b = new System.Windows.Forms.Label();
+            Label label_fecha_compra = new System.Windows.Forms.Label();
+            Label label_c = new System.Windows.Forms.Label();
+            Label label_cli_compra = new System.Windows.Forms.Label();
+            Label label_d = new System.Windows.Forms.Label();
+            Label label_importe_compra = new System.Windows.Forms.Label();
+            GroupBox gb_detalle_compra = new System.Windows.Forms.GroupBox();
+            Panel panel_pasajes = new System.Windows.Forms.Panel();
+            Label label_e = new System.Windows.Forms.Label();
+            Label label_f = new System.Windows.Forms.Label();
+            Panel panel_encomiendas = new System.Windows.Forms.Panel();
+            panel_pasajes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            panel_encomiendas.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            gb_detalle_compra.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // label_a
+            // 
+            label_a.AutoSize = true;
+            label_a.Location = new System.Drawing.Point(24, 27);
+            label_a.Name = "label_a";
+            label_a.Size = new System.Drawing.Size(97, 13);
+            label_a.TabIndex = 4;
+            label_a.Text = "Código de Compra:";
+            // 
+            // label_cod_compra
+            // 
+            label_cod_compra.AutoSize = true;
+            label_cod_compra.ForeColor = System.Drawing.Color.Green;
+            label_cod_compra.Location = new System.Drawing.Point(126, 27);
+            label_cod_compra.Name = "label_cod_compra";
+            label_cod_compra.Size = new System.Drawing.Size(10, 13);
+            label_cod_compra.TabIndex = 5;
+            label_cod_compra.Text = "-";
+            // 
+            // label_b
+            // 
+            label_b.AutoSize = true;
+            label_b.Location = new System.Drawing.Point(265, 27);
+            label_b.Name = "label_b";
+            label_b.Size = new System.Drawing.Size(40, 13);
+            label_b.TabIndex = 6;
+            label_b.Text = "Fecha:";
+            // 
+            // label_fecha_compra
+            // 
+            label_fecha_compra.AutoSize = true;
+            label_fecha_compra.ForeColor = System.Drawing.Color.Green;
+            label_fecha_compra.Location = new System.Drawing.Point(308, 27);
+            label_fecha_compra.Name = "label_fecha_compra";
+            label_fecha_compra.Size = new System.Drawing.Size(10, 13);
+            label_fecha_compra.TabIndex = 7;
+            label_fecha_compra.Text = "-";
+            // 
+            // label_c
+            // 
+            label_c.AutoSize = true;
+            label_c.Location = new System.Drawing.Point(412, 27);
+            label_c.Name = "label_c";
+            label_c.Size = new System.Drawing.Size(42, 13);
+            label_c.TabIndex = 12;
+            label_c.Text = "Cliente:";
+            // 
+            // label_cli_compra
+            // 
+            label_cli_compra.AutoSize = true;
+            label_cli_compra.ForeColor = System.Drawing.Color.Green;
+            label_cli_compra.Location = new System.Drawing.Point(460, 27);
+            label_cli_compra.Name = "label_cli_compra";
+            label_cli_compra.Size = new System.Drawing.Size(10, 13);
+            label_cli_compra.TabIndex = 13;
+            label_cli_compra.Text = "-";
+            // 
+            // label_d
+            // 
+            label_d.AutoSize = true;
+            label_d.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            label_d.Location = new System.Drawing.Point(24, 56);
+            label_d.Name = "label_d";
+            label_d.Size = new System.Drawing.Size(53, 13);
+            label_d.TabIndex = 18;
+            label_d.Text = "Importe:";
+            // 
+            // label_importe_compra
+            // 
+            label_importe_compra.AutoSize = true;
+            label_importe_compra.ForeColor = System.Drawing.Color.Green;
+            label_importe_compra.Location = new System.Drawing.Point(83, 56);
+            label_importe_compra.Name = "label_importe_compra";
+            label_importe_compra.Size = new System.Drawing.Size(10, 13);
+            label_importe_compra.TabIndex = 19;
+            label_importe_compra.Text = "-";
+            // 
+            // gb_detalle_compra
+            // 
+            gb_detalle_compra.Controls.Add(label_f);
+            gb_detalle_compra.Controls.Add(panel_encomiendas);
+            gb_detalle_compra.Controls.Add(label_e);
+            gb_detalle_compra.Controls.Add(panel_pasajes);
+            gb_detalle_compra.Controls.Add(label_importe_compra);
+            gb_detalle_compra.Controls.Add(label_d);
+            gb_detalle_compra.Controls.Add(label_cli_compra);
+            gb_detalle_compra.Controls.Add(label_c);
+            gb_detalle_compra.Controls.Add(label_fecha_compra);
+            gb_detalle_compra.Controls.Add(label_b);
+            gb_detalle_compra.Controls.Add(label_cod_compra);
+            gb_detalle_compra.Controls.Add(label_a);
+            gb_detalle_compra.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            gb_detalle_compra.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            gb_detalle_compra.Location = new System.Drawing.Point(24, 12);
+            gb_detalle_compra.Name = "gb_detalle_compra";
+            gb_detalle_compra.Size = new System.Drawing.Size(669, 443);
+            gb_detalle_compra.TabIndex = 9;
+            gb_detalle_compra.TabStop = false;
+            gb_detalle_compra.Text = "Detalle de la Compra";
+            // 
+            // panel_pasajes
+            // 
+            panel_pasajes.Location = new System.Drawing.Point(27, 122);
+            panel_pasajes.Name = "panel_pasajes";
+            panel_pasajes.Size = new System.Drawing.Size(612, 133);
+            panel_pasajes.TabIndex = 20;
+            // 
+            // label_e
+            // 
+            label_e.AutoSize = true;
+            label_e.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            label_e.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            label_e.Location = new System.Drawing.Point(26, 102);
+            label_e.Name = "label_e";
+            label_e.Size = new System.Drawing.Size(51, 13);
+            label_e.TabIndex = 21;
+            label_e.Text = "Pasajes";
+            // 
+            // label_f
+            // 
+            label_f.AutoSize = true;
+            label_f.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            label_f.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            label_f.Location = new System.Drawing.Point(26, 265);
+            label_f.Name = "label_f";
+            label_f.Size = new System.Drawing.Size(82, 13);
+            label_f.TabIndex = 23;
+            label_f.Text = "Encomiendas";
+            // 
+            // panel_encomiendas
+            // 
+            panel_encomiendas.Location = new System.Drawing.Point(27, 285);
+            panel_encomiendas.Name = "panel_encomiendas";
+            panel_encomiendas.Size = new System.Drawing.Size(612, 133);
+            panel_encomiendas.TabIndex = 22;
+            // 
+            // Funciones
+            // 
+
+            panel_pasajes.AutoScroll = true;
+            panel_encomiendas.AutoScroll = true;
+
+
+            /*inicio - pongo los datos en pantalla*/
+            Funciones fun = new Funciones();
+            label_cod_compra.Text = this.id_compra_generada.ToString(); ;
+            label_fecha_compra.Text = fun.getFechaActual().Day.ToString() + "/" + fun.getFechaActual().Month.ToString() + "/" + fun.getFechaActual().Year.ToString();
+            label_cli_compra.Text = this.cliente.nombre + " " + this.cliente.apellido + " (" + this.cliente.dni + ")";
+            label_importe_compra.Text = "$" + this.precio_total.ToString();
+
+            //cargo panel pasajes
+            Label lab_head_cod = new System.Windows.Forms.Label();
+            lab_head_cod.Location = new System.Drawing.Point(25, 1);
+            lab_head_cod.Size = new System.Drawing.Size(46, 13);
+            lab_head_cod.ForeColor = System.Drawing.Color.Indigo;
+            lab_head_cod.Text = "Código";
+            Label lab_head_pas = new System.Windows.Forms.Label();
+            lab_head_pas.Location = new System.Drawing.Point(175, 1);
+            lab_head_pas.Size = new System.Drawing.Size(50, 13);
+            lab_head_pas.ForeColor = System.Drawing.Color.Indigo;
+            lab_head_pas.Text = "Pasajero";
+            Label lab_head_but = new System.Windows.Forms.Label();
+            lab_head_but.Location = new System.Drawing.Point(400, 1);
+            lab_head_but.Size = new System.Drawing.Size(50, 13);
+            lab_head_but.ForeColor = System.Drawing.Color.Indigo;
+            lab_head_but.Text = "Butaca";
+            Label lab_head_precio = new System.Windows.Forms.Label();
+            lab_head_precio.Location = new System.Drawing.Point(530, 1);
+            lab_head_precio.Size = new System.Drawing.Size(50, 13);
+            lab_head_precio.ForeColor = System.Drawing.Color.Indigo;
+            lab_head_precio.Text = "Precio";
+
+            panel_pasajes.Controls.Add(lab_head_cod);
+            panel_pasajes.Controls.Add(lab_head_pas);
+            panel_pasajes.Controls.Add(lab_head_but);
+            panel_pasajes.Controls.Add(lab_head_precio);
+
+            int heig = 20;
+            foreach (Nuevo_Pasaje.Pasaje pas in this.lista_pasajes)
+            {
+                Label label_cod_pasaje = new System.Windows.Forms.Label();
+                label_cod_pasaje.Location = new System.Drawing.Point(20, heig);
+                label_cod_pasaje.Size = new System.Drawing.Size(55, 13);
+                label_cod_pasaje.Text = pas.id_pasaje_gen.ToString();
+                panel_pasajes.Controls.Add(label_cod_pasaje);
+
+                Label label_pasajero_pasaje = new System.Windows.Forms.Label();
+                label_pasajero_pasaje.Location = new System.Drawing.Point(115, heig);
+                label_pasajero_pasaje.Size = new System.Drawing.Size(230, 13);
+                label_pasajero_pasaje.Text = pas.cliente.nombre + " " + pas.cliente.apellido + " (" + pas.cliente.dni + ")";
+
+                Label label_butaca_pasaje = new System.Windows.Forms.Label();
+                label_butaca_pasaje.Location = new System.Drawing.Point(355, heig);
+                label_butaca_pasaje.Name = "label_butaca_pasaje";
+                label_butaca_pasaje.Size = new System.Drawing.Size(150, 13);
+                label_butaca_pasaje.Text = "Nro: " + pas.butaca.nro_butaca + " - " + pas.butaca.tipo_butaca + " - Piso: " + pas.butaca.piso_butaca;
+
+                Label label_precio_pasaje = new System.Windows.Forms.Label();
+                label_precio_pasaje.Location = new System.Drawing.Point(528, heig);
+                label_precio_pasaje.Size = new System.Drawing.Size(50, 13);
+                label_precio_pasaje.Text = "$"+pas.precio.ToString();
+
+                panel_pasajes.Controls.Add(label_cod_pasaje);
+                panel_pasajes.Controls.Add(label_pasajero_pasaje);
+                panel_pasajes.Controls.Add(label_butaca_pasaje);
+                panel_pasajes.Controls.Add(label_precio_pasaje);
+
+                heig = heig + 20;
+
+            }
+
+            //cargo panel encomiendas
+            Label lab_head_cod_enco = new System.Windows.Forms.Label();
+            lab_head_cod_enco.Location = new System.Drawing.Point(25, 1);
+            lab_head_cod_enco.Size = new System.Drawing.Size(46, 13);
+            lab_head_cod_enco.ForeColor = System.Drawing.Color.Indigo;
+            lab_head_cod_enco.Text = "Código";
+            Label lab_head_duenio = new System.Windows.Forms.Label();
+            lab_head_duenio.Location = new System.Drawing.Point(175, 1);
+            lab_head_duenio.Size = new System.Drawing.Size(75, 13);
+            lab_head_duenio.ForeColor = System.Drawing.Color.Indigo;
+            lab_head_duenio.Text = "Encomendero";
+            Label lab_head_kg = new System.Windows.Forms.Label();
+            lab_head_kg.Location = new System.Drawing.Point(400, 1);
+            lab_head_kg.Size = new System.Drawing.Size(70, 13);
+            lab_head_kg.ForeColor = System.Drawing.Color.Indigo;
+            lab_head_kg.Text = "Cantidad Kg";
+            Label lab_head_precio_enco = new System.Windows.Forms.Label();
+            lab_head_precio_enco.Location = new System.Drawing.Point(530, 1);
+            lab_head_precio_enco.Size = new System.Drawing.Size(50, 13);
+            lab_head_precio_enco.ForeColor = System.Drawing.Color.Indigo;
+            lab_head_precio_enco.Text = "Precio";
+
+            panel_encomiendas.Controls.Add(lab_head_cod_enco);
+            panel_encomiendas.Controls.Add(lab_head_duenio);
+            panel_encomiendas.Controls.Add(lab_head_kg);
+            panel_encomiendas.Controls.Add(lab_head_precio_enco);
+
+            heig = 20;
+            foreach (Nueva_Encomienda.Encomienda enco in this.lista_encomiendas)
+            {
+                Label label_cod_encomienda = new System.Windows.Forms.Label();
+                label_cod_encomienda.Location = new System.Drawing.Point(20, heig);
+                label_cod_encomienda.Size = new System.Drawing.Size(55, 13);
+                label_cod_encomienda.Text = enco.id_encomienda_gen.ToString();
+
+                Label label_pasajero_enco = new System.Windows.Forms.Label();
+                label_pasajero_enco.Location = new System.Drawing.Point(115, heig);
+                label_pasajero_enco.Size = new System.Drawing.Size(280, 13);
+                label_pasajero_enco.Text = enco.cliente.nombre + " " + enco.cliente.apellido + " (" + enco.cliente.dni + ")";
+
+                Label label_kg_enco = new System.Windows.Forms.Label();
+                label_kg_enco.Location = new System.Drawing.Point(415, heig);
+                label_kg_enco.Size = new System.Drawing.Size(50, 13);
+                label_kg_enco.Text = enco.cant_kg.ToString();
+
+                Label label_precio_enco = new System.Windows.Forms.Label();
+                label_precio_enco.Location = new System.Drawing.Point(523, heig);
+                label_precio_enco.Size = new System.Drawing.Size(50, 13);
+                label_precio_enco.Text = "$"+enco.precio.ToString();
+
+                panel_encomiendas.Controls.Add(label_cod_encomienda);
+                panel_encomiendas.Controls.Add(label_pasajero_enco);
+                panel_encomiendas.Controls.Add(label_kg_enco);
+                panel_encomiendas.Controls.Add(label_precio_enco);
+
+                heig = heig + 20;
+
+            }
+
+            /*fin - pongo los datos en pantalla*/
+
+            this.Controls.Add(gb_detalle_compra);
+            gb_detalle_compra.ResumeLayout(false);
+            gb_detalle_compra.PerformLayout();
+            this.ResumeLayout(false);
+
+
+            MessageBox.Show("La Compra ha sido registrada", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+        }
+
+        public void pruebaGroupbox(){
+
+            gb_compra.Visible = false;
+            gb_cliente.Visible = false;
+            gb_pago.Visible = false;
+
+            Label label_a = new System.Windows.Forms.Label();
+            Label label_cod_compra = new System.Windows.Forms.Label();
+            Label label_b = new System.Windows.Forms.Label();
+            Label label_fecha_compra = new System.Windows.Forms.Label();
+            Label label_c = new System.Windows.Forms.Label();
+            Label label_cli_compra = new System.Windows.Forms.Label();
+            Label label_d = new System.Windows.Forms.Label();
+            Label label_importe_compra = new System.Windows.Forms.Label();
+            GroupBox gb_detalle_compra = new System.Windows.Forms.GroupBox();
+            Panel panel_pasajes = new System.Windows.Forms.Panel();
+            Label label_e = new System.Windows.Forms.Label();
+            Label label_f = new System.Windows.Forms.Label();
+            Panel panel_encomiendas = new System.Windows.Forms.Panel();
+            panel_pasajes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            panel_encomiendas.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            gb_detalle_compra.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // label_a
+            // 
+            label_a.AutoSize = true;
+            label_a.Location = new System.Drawing.Point(24, 27);
+            label_a.Name = "label_a";
+            label_a.Size = new System.Drawing.Size(97, 13);
+            label_a.TabIndex = 4;
+            label_a.Text = "Código de Compra:";
+            // 
+            // label_cod_compra
+            // 
+            label_cod_compra.AutoSize = true;
+            label_cod_compra.ForeColor = System.Drawing.Color.Green;
+            label_cod_compra.Location = new System.Drawing.Point(126, 27);
+            label_cod_compra.Name = "label_cod_compra";
+            label_cod_compra.Size = new System.Drawing.Size(10, 13);
+            label_cod_compra.TabIndex = 5;
+            label_cod_compra.Text = "-";
+            // 
+            // label_b
+            // 
+            label_b.AutoSize = true;
+            label_b.Location = new System.Drawing.Point(265, 27);
+            label_b.Name = "label_b";
+            label_b.Size = new System.Drawing.Size(40, 13);
+            label_b.TabIndex = 6;
+            label_b.Text = "Fecha:";
+            // 
+            // label_fecha_compra
+            // 
+            label_fecha_compra.AutoSize = true;
+            label_fecha_compra.ForeColor = System.Drawing.Color.Green;
+            label_fecha_compra.Location = new System.Drawing.Point(308, 27);
+            label_fecha_compra.Name = "label_fecha_compra";
+            label_fecha_compra.Size = new System.Drawing.Size(10, 13);
+            label_fecha_compra.TabIndex = 7;
+            label_fecha_compra.Text = "-";
+            // 
+            // label_c
+            // 
+            label_c.AutoSize = true;
+            label_c.Location = new System.Drawing.Point(412, 27);
+            label_c.Name = "label_c";
+            label_c.Size = new System.Drawing.Size(42, 13);
+            label_c.TabIndex = 12;
+            label_c.Text = "Cliente:";
+            // 
+            // label_cli_compra
+            // 
+            label_cli_compra.AutoSize = true;
+            label_cli_compra.ForeColor = System.Drawing.Color.Green;
+            label_cli_compra.Location = new System.Drawing.Point(460, 27);
+            label_cli_compra.Name = "label_cli_compra";
+            label_cli_compra.Size = new System.Drawing.Size(10, 13);
+            label_cli_compra.TabIndex = 13;
+            label_cli_compra.Text = "-";
+            // 
+            // label_d
+            // 
+            label_d.AutoSize = true;
+            label_d.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            label_d.Location = new System.Drawing.Point(24, 56);
+            label_d.Name = "label_d";
+            label_d.Size = new System.Drawing.Size(53, 13);
+            label_d.TabIndex = 18;
+            label_d.Text = "Importe:";
+            // 
+            // label_importe_compra
+            // 
+            label_importe_compra.AutoSize = true;
+            label_importe_compra.ForeColor = System.Drawing.Color.Green;
+            label_importe_compra.Location = new System.Drawing.Point(83, 56);
+            label_importe_compra.Name = "label_importe_compra";
+            label_importe_compra.Size = new System.Drawing.Size(10, 13);
+            label_importe_compra.TabIndex = 19;
+            label_importe_compra.Text = "-";
+            // 
+            // gb_detalle_compra
+            // 
+            gb_detalle_compra.Controls.Add(label_f);
+            gb_detalle_compra.Controls.Add(panel_encomiendas);
+            gb_detalle_compra.Controls.Add(label_e);
+            gb_detalle_compra.Controls.Add(panel_pasajes);
+            gb_detalle_compra.Controls.Add(label_importe_compra);
+            gb_detalle_compra.Controls.Add(label_d);
+            gb_detalle_compra.Controls.Add(label_cli_compra);
+            gb_detalle_compra.Controls.Add(label_c);
+            gb_detalle_compra.Controls.Add(label_fecha_compra);
+            gb_detalle_compra.Controls.Add(label_b);
+            gb_detalle_compra.Controls.Add(label_cod_compra);
+            gb_detalle_compra.Controls.Add(label_a);
+            gb_detalle_compra.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            gb_detalle_compra.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            gb_detalle_compra.Location = new System.Drawing.Point(24, 12);
+            gb_detalle_compra.Name = "gb_detalle_compra";
+            gb_detalle_compra.Size = new System.Drawing.Size(669, 443);
+            gb_detalle_compra.TabIndex = 9;
+            gb_detalle_compra.TabStop = false;
+            gb_detalle_compra.Text = "Detalle de la Compra";
+            // 
+            // panel_pasajes
+            // 
+            panel_pasajes.Location = new System.Drawing.Point(27, 122);
+            panel_pasajes.Name = "panel_pasajes";
+            panel_pasajes.Size = new System.Drawing.Size(612, 133);
+            panel_pasajes.TabIndex = 20;
+            // 
+            // label_e
+            // 
+            label_e.AutoSize = true;
+            label_e.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            label_e.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            label_e.Location = new System.Drawing.Point(26, 102);
+            label_e.Name = "label_e";
+            label_e.Size = new System.Drawing.Size(51, 13);
+            label_e.TabIndex = 21;
+            label_e.Text = "Pasajes";
+            // 
+            // label_f
+            // 
+            label_f.AutoSize = true;
+            label_f.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            label_f.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            label_f.Location = new System.Drawing.Point(26, 265);
+            label_f.Name = "label_f";
+            label_f.Size = new System.Drawing.Size(82, 13);
+            label_f.TabIndex = 23;
+            label_f.Text = "Encomiendas";
+            // 
+            // panel_encomiendas
+            // 
+            panel_encomiendas.Location = new System.Drawing.Point(27, 285);
+            panel_encomiendas.Name = "panel_encomiendas";
+            panel_encomiendas.Size = new System.Drawing.Size(612, 133);
+            panel_encomiendas.TabIndex = 22;
+            // 
+            // Funciones
+            // 
+
+            panel_pasajes.AutoScroll = true;
+            panel_encomiendas.AutoScroll = true;
+
+
+            /*inicio - pongo los datos en pantalla*/
+
+            label_cod_compra.Text = "3048308509";
+            label_fecha_compra.Text = "12/07/2013";
+            label_cli_compra.Text = "Pedro León (35031643)";
+            label_importe_compra.Text = "$1203.84";
+
+            //cargo panel pasajes
+            Label lab_head_cod = new System.Windows.Forms.Label();
+            lab_head_cod.Location = new System.Drawing.Point(25, 1);
+            lab_head_cod.Size = new System.Drawing.Size(46, 13);
+            lab_head_cod.ForeColor = System.Drawing.Color.Indigo;
+            lab_head_cod.Text = "Código";
+            Label lab_head_pas = new System.Windows.Forms.Label();
+            lab_head_pas.Location = new System.Drawing.Point(175, 1);
+            lab_head_pas.Size = new System.Drawing.Size(50, 13);
+            lab_head_pas.ForeColor = System.Drawing.Color.Indigo;
+            lab_head_pas.Text = "Pasajero";
+            Label lab_head_but = new System.Windows.Forms.Label();
+            lab_head_but.Location = new System.Drawing.Point(400, 1);
+            lab_head_but.Size = new System.Drawing.Size(50, 13);
+            lab_head_but.ForeColor = System.Drawing.Color.Indigo;
+            lab_head_but.Text = "Butaca";
+            Label lab_head_precio = new System.Windows.Forms.Label();
+            lab_head_precio.Location = new System.Drawing.Point(530, 1);
+            lab_head_precio.Size = new System.Drawing.Size(50, 13);
+            lab_head_precio.ForeColor = System.Drawing.Color.Indigo;
+            lab_head_precio.Text = "Precio";
+
+            panel_pasajes.Controls.Add(lab_head_cod);
+            panel_pasajes.Controls.Add(lab_head_pas);
+            panel_pasajes.Controls.Add(lab_head_but);
+            panel_pasajes.Controls.Add(lab_head_precio);
+
+            int heig = 20;
+            for (int i = 0; i < 8; i++)
+            {
+                Label label_cod_pasaje = new System.Windows.Forms.Label();
+                label_cod_pasaje.Location = new System.Drawing.Point(20, heig);
+                label_cod_pasaje.Size = new System.Drawing.Size(55, 13);
+                label_cod_pasaje.Text = "72583899";
+                panel_pasajes.Controls.Add(label_cod_pasaje);
+
+                Label label_pasajero_pasaje = new System.Windows.Forms.Label();
+                label_pasajero_pasaje.Location = new System.Drawing.Point(110, heig);
+                label_pasajero_pasaje.Size = new System.Drawing.Size(230, 13);
+                label_pasajero_pasaje.Text = "Pedro Leon (35031643)";
+
+                Label label_butaca_pasaje = new System.Windows.Forms.Label();
+                label_butaca_pasaje.Location = new System.Drawing.Point(355, heig);
+                label_butaca_pasaje.Size = new System.Drawing.Size(150, 13);
+                label_butaca_pasaje.Text = "Nro: 10 - Ventanilla - Piso: 2";
+
+                Label label_precio_pasaje = new System.Windows.Forms.Label();
+                label_precio_pasaje.Location = new System.Drawing.Point(524, heig);
+                label_precio_pasaje.Size = new System.Drawing.Size(50, 13);
+                label_precio_pasaje.Text = "$1203.03";
+
+                panel_pasajes.Controls.Add(label_cod_pasaje);
+                panel_pasajes.Controls.Add(label_pasajero_pasaje);
+                panel_pasajes.Controls.Add(label_butaca_pasaje);
+                panel_pasajes.Controls.Add(label_precio_pasaje);
+
+                heig = heig + 20;
+
+            }
+
+            //cargo panel encomiendas
+            Label lab_head_cod_enco = new System.Windows.Forms.Label();
+            lab_head_cod_enco.Location = new System.Drawing.Point(25, 1);
+            lab_head_cod_enco.Size = new System.Drawing.Size(46, 13);
+            lab_head_cod_enco.ForeColor = System.Drawing.Color.Indigo;
+            lab_head_cod_enco.Text = "Código";
+            Label lab_head_duenio = new System.Windows.Forms.Label();
+            lab_head_duenio.Location = new System.Drawing.Point(175, 1);
+            lab_head_duenio.Size = new System.Drawing.Size(75, 13);
+            lab_head_duenio.ForeColor = System.Drawing.Color.Indigo;
+            lab_head_duenio.Text = "Encomendero";
+            Label lab_head_kg = new System.Windows.Forms.Label();
+            lab_head_kg.Location = new System.Drawing.Point(400, 1);
+            lab_head_kg.Size = new System.Drawing.Size(70, 13);
+            lab_head_kg.ForeColor = System.Drawing.Color.Indigo;
+            lab_head_kg.Text = "Cantidad Kg";
+            Label lab_head_precio_enco = new System.Windows.Forms.Label();
+            lab_head_precio_enco.Location = new System.Drawing.Point(530, 1);
+            lab_head_precio_enco.Size = new System.Drawing.Size(50, 13);
+            lab_head_precio_enco.ForeColor = System.Drawing.Color.Indigo;
+            lab_head_precio_enco.Text = "Precio";
+
+            panel_encomiendas.Controls.Add(lab_head_cod_enco);
+            panel_encomiendas.Controls.Add(lab_head_duenio);
+            panel_encomiendas.Controls.Add(lab_head_kg);
+            panel_encomiendas.Controls.Add(lab_head_precio_enco);
+
+            heig = 20;
+            for (int i = 0; i < 8; i++)
+            {
+                Label label_cod_encomienda = new System.Windows.Forms.Label();
+                label_cod_encomienda.Location = new System.Drawing.Point(20, heig);
+                label_cod_encomienda.Size = new System.Drawing.Size(55, 13);
+                label_cod_encomienda.Text = "72583899";
+
+                Label label_pasajero_enco = new System.Windows.Forms.Label();
+                label_pasajero_enco.Location = new System.Drawing.Point(110, heig);
+                label_pasajero_enco.Size = new System.Drawing.Size(280, 13);
+                label_pasajero_enco.Text = "DE LAS MERCEDES Valenzuela (35031643)";
+
+                Label label_kg_enco = new System.Windows.Forms.Label();
+                label_kg_enco.Location = new System.Drawing.Point(415, heig);
+                label_kg_enco.Size = new System.Drawing.Size(50, 13);
+                label_kg_enco.Text = "183";
+
+                Label label_precio_enco = new System.Windows.Forms.Label();
+                label_precio_enco.Location = new System.Drawing.Point(523, heig);
+                label_precio_enco.Size = new System.Drawing.Size(50, 13);
+                label_precio_enco.Text = "$1833.45";
+
+                panel_encomiendas.Controls.Add(label_cod_encomienda);
+                panel_encomiendas.Controls.Add(label_pasajero_enco);
+                panel_encomiendas.Controls.Add(label_kg_enco);
+                panel_encomiendas.Controls.Add(label_precio_enco);
+
+                heig = heig + 20;
+
+            }
+
+            /*fin - pongo los datos en pantalla*/
+
+            this.Controls.Add(gb_detalle_compra);
+            gb_detalle_compra.ResumeLayout(false);
+            gb_detalle_compra.PerformLayout();
+            this.ResumeLayout(false);
+
         }
 
         public class ComboboxItem
@@ -521,6 +1140,10 @@ namespace FrbaBus.Compra_de_Pasajes
 
         private void b_guardar_Click(object sender, EventArgs e)
         {
+            if(this.mostroComprobante){
+                Finalizar_Compra.ActiveForm.Close();
+                return;
+            }
             String err = "";
             if (dni.Text.Trim().Equals(""))
                 err = err + "Debe ingresar el DNI del pasajero \n";
@@ -547,6 +1170,7 @@ namespace FrbaBus.Compra_de_Pasajes
 
             int id_cliente_generado = grabaCliente();
             int id_compra_generada = grabaCompra(id_cliente_generado);
+            this.id_compra_generada = id_compra_generada;
 
             //grabo los pasajes
             foreach (Nuevo_Pasaje.Pasaje pas in this.lista_pasajes)
@@ -562,6 +1186,7 @@ namespace FrbaBus.Compra_de_Pasajes
                 enco.id_encomienda_gen = id_encomienda_generada;
             }
 
+            mostrarComprobante();
 
         }
 
