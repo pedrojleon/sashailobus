@@ -167,11 +167,11 @@
       <DependentUpon>Nuevo_Pasaje.cs</DependentUpon>
     </Compile>
     <Compile Include="Conexion.cs" />
-    <Compile Include="Consulta Puntos Adquiridos\Form1.cs">
+    <Compile Include="Consulta Puntos Adquiridos\Consulta_Puntos.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Consulta Puntos Adquiridos\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Consulta Puntos Adquiridos\Consulta_Puntos.Designer.cs">
+      <DependentUpon>Consulta_Puntos.cs</DependentUpon>
     </Compile>
     <Compile Include="Funciones.cs">
       <SubType>Form</SubType>
@@ -261,6 +261,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Compra de Pasajes\Nuevo_Pasaje.resx">
       <DependentUpon>Nuevo_Pasaje.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Consulta Puntos Adquiridos\Consulta_Puntos.resx">
+      <DependentUpon>Consulta_Puntos.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Funciones.resx">
       <DependentUpon>Funciones.cs</DependentUpon>
