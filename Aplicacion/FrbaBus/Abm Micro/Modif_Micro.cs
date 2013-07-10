@@ -253,16 +253,21 @@ namespace FrbaBus.Abm_Micro
                 error_fechas = fechaBajaDefinitivaValida();
                 str_errores = str_errores + error_fechas;
             }
-
             if (!str_errores.Equals(""))
             {
                 MessageBox.Show(str_errores, "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 
+            //no confirma el popup
+            if ((baja_definitiva.Checked || fuera_servicio.Checked) && !evaluarMicroFServicio())
+                return;
+
             Conexion conn = new Conexion();
             SqlCommand sp_modif;
             Funciones func = new Funciones();
+
+            string msj = "";
 
             sp_modif = new SqlCommand("SASHAILO.modif_micro", conn.miConexion); // Lo inicializo
             sp_modif.CommandType = CommandType.StoredProcedure; // Defino que tipo de comando es
@@ -317,19 +322,146 @@ namespace FrbaBus.Abm_Micro
                     conn.desconectar();
                     return;
                 }
-                
-                MessageBox.Show("Los datos del Micro han sido modificados", null, MessageBoxButtons.OK);
+
                 conn.desconectar();
             }
             catch (Exception error)
             {
-                MessageBox.Show("Error en la creación del micro. Error: " + error.ToString(), null, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show("Error en la modificacion del micro. Error: " + error.ToString(), null, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 conn.desconectar();
+                return;
+            }
+
+
+            if (!fuera_servicio.Checked && !baja_definitiva.Checked)
+            {
+                MessageBox.Show("Los datos del Micro han sido modificados", null, MessageBoxButtons.OK);
+                Modif_Micro.ActiveForm.Close();
+                return;
+            }
+
+            //cancelacion de viajes, pasajes y encomiendas
+            Conexion conn2 = new Conexion();
+            SqlCommand sp_modif2;
+
+            sp_modif2 = new SqlCommand("SASHAILO.mic_fs_reemplazar_cancelar", conn2.miConexion); // Lo inicializo
+            sp_modif2.CommandType = CommandType.StoredProcedure; // Defino que tipo de comando es
+            SqlParameter ID_MICRO2 = sp_modif2.Parameters.Add("@p_id_micro", SqlDbType.Int);
+            SqlParameter F_ACTUAL = sp_modif2.Parameters.Add("@p_f_actual", SqlDbType.DateTime);
+            SqlParameter F_DESDE = sp_modif2.Parameters.Add("@p_f_desde", SqlDbType.DateTime);
+            SqlParameter F_HASTA = sp_modif2.Parameters.Add("@p_f_hasta", SqlDbType.DateTime);
+            SqlParameter VIAJES_CAN = sp_modif2.Parameters.Add("@viajesCancelados", SqlDbType.Int);
+            SqlParameter PASAJES_CAN = sp_modif2.Parameters.Add("@pasajesCancelados", SqlDbType.Int);
+            SqlParameter ENCO_CAN = sp_modif2.Parameters.Add("@encoCanceladas", SqlDbType.Int);
+
+            ID_MICRO2.Value = this.id_micro;
+            F_ACTUAL.Value = func.getFechaActual();
+            if (fuera_servicio.Checked)
+            {
+                F_DESDE.Value = f_fuera_servicio.Value.Date;
+                F_HASTA.Value = f_reinicio_servicio.Value.Date;
+            }
+            else if (baja_definitiva.Checked)
+            {
+                F_DESDE.Value = f_baja_def.Value.Date;
+                F_HASTA.Value = Convert.ToDateTime("20/12/2100");
+            }
+            VIAJES_CAN.Direction = ParameterDirection.Output;
+            PASAJES_CAN.Direction = ParameterDirection.Output;
+            ENCO_CAN.Direction = ParameterDirection.Output;
+
+            try
+            {
+                sp_modif2.ExecuteNonQuery();
+
+                int viajesCan = Convert.ToInt16(sp_modif2.Parameters["@viajesCancelados"].Value.ToString());
+                int pasajesCan = Convert.ToInt16(sp_modif2.Parameters["@pasajesCancelados"].Value.ToString());
+                int encoCan = Convert.ToInt16(sp_modif2.Parameters["@encoCanceladas"].Value.ToString());
+                if (viajesCan > 0)
+                {
+                    msj = "Los datos del micro han sido modificados.\n";
+                    msj = msj + "Cantidad de viajes cancelados: " + viajesCan + ".\n";
+                    msj = msj + "Cantidad de pasajes cancelados: " + pasajesCan + ".\n";
+                    msj = msj + "Cantidad de encomiendas canceladas: " + encoCan + ".\n";
+                    MessageBox.Show(msj, null, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                conn2.desconectar();
+            }
+            catch (Exception error)
+            {
+                conn2.desconectar();
                 return;
             }
 
             Modif_Micro.ActiveForm.Close();
 
+        }
+
+        public bool evaluarMicroFServicio() {
+            bool rtado = false;
+
+            Conexion conn = new Conexion();
+            SqlCommand sp_modif;
+            Funciones func = new Funciones();
+
+            sp_modif = new SqlCommand("SASHAILO.evalua_mic_f_de_servicio", conn.miConexion); // Lo inicializo
+            sp_modif.CommandType = CommandType.StoredProcedure; // Defino que tipo de comando es
+            SqlParameter ID_MICRO = sp_modif.Parameters.Add("@p_id_micro", SqlDbType.Int);
+            SqlParameter F_DESDE = sp_modif.Parameters.Add("@p_f_desde", SqlDbType.DateTime);
+            SqlParameter F_HASTA = sp_modif.Parameters.Add("@p_f_hasta", SqlDbType.DateTime);
+            SqlParameter TODOS_SE_REEMPLAZAN = sp_modif.Parameters.Add("@todosSeReemplazan", SqlDbType.Int);
+            SqlParameter CANT_VIAJES = sp_modif.Parameters.Add("@cantViajes", SqlDbType.Int);
+            SqlParameter CANT_SIN_MICRO = sp_modif.Parameters.Add("@cantViajesSinMicro", SqlDbType.Int);
+
+            ID_MICRO.Value = this.id_micro;
+
+            if (fuera_servicio.Checked)
+            {
+                F_DESDE.Value = f_fuera_servicio.Value.Date;
+                F_HASTA.Value = f_reinicio_servicio.Value.Date;
+            }
+            else if (baja_definitiva.Checked)
+            {
+                F_DESDE.Value = f_baja_def.Value.Date;
+                F_HASTA.Value = Convert.ToDateTime("20/12/2100");
+            }
+            TODOS_SE_REEMPLAZAN.Direction = ParameterDirection.Output;
+            CANT_VIAJES.Direction = ParameterDirection.Output;
+            CANT_SIN_MICRO.Direction = ParameterDirection.Output;
+
+            try
+            {
+                sp_modif.ExecuteNonQuery();
+                int todosSeReemplazan = Convert.ToInt16(sp_modif.Parameters["@todosSeReemplazan"].Value.ToString());
+                int cantViajes = Convert.ToInt16(sp_modif.Parameters["@cantViajes"].Value.ToString());
+                int cantViajesSinMicro = Convert.ToInt16(sp_modif.Parameters["@cantViajesSinMicro"].Value.ToString());
+
+                if(todosSeReemplazan == 1)
+                    return true;
+                string palabraViaje = (cantViajes == 1) ? "viaje" : "viajes";
+                string palabraProgram = (cantViajes == 1) ? "programado" : "programados";
+                string mensaje = "El micro tiene "+cantViajes+" "+palabraViaje+" "+palabraProgram+" entre las fechas que va a estar fuera de servicio.\n";
+                mensaje = mensaje + "La cantidad de viajes a los que no se les encontró un Micro suplente es: " + cantViajesSinMicro + ".\n";
+                mensaje = mensaje + "¿Desea continuar y cancelar los pasajes respectivos?\n";
+                DialogResult dialogResult = MessageBox.Show(mensaje, "Atención", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    return true;
+                }
+                else if (dialogResult == DialogResult.No)
+                {
+                    return false;
+                }
+
+                conn.desconectar();
+            }
+            catch (Exception error)
+            {
+                conn.desconectar();
+            }
+
+            return rtado;
+        
         }
 
         private string fechasFueraServicioValidas()

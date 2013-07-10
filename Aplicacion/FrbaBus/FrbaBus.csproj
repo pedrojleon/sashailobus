@@ -130,17 +130,17 @@
     <Compile Include="Abm Recorrido\Modif_Recorrido.Designer.cs">
       <DependentUpon>Modif_Recorrido.cs</DependentUpon>
     </Compile>
-    <Compile Include="Cancelar Viaje\Form1.cs">
+    <Compile Include="Cancelar Viaje\Cancelar_Viaje.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Cancelar Viaje\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Cancelar Viaje\Cancelar_Viaje.Designer.cs">
+      <DependentUpon>Cancelar_Viaje.cs</DependentUpon>
     </Compile>
-    <Compile Include="Canje de Ptos\Form1.cs">
+    <Compile Include="Canje de Ptos\Canje_Puntos.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Canje de Ptos\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Canje de Ptos\Canje_Puntos.Designer.cs">
+      <DependentUpon>Canje_Puntos.cs</DependentUpon>
     </Compile>
     <Compile Include="Compra de Pasajes\Compra_Pasaje.cs">
       <SubType>Form</SubType>
@@ -244,6 +244,12 @@
     <EmbeddedResource Include="Abm Recorrido\Modif_Recorrido.resx">
       <DependentUpon>Modif_Recorrido.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Cancelar Viaje\Cancelar_Viaje.resx">
+      <DependentUpon>Cancelar_Viaje.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Canje de Ptos\Canje_Puntos.resx">
+      <DependentUpon>Canje_Puntos.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Compra de Pasajes\Compra_Pasaje.resx">
       <DependentUpon>Compra_Pasaje.cs</DependentUpon>
     </EmbeddedResource>
@@ -279,6 +285,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Registrar LLegada Micro\Registro_Llegada.resx">
+      <DependentUpon>Registro_Llegada.cs</DependentUpon>
+    </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
@@ -294,11 +303,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Registrar LLegada Micro\Form1.cs">
+    <Compile Include="Registrar LLegada Micro\Registro_Llegada.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Registrar LLegada Micro\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Registrar LLegada Micro\Registro_Llegada.Designer.cs">
+      <DependentUpon>Registro_Llegada.cs</DependentUpon>
     </Compile>
     <Compile Include="Top Clientes\Form1.cs">
       <SubType>Form</SubType>
