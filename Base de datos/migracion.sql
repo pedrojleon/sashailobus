@@ -1001,6 +1001,50 @@ AS
 		
 GO
 
+CREATE PROCEDURE SASHAILO.puntos_cliente
+    	@p_id_cliente int
+AS
+
+	select * from (
+		select hp.ID_CLIENTE, hp.ID_PASAJE, ID_ENCOMIENDA, PUNTOS, FECHA, 
+			   null PRODUCTO, c_o.NOMBRE_CIUDAD + ' - ' + c_d.NOMBRE_CIUDAD VIAJE
+		from SASHAILO.Historial_Puntos hp
+		join SASHAILO.Pasaje pa on pa.ID_PASAJE = hp.ID_PASAJE
+		join SASHAILO.Viaje vi on vi.ID_VIAJE = pa.ID_VIAJE
+		join SASHAILO.Recorrido re on re.ID_RECORRIDO = vi.ID_RECORRIDO
+		join SASHAILO.Recorrido_Ciudades rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES
+		join SASHAILO.Ciudad c_o on c_o.ID_CIUDAD = rc.ID_CIUDAD_ORIGEN
+		join SASHAILO.Ciudad c_d on c_d.ID_CIUDAD = rc.ID_CIUDAD_DESTINO
+		where hp.ID_CLIENTE = @p_id_cliente and hp.ID_PASAJE is not null
+
+		union all
+
+		select hp.ID_CLIENTE, hp.ID_PASAJE, hp.ID_ENCOMIENDA, PUNTOS, FECHA, 
+			   null PRODUCTO, c_o.NOMBRE_CIUDAD + ' - ' + c_d.NOMBRE_CIUDAD VIAJE
+		from SASHAILO.Historial_Puntos hp
+		join SASHAILO.Encomienda en on en.ID_ENCOMIENDA = hp.ID_ENCOMIENDA
+		join SASHAILO.Viaje vi on vi.ID_VIAJE = en.ID_VIAJE
+		join SASHAILO.Recorrido re on re.ID_RECORRIDO = vi.ID_RECORRIDO
+		join SASHAILO.Recorrido_Ciudades rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES
+		join SASHAILO.Ciudad c_o on c_o.ID_CIUDAD = rc.ID_CIUDAD_ORIGEN
+		join SASHAILO.Ciudad c_d on c_d.ID_CIUDAD = rc.ID_CIUDAD_DESTINO
+		where hp.ID_CLIENTE = @p_id_cliente and hp.ID_ENCOMIENDA is not null
+
+		union all
+
+		select ID_CLIENTE, null ID_PASAJE, null ID_ENCOMIENDA, 
+			  -1 * (ca.CANTIDAD * pr.PUNTOS_NECESARIOS) PUNTOS, FECHA,
+			  cast(ca.CANTIDAD as varchar) + ' ' + pr.DESCRIPCION PRODUCTO,
+			  null VIAJE
+		from SASHAILO.Canje ca 
+		join SASHAILO.Producto pr on pr.ID_PRODUCTO = ca.ID_PRODUCTO
+		where ca.ID_CLIENTE = @p_id_cliente
+	) tabla
+	order by tabla.FECHA desc
+	;
+		
+GO
+
 CREATE PROCEDURE SASHAILO.sp_alta_recorrido
 	@p_id_ciudad_origen INT,
 	@p_id_ciudad_destino INT,
