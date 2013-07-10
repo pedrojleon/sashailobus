@@ -205,6 +205,7 @@ CREATE TABLE SASHAILO.Canje(
 	ID_CLIENTE int FOREIGN KEY REFERENCES SASHAILO.Cliente(ID_CLIENTE),
 	ID_PRODUCTO int FOREIGN KEY REFERENCES SASHAILO.Producto(ID_PRODUCTO),
 	CANTIDAD int not null,
+	FECHA datetime not null,
 	PRIMARY KEY(ID_CANJE)
 ) 
 
@@ -217,6 +218,7 @@ CREATE TABLE SASHAILO.Viaje(
 	F_SALIDA datetime,
 	F_LLEGADA_ESTIMADA datetime,
 	F_LLEGADA datetime,
+	CANCELADO char(1) not null DEFAULT 'N',
 	PRIMARY KEY (ID_VIAJE)
 ) 
 
@@ -316,6 +318,7 @@ CREATE TABLE SASHAILO.Llegada(
 	ID_VIAJE int FOREIGN KEY REFERENCES SASHAILO.Viaje(ID_VIAJE) not null,
 	ID_CIUDAD_ORIGEN int FOREIGN KEY REFERENCES SASHAILO.Ciudad(ID_CIUDAD) not null,
 	ID_CIUDAD_DESTINO int FOREIGN KEY REFERENCES SASHAILO.Ciudad(ID_CIUDAD) not null,
+	D_ERROR varchar(255),
 	PRIMARY KEY (ID_LLEGADA)
 ) 
 
@@ -642,6 +645,123 @@ BEGIN
 		/*Se logueó correctamente. Blanqueo los login fallidos*/
 		update SASHAILO.Usuario set LOGIN_FALLIDOS=0 where USUARIO=@p_usuario
 	END
+	
+END
+
+GO
+
+CREATE PROCEDURE SASHAILO.sp_canjear_producto
+    	@p_id_cliente int,
+    	@p_id_producto int,
+    	@p_cantidad int,
+    	@p_fecha datetime,
+    	@hayErr int OUT,
+    	@errores varchar(200) OUT
+AS
+	
+BEGIN
+
+	SET @hayErr = 0
+	SET @errores = ''
+
+	/*verifico que alcance el stock*/
+	DECLARE @stockActual int 
+	select @stockActual = (select STOCK from SASHAILO.Producto where ID_PRODUCTO=@p_id_producto)
+	if @stockActual < @p_cantidad
+	BEGIN
+		set @hayErr = 1
+		set @errores = 'El stock actual no es suficiente para realizar el canje.'
+		RETURN
+	END
+	
+	/*verifico que alcance el stock*/
+	DECLARE @puntos_producto int 
+	DECLARE @puntos_cliente int
+	DECLARE @puntos_totales int
+	select @puntos_producto = (select PUNTOS_NECESARIOS from SASHAILO.Producto where ID_PRODUCTO=@p_id_producto)
+	select @puntos_cliente = (select PUNTOS from SASHAILO.Cliente where ID_CLIENTE=@p_id_cliente)
+	set @puntos_totales = @puntos_producto * @p_cantidad
+	if @puntos_totales > @puntos_cliente
+	BEGIN
+		set @hayErr = 1
+		set @errores = 'Los puntos del Cliente no son suficientes para realizar el canje.'
+		RETURN
+	END
+	
+	/*realizo el canje*/
+	BEGIN TRANSACTION
+	
+	INSERT INTO SASHAILO.Canje(ID_CLIENTE, ID_PRODUCTO, CANTIDAD, FECHA)
+	VALUES(@p_id_cliente, @p_id_producto, @p_cantidad, @p_fecha);
+	
+	UPDATE SASHAILO.Cliente SET PUNTOS = PUNTOS - (@puntos_producto * @p_cantidad) WHERE ID_CLIENTE = @p_id_cliente
+	
+	UPDATE SASHAILO.Producto SET STOCK = STOCK - @p_cantidad WHERE ID_PRODUCTO = @p_id_producto
+	
+	COMMIT TRANSACTION
+	
+END
+
+GO
+
+CREATE PROCEDURE SASHAILO.sp_registro_llegada
+    	@p_patente VARCHAR(7),
+		@p_f_llegada datetime,
+    	@p_id_origen int,
+    	@p_id_destino int,
+    	@hayErr int OUT,
+    	@errores varchar(200) OUT
+AS
+	
+BEGIN
+
+	SET @hayErr = 0
+	SET @errores = 'Se ha registrado la llegada del Micro'
+
+	/*verifico que exista el micro*/
+	DECLARE @existePatente int 
+	select @existePatente = (select COUNT(*) from SASHAILO.Micro where upper(PATENTE) = upper(@p_patente))
+	if @existePatente = 0
+	BEGIN
+		set @hayErr = 1
+		set @errores = 'El Micro ingresado no existe.'
+		RETURN
+	END
+	
+	/*verifico que exista el viaje segun los datos ingresados*/
+	DECLARE @id_viaje int 
+	select @id_viaje = (select vi.ID_VIAJE 
+						from SASHAILO.Viaje vi join SASHAILO.Micro mi on mi.ID_MICRO = vi.ID_MICRO
+						join SASHAILO.Recorrido re on re.ID_RECORRIDO = vi.ID_RECORRIDO
+						join SASHAILO.Recorrido_Ciudades rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES
+						where vi.CANCELADO = 'N' and vi.F_LLEGADA is null and rc.ID_CIUDAD_ORIGEN = @p_id_origen and upper(mi.PATENTE) = upper(@p_patente))
+	
+	IF @id_viaje is null BEGIN 
+		set @hayErr = 1
+		set @errores = 'No existe ningún Viaje para el Micro y la Ciudad de Salida ingresadas.'
+		RETURN
+	END
+		
+	DECLARE @id_ciudad_llegada int
+	select @id_ciudad_llegada = (select rc.ID_CIUDAD_DESTINO
+								 from SASHAILO.Viaje vi join SASHAILO.Recorrido re on re.ID_RECORRIDO = vi.ID_RECORRIDO
+								 join SASHAILO.Recorrido_Ciudades rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES
+								 where vi.CANCELADO = 'N' and vi.ID_VIAJE = @id_viaje)
+
+	DECLARE @id_micro int
+	select @id_micro = (select ID_MICRO from SASHAILO.Viaje where ID_VIAJE = @id_viaje)		
+	
+	DECLARE @d_error varchar(255)
+	set @d_error = ''
+	IF @p_id_destino <> @id_ciudad_llegada BEGIN
+		set @errores = 'Se ha registrado la Llegada del Micro. La Ciudad de Arribo no fué la que correspondía para el Viaje.'
+		set @d_error = 'El Micro arribó a una Ciudad que no correspondía'
+	END
+		
+	BEGIN TRANSACTION						 							 
+	INSERT INTO SASHAILO.Llegada(ID_VIAJE, ID_MICRO, PATENTE, ID_CIUDAD_ORIGEN, ID_CIUDAD_DESTINO, F_LLEGADA, D_ERROR)		 
+	VALUES(@id_viaje, @id_micro, upper(@p_patente), @p_id_origen, @p_id_destino, @p_f_llegada, @d_error)
+	COMMIT TRANSACTION
 	
 END
 
@@ -1045,6 +1165,65 @@ BEGIN
 END
 GO
 
+CREATE FUNCTION SASHAILO.puedeReemplazar(@p_id_micro int, @p_id_micro_reemplazado int)
+RETURNS INT
+AS
+BEGIN    
+	DECLARE @rtado INT
+	SET @rtado = 1
+
+	DECLARE @cant_kg int
+	DECLARE @cant_kg_reemplazado int
+	SET @cant_kg_reemplazado = (select CANT_KG from SASHAILO.Micro mi where mi.ID_MICRO = @p_id_micro_reemplazado)
+	SET @cant_kg = (select CANT_KG from SASHAILO.Micro mi where mi.ID_MICRO = @p_id_micro)
+	
+	IF @cant_kg < @cant_kg_reemplazado BEGIN -- no lo puede reemplazar porque no tiene tantos kg
+		SET @rtado = 0
+		RETURN @rtado
+	END
+	
+	DECLARE @id_ts int
+	DECLARE @id_ts_reemplazado int
+	SET @id_ts_reemplazado = (select mi.ID_TIPO_SERVICIO from SASHAILO.Micro mi where mi.ID_MICRO = @p_id_micro_reemplazado)
+	SET @id_ts = (select mi.ID_TIPO_SERVICIO from SASHAILO.Micro mi where mi.ID_MICRO = @p_id_micro)
+	
+	IF @id_ts <> @id_ts_reemplazado BEGIN -- no lo puede reemplazar porque no brindan el mismo tipo de servicio
+		SET @rtado = 0
+		RETURN @rtado
+	END
+	
+    DECLARE @nro_butaca int 
+	DECLARE @id_tipo_butaca int
+	DECLARE @nro_piso int
+	DECLARE curr_butacas CURSOR FOR 
+	select NRO_BUTACA, ID_TIPO_BUTACA, NRO_PISO from SASHAILO.Butaca bu where bu.ID_MICRO = @p_id_micro_reemplazado
+	
+	OPEN curr_butacas 
+	FETCH curr_butacas INTO @nro_butaca, @id_tipo_butaca, @nro_piso
+	
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+		
+		DECLARE @existeButaca int
+		SELECT @existeButaca = (select count(1) from SASHAILO.Butaca bu where bu.ID_MICRO=@p_id_micro and 
+		                                                                      bu.NRO_BUTACA=@nro_butaca and 
+		                                                                      bu.ID_TIPO_BUTACA=@id_tipo_butaca and 
+		                                                                      bu.NRO_PISO=@nro_piso)
+		IF @existeButaca = 0 BEGIN --la butaca no existe en el micro sustituto
+			SET @rtado = 0         -- por lo tanto no puede reemplazar al otro
+		END		
+		
+		FETCH curr_butacas INTO @nro_butaca, @id_tipo_butaca, @nro_piso
+	END
+	
+	CLOSE curr_butacas
+	DEALLOCATE curr_butacas	
+
+	RETURN @rtado
+	
+END
+GO
+
 CREATE FUNCTION SASHAILO.F_GET_ESTADO_MICRO(@id_micro int)
  RETURNS int
  AS
@@ -1091,11 +1270,13 @@ AS
 	JOIN SASHAILO.Marca_Micro ma on ma.ID_MARCA=mi.ID_MARCA
 	JOIN SASHAILO.Tipo_Servicio ts on ts.ID_TIPO_SERVICIO=mi.ID_TIPO_SERVICIO
 	WHERE 
+	 SASHAILO.f_m_operativo_entre_fechas(mi.ID_MICRO, @p_f_salida, @p_f_llegada_estimada) = 1 AND
 	(@p_id_tipo_servicio is null or mi.ID_TIPO_SERVICIO = @p_id_tipo_servicio) and
 	(@p_id_marca is null or ma.ID_MARCA = @p_id_marca) and
 	(SASHAILO.F_GET_ESTADO_MICRO(mi.ID_MICRO) = 1) and
 	 NOT EXISTS (SELECT 1 from SASHAILO.Viaje vi
 				 WHERE 
+				 vi.CANCELADO = 'N' AND
 				 vi.ID_MICRO = mi.ID_MICRO AND
 				 (
 				   (@p_f_salida >=  vi.F_SALIDA and @p_f_salida <=  vi.F_LLEGADA_ESTIMADA)
@@ -1366,6 +1547,365 @@ BEGIN
 END
 GO
 
+CREATE PROCEDURE SASHAILO.evalua_mic_f_de_servicio
+    	@p_id_micro int,
+    	@p_f_desde datetime,
+    	@p_f_hasta datetime,
+    	@todosSeReemplazan int OUT,
+    	@cantViajes int OUT,
+    	@cantViajesSinMicro int OUT
+    	
+AS
+BEGIN
+	SET @todosSeReemplazan = 1
+	SET @cantViajesSinMicro = 0
+	
+	select @cantViajes = (select COUNT(1) from SASHAILO.Viaje vi where vi.ID_MICRO = @p_id_micro
+																 and vi.CANCELADO = 'N'
+																 and (vi.F_SALIDA BETWEEN @p_f_desde and @p_f_hasta)
+																 and (vi.F_LLEGADA_ESTIMADA BETWEEN @p_f_desde and @p_f_hasta))
+	
+	--no tiene viajes programados, puede salir de servicio sin ningun problema
+	if @cantViajes = 0
+	BEGIN
+		RETURN
+	END
+
+	DECLARE @id_viaje int 
+	DECLARE @f_salida datetime
+	DECLARE @f_llegada_estim datetime
+	
+	DECLARE curr_viajes CURSOR FOR 
+	select vi.ID_VIAJE, vi.F_SALIDA, vi.F_LLEGADA_ESTIMADA 
+	from SASHAILO.Viaje vi where vi.ID_MICRO = @p_id_micro
+	and vi.CANCELADO = 'N'
+	and (vi.F_SALIDA BETWEEN @p_f_desde and @p_f_hasta)
+	and (vi.F_LLEGADA_ESTIMADA BETWEEN @p_f_desde and @p_f_hasta)
+	
+	OPEN curr_viajes 
+	FETCH curr_viajes INTO @id_viaje, @f_salida, @f_llegada_estim
+	
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+		
+		DECLARE @cantReemplazantes int
+		SELECT @cantReemplazantes = (SELECT COUNT(1) from SASHAILO.Micro mi
+		                             WHERE mi.ID_MICRO not IN (select distinct vi.ID_MICRO from SASHAILO.Viaje vi where (vi.F_SALIDA between @f_salida and @f_llegada_estim) and (vi.F_LLEGADA_ESTIMADA between @f_salida and @f_llegada_estim))
+		                             AND SASHAILO.puedeReemplazar(mi.ID_MICRO, @p_id_micro) = 1
+		                             AND SASHAILO.f_m_operativo_entre_fechas(mi.ID_MICRO, @f_salida, @f_llegada_estim) = 1
+		                             )
+		
+		IF @cantReemplazantes = 0 begin
+			SET @todosSeReemplazan = 0
+			SET @cantViajesSinMicro = @cantViajesSinMicro + 1
+		end
+		
+		
+		FETCH curr_viajes INTO @id_viaje, @f_salida, @f_llegada_estim
+	END
+	
+	CLOSE curr_viajes
+	DEALLOCATE curr_viajes	
+
+END
+GO
+
+CREATE PROCEDURE SASHAILO.mic_fs_reemplazar_cancelar
+    	@p_id_micro int,
+    	@p_f_actual datetime,
+    	@p_f_desde datetime,
+    	@p_f_hasta datetime,
+    	@viajesCancelados int OUT,
+    	@pasajesCancelados int OUT,
+    	@encoCanceladas int OUT
+    	
+AS
+BEGIN
+	SET @viajesCancelados = 0
+	SET @pasajesCancelados = 0
+	SET @encoCanceladas = 0
+	
+	DECLARE @cantViajes int
+	select @cantViajes = (select COUNT(1) from SASHAILO.Viaje vi where vi.ID_MICRO = @p_id_micro
+																 and vi.CANCELADO = 'N'
+																 and (vi.F_SALIDA BETWEEN @p_f_desde and @p_f_hasta)
+																 and (vi.F_LLEGADA_ESTIMADA BETWEEN @p_f_desde and @p_f_hasta))
+	
+	--no tiene viajes programados, puede salir de servicio sin ningun problema
+	if @cantViajes = 0
+	BEGIN
+		RETURN
+	END
+
+	DECLARE @id_viaje int 
+	DECLARE @f_salida datetime
+	DECLARE @f_llegada_estim datetime
+	
+	DECLARE curr_viajes CURSOR FOR 
+	select vi.ID_VIAJE, vi.F_SALIDA, vi.F_LLEGADA_ESTIMADA 
+	from SASHAILO.Viaje vi where vi.ID_MICRO = @p_id_micro
+	and vi.CANCELADO = 'N'
+	and (vi.F_SALIDA BETWEEN @p_f_desde and @p_f_hasta)
+	and (vi.F_LLEGADA_ESTIMADA BETWEEN @p_f_desde and @p_f_hasta)
+	
+	BEGIN TRANSACTION
+	
+	OPEN curr_viajes 
+	FETCH curr_viajes INTO @id_viaje, @f_salida, @f_llegada_estim
+	
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+		
+		DECLARE @cantReemplazantes int
+		SELECT @cantReemplazantes = (SELECT COUNT(1) from SASHAILO.Micro mi
+		                             WHERE mi.ID_MICRO not IN (select distinct vi.ID_MICRO from SASHAILO.Viaje vi where (vi.F_SALIDA between @f_salida and @f_llegada_estim) and (vi.F_LLEGADA_ESTIMADA between @f_salida and @f_llegada_estim))
+		                             AND SASHAILO.puedeReemplazar(mi.ID_MICRO, @p_id_micro) = 1
+		                             AND SASHAILO.f_m_operativo_entre_fechas(mi.ID_MICRO, @f_salida, @f_llegada_estim) = 1
+		                             )
+		--cancelo el viaje y los pasajes/encomiendas
+		IF @cantReemplazantes = 0 BEGIN
+			
+			
+			SET @viajesCancelados = @viajesCancelados + 1
+			DECLARE @cantPasajes int
+			DECLARE @cantEnco int
+			SET @cantPasajes = (select COUNT(1) from SASHAILO.Pasaje pa where pa.ID_VIAJE = @id_viaje)
+			SET @cantEnco = (select COUNT(1) from SASHAILO.Encomienda en where en.ID_VIAJE = @id_viaje)
+			SET @pasajesCancelados = @pasajesCancelados + @cantPasajes
+			SET @encoCanceladas = @encoCanceladas + @cantEnco
+			
+			--cancelo pasajes
+			INSERT INTO SASHAILO.Devolucion(ID_PASAJE, F_DEVOLUCION, MOTIVO)
+			SELECT ID_PASAJE, @p_f_actual, 'Viaje Cancelado' FROM SASHAILO.Pasaje where ID_VIAJE = @id_viaje
+			
+			--cancelo encomiendas
+			INSERT INTO SASHAILO.Devolucion(ID_ENCOMIENDA, F_DEVOLUCION, MOTIVO)
+			SELECT ID_ENCOMIENDA, @p_f_actual, 'Viaje Cancelado' FROM SASHAILO.Encomienda where ID_VIAJE = @id_viaje
+			
+			--marco el viaje como cancelado
+			UPDATE SASHAILO.Viaje SET CANCELADO = 'S' WHERE ID_VIAJE = @id_viaje
+			
+		END
+		ELSE BEGIN
+			DECLARE @id_micro_reemplazante int
+			SELECT @id_micro_reemplazante = (SELECT TOP 1 mi.ID_MICRO from SASHAILO.Micro mi
+		                                     WHERE mi.ID_MICRO not IN (select distinct vi.ID_MICRO from SASHAILO.Viaje vi 
+		                                                               where  vi.CANCELADO = 'N' and
+		                                                                     (vi.F_SALIDA between @f_salida and @f_llegada_estim) and 
+		                                                                     (vi.F_LLEGADA_ESTIMADA between @f_salida and @f_llegada_estim))
+		                                     AND SASHAILO.puedeReemplazar(mi.ID_MICRO, @p_id_micro) = 1
+		                                     AND SASHAILO.f_m_operativo_entre_fechas(mi.ID_MICRO, @f_salida, @f_llegada_estim) = 1
+		                                     )
+			--le cambio el micro al viaje
+			UPDATE SASHAILO.Viaje SET ID_MICRO = @id_micro_reemplazante WHERE ID_VIAJE = @id_viaje
+			
+			--cambio el id de las butacas de los pasajes por los id_butaca analogas en el micro nuevo
+			DECLARE @id_pasaje int 
+			DECLARE @id_butaca int 
+			DECLARE curr_butacas CURSOR FOR 
+			select ID_PASAJE, ID_BUTACA from SASHAILO.Pasaje where ID_VIAJE = @id_viaje
+			
+			OPEN curr_butacas 
+			FETCH curr_butacas INTO @id_pasaje, @id_butaca
+			
+			WHILE (@@FETCH_STATUS = 0)
+			BEGIN
+				
+				DECLARE @nro_butaca int 
+				DECLARE @id_tipo_butaca int
+				DECLARE @nro_piso int
+				DECLARE @id_butaca_reemplazante int
+				
+				SELECT @nro_butaca = bu.NRO_BUTACA, @id_tipo_butaca = bu.ID_TIPO_BUTACA, @nro_piso = bu.NRO_PISO FROM SASHAILO.Butaca bu WHERE bu.ID_BUTACA = @id_butaca
+				SELECT @id_butaca_reemplazante = bu.ID_BUTACA FROM SASHAILO.Butaca bu WHERE bu.NRO_BUTACA = @nro_butaca AND
+				                                                                            bu.ID_TIPO_BUTACA = @id_tipo_butaca AND
+				                                                                            bu.NRO_PISO = @nro_piso AND
+				                                                                            bu.ID_MICRO = @id_micro_reemplazante
+				
+				--actualizo el id_butaca con la reemplazante
+				UPDATE SASHAILO.Pasaje SET ID_BUTACA = @id_butaca_reemplazante WHERE ID_PASAJE = @id_pasaje	                                                                            
+				
+				
+				FETCH curr_butacas INTO @id_pasaje, @id_butaca
+			END
+			
+			CLOSE curr_butacas
+			DEALLOCATE curr_butacas				
+					                                     
+		END
+		
+		FETCH curr_viajes INTO @id_viaje, @f_salida, @f_llegada_estim
+	END
+	
+	CLOSE curr_viajes
+	DEALLOCATE curr_viajes	
+	
+	COMMIT TRANSACTION
+
+END
+GO
+
+CREATE PROCEDURE SASHAILO.sp_devolver_compra
+    	@p_id_compra int,
+		@p_id_pasaje numeric(18,0),
+    	@p_id_encomienda numeric(18,0),
+    	@p_f_devolucion datetime,
+    	@p_motivo nvarchar(255),
+    	@hayErr int OUT,
+    	@errores varchar(200) OUT
+AS
+	
+BEGIN
+
+	SET @hayErr = 0
+	SET @errores = ''
+
+	/*verifico que exista la compra*/
+	DECLARE @existeCompra int 
+	select @existeCompra = (select COUNT(1) from SASHAILO.Compra where ID_COMPRA = @p_id_compra)
+	if @existeCompra = 0
+	BEGIN
+		set @hayErr = 1
+		set @errores = 'El Código de Compra ingresado no existe.'
+		RETURN
+	END
+	
+	/*verifico que la compra no sea antigua*/
+	DECLARE @compraAntigua int 
+	select @compraAntigua = (select top 1 co.ID_COMPRA from SASHAILO.Compra co 
+	                        join SASHAILO.Pasaje pa on pa.ID_COMPRA = co.ID_COMPRA
+	                        join SASHAILO.Viaje vi on vi.ID_VIAJE = pa.ID_VIAJE
+	                        where co.ID_COMPRA = @p_id_compra and 
+	                        vi.F_SALIDA <= @p_f_devolucion
+	                        )
+	if @compraAntigua is null BEGIN
+	select @compraAntigua = (select top 1 co.ID_COMPRA from SASHAILO.Compra co 
+	                        join SASHAILO.Encomienda en on en.ID_COMPRA = co.ID_COMPRA
+	                        join SASHAILO.Viaje vi on vi.ID_VIAJE = en.ID_VIAJE
+	                        where co.ID_COMPRA = @p_id_compra and 
+	                        vi.F_SALIDA <= @p_f_devolucion
+	                        )	
+	END	                        
+	if @compraAntigua is not null
+	BEGIN
+		set @hayErr = 1
+		set @errores = 'La Compra que intenta cancelar ya se hizo efectiva. Es un viaje pasado.'
+		RETURN
+	END
+	
+	/*verifico que exista el pasaje*/
+	DECLARE @existePasaje int 
+	select @existePasaje = (select COUNT(1)
+						  from SASHAILO.Pasaje pa join SASHAILO.Compra co on co.ID_COMPRA = pa.ID_COMPRA
+						  where pa.ID_PASAJE = @p_id_pasaje and co.ID_COMPRA = @p_id_compra)
+	
+	IF @p_id_pasaje is not null and @existePasaje = 0 BEGIN 
+		set @hayErr = 1
+		set @errores = 'El Código de Pasaje ingresado no existe'
+		RETURN
+	END	
+	
+	/*verifico que exista la encomienda*/
+	DECLARE @existeEnco int 
+	select @existeEnco = (select COUNT(1)
+						  from SASHAILO.Encomienda en join SASHAILO.Compra co on co.ID_COMPRA = en.ID_COMPRA
+						  where en.ID_ENCOMIENDA = @p_id_encomienda and co.ID_COMPRA = @p_id_compra)
+	
+	IF @p_id_encomienda is not null and @existeEnco = 0 BEGIN 
+		set @hayErr = 1
+		set @errores = 'El Código de Encomienda ingresado no existe'
+		RETURN
+	END
+	
+	/*verifico si el pasaje ya fue devuelto*/
+	DECLARE @pasajeDevuelto int 
+	select @pasajeDevuelto = (select COUNT(1) from SASHAILO.Devolucion de where de.ID_PASAJE = @p_id_pasaje)
+	
+	IF @p_id_pasaje is not null and @pasajeDevuelto > 0 BEGIN 
+		set @hayErr = 1
+		set @errores = 'El Pasaje ingresado ya ha sido devuelto'
+		RETURN
+	END
+	
+	/*verifico si el pasaje ya fue devuelto*/
+	DECLARE @encoDevuelta int 
+	select @encoDevuelta = (select COUNT(1) from SASHAILO.Devolucion de where de.ID_ENCOMIENDA = @p_id_encomienda)
+	
+	IF @p_id_encomienda is not null and @encoDevuelta > 0 BEGIN 
+		set @hayErr = 1
+		set @errores = 'La Encomienda ingresada ya ha sido devuelta'
+		RETURN
+	END	
+	
+	/*elimino pasaje*/
+	IF @p_id_pasaje is not null BEGIN 
+		BEGIN TRANSACTION
+		INSERT INTO SASHAILO.Devolucion(ID_PASAJE, F_DEVOLUCION, MOTIVO)
+		VALUES(@p_id_pasaje, @p_f_devolucion, @p_motivo)
+		COMMIT TRANSACTION
+		RETURN
+	END
+	
+	/*elimino encomienda*/
+	IF @p_id_encomienda is not null BEGIN 
+		BEGIN TRANSACTION
+		INSERT INTO SASHAILO.Devolucion(ID_ENCOMIENDA, F_DEVOLUCION, MOTIVO)
+		VALUES(@p_id_encomienda, @p_f_devolucion, @p_motivo)
+		COMMIT TRANSACTION
+		RETURN
+	END
+		
+	-- elimino la compra completa
+	DECLARE @eliminaAlgo int
+	set @eliminaAlgo = 0
+	BEGIN TRANSACTION
+	
+	DECLARE @id_pasaje numeric(18,0) 
+	DECLARE @id_encomienda numeric(18,0)
+	
+	DECLARE curr_pasajes CURSOR FOR 
+	select ID_PASAJE from SASHAILO.Pasaje 
+	where ID_COMPRA = @p_id_compra and ID_PASAJE not in (select distinct id_pasaje from SASHAILO.Devolucion where id_pasaje is not null)
+	OPEN curr_pasajes 
+	FETCH curr_pasajes INTO @id_pasaje	
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+		set @eliminaAlgo = 1
+		INSERT INTO SASHAILO.Devolucion(ID_PASAJE, F_DEVOLUCION, MOTIVO)
+		VALUES(@id_pasaje, @p_f_devolucion, @p_motivo)                                                                          
+		
+		FETCH curr_pasajes INTO @id_pasaje
+	END
+	CLOSE curr_pasajes
+	DEALLOCATE curr_pasajes	
+	
+	DECLARE curr_encomiendas CURSOR FOR 
+	select ID_ENCOMIENDA from SASHAILO.Encomienda
+	where ID_COMPRA = @p_id_compra and ID_ENCOMIENDA not in (select distinct id_encomienda from SASHAILO.Devolucion where id_encomienda is not null)
+	OPEN curr_encomiendas 
+	FETCH curr_encomiendas INTO @id_encomienda	
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+		set @eliminaAlgo = 1
+		INSERT INTO SASHAILO.Devolucion(ID_ENCOMIENDA, F_DEVOLUCION, MOTIVO)
+		VALUES(@id_encomienda, @p_f_devolucion, @p_motivo)                                                                          
+		
+		FETCH curr_encomiendas INTO @id_encomienda
+	END
+	CLOSE curr_encomiendas
+	DEALLOCATE curr_encomiendas				
+	
+	COMMIT TRANSACTION
+	
+	if @eliminaAlgo = 0 begin
+		set @hayErr = 1
+		set @errores = 'La Compra no tiene nada por cancelar'
+	end
+	
+END
+
+GO
+
 CREATE PROCEDURE SASHAILO.fin_vida_util_micro
     	@p_id_micro int,
     	@p_m_baja_definitiva char(1),
@@ -1465,14 +2005,67 @@ CREATE FUNCTION SASHAILO.F_CANT_BUTACAS_DISP(@id_viaje int)
    declare @cant_butacas_vendidas int
    select @id_micro = (SELECT vi.ID_MICRO FROM SASHAILO.Viaje vi where vi.ID_VIAJE = @id_viaje)
    select @cant_butacas_micro = (select mi.CANT_BUTACAS from SASHAILO.Micro mi where mi.ID_MICRO = @id_micro)
-   select @cant_butacas_vendidas = (select COUNT(1) from SASHAILO.Pasaje pa where pa.ID_VIAJE = @id_viaje)
+   select @cant_butacas_vendidas = (select COUNT(1) from SASHAILO.Pasaje pa where pa.ID_VIAJE = @id_viaje and 
+                                                                                  pa.ID_PASAJE not in (select distinct ID_PASAJE
+                                                                                                       from SASHAILO.Devolucion
+                                                                                                       where ID_PASAJE is not null))
    
    return (@cant_butacas_micro - @cant_butacas_vendidas)
    
  END
  GO
 
- CREATE FUNCTION SASHAILO.F_CANT_KG_DISP(@id_viaje int)
+CREATE FUNCTION SASHAILO.f_m_operativo_entre_fechas(@id_micro int,
+                                                @f_desde datetime,
+                                                @f_hasta datetime)
+RETURNS int
+AS
+BEGIN
+
+	declare @f_f_servicio datetime
+	declare @f_r_servicio datetime
+	declare @f_b_definitiva datetime
+
+	select top 1 @f_f_servicio = FECHA_F_SERVICIO, @f_r_servicio = FECHA_REINICIO, @f_b_definitiva = FECHA_BAJA_DEF 
+	from SASHAILO.Log_Estado_Micro l where l.ID_MICRO = @id_micro
+	order by l.ID_LOG desc
+
+	--el micro no tiene programadas fechas de baja, estará operativo
+	if @f_f_servicio is null and @f_b_definitiva is null begin
+		return 1
+	end
+	
+	--el micro sera dado de baja entre las fechas en cuestion
+	if @f_b_definitiva is not null and @f_b_definitiva <= @f_hasta begin
+		return 0
+	end
+	
+	--el micro saldra de servicio entre las fechas en cuestion
+	if @f_f_servicio between @f_desde and @f_hasta begin
+		return 0
+	end
+	
+	--el micro retomará de servicio entre las fechas en cuestion
+	if @f_r_servicio > @f_desde and @f_r_servicio < @f_hasta begin
+		return 0
+	end
+	
+	--el micro estaria fuera de servicio al momento de salir
+	if @f_desde >= @f_f_servicio and @f_desde < @f_r_servicio begin
+		return 0
+	end
+	
+	--el micro estaria fuera de servicio el dia de arribo
+	if @f_hasta >= @f_f_servicio and @f_hasta < @f_r_servicio begin
+		return 0
+	end
+      
+    return 1
+    
+END
+GO
+
+CREATE FUNCTION SASHAILO.F_CANT_KG_DISP(@id_viaje int)
  RETURNS numeric(18,0)
  AS
  BEGIN
@@ -1481,7 +2074,11 @@ CREATE FUNCTION SASHAILO.F_CANT_BUTACAS_DISP(@id_viaje int)
    declare @cant_kg_vendidos numeric(18,0)
    select @id_micro = (SELECT vi.ID_MICRO FROM SASHAILO.Viaje vi where vi.ID_VIAJE = @id_viaje)
    select @cant_kg_micro = (select mi.CANT_KG from SASHAILO.Micro mi where mi.ID_MICRO = @id_micro)
-   select @cant_kg_vendidos = (select ISNULL(SUM(en.KG),0) from SASHAILO.Encomienda en where en.ID_VIAJE = @id_viaje)
+   select @cant_kg_vendidos = (select ISNULL(SUM(en.KG),0) from SASHAILO.Encomienda en 
+                               where en.ID_VIAJE = @id_viaje and 
+                               en.ID_ENCOMIENDA not in (select distinct ID_ENCOMIENDA
+														from SASHAILO.Devolucion
+														where ID_ENCOMIENDA is not null))
    
    return (@cant_kg_micro - @cant_kg_vendidos)
    
@@ -1515,6 +2112,7 @@ AS
 	JOIN SASHAILO.Recorrido_Ciudades rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES
 	JOIN SASHAILO.Tipo_Servicio ts on ts.ID_TIPO_SERVICIO = re.ID_TIPO_SERVICIO
 	WHERE
+	vi.CANCELADO = 'N' AND
 	vi.F_SALIDA >= @p_f_salida AND
 	YEAR(vi.F_SALIDA) = YEAR(@p_f_salida) AND
 	MONTH(vi.F_SALIDA) = MONTH(@p_f_salida) AND
@@ -1540,13 +2138,15 @@ AS
 	WHERE mi.ID_MICRO = @p_id_micro
 	AND bu.ID_BUTACA not in (SELECT pa.ID_BUTACA
 							 FROM SASHAILO.Pasaje pa
-							 WHERE pa.ID_VIAJE = @p_id_viaje)
+							 WHERE pa.ID_VIAJE = @p_id_viaje and 
+							 pa.ID_PASAJE not in (select ID_PASAJE from SASHAILO.Devolucion where ID_PASAJE is not null))
 	AND bu.ID_BUTACA not in (SELECT pet.ID_BUTACA
 							 FROM SASHAILO.Pasaje_Encomienda_Temporal pet
 							 WHERE pet.ID_VIAJE = @p_id_viaje AND pet.ID_BUTACA is not null)	
 	;
 		
 GO
+
 
 CREATE PROCEDURE SASHAILO.top_destinos_mas_pasajes
     	@p_f_desde datetime,
@@ -1626,7 +2226,9 @@ AS
 	SET @errores = ''
 	
 	DECLARE @cantidad INT
-	SELECT @cantidad = (SELECT COUNT(1) FROM SASHAILO.Pasaje pa WHERE pa.ID_VIAJE = @p_id_viaje AND pa.ID_CLIENTE = @p_id_cliente)
+	SELECT @cantidad = (SELECT COUNT(1) FROM SASHAILO.Pasaje pa WHERE pa.ID_VIAJE = @p_id_viaje AND 
+	                                                                  pa.ID_CLIENTE = @p_id_cliente AND
+	                                                                  pa.ID_PASAJE not in (select ID_PASAJE from SASHAILO.Devolucion where ID_PASAJE is not null))
 	IF @cantidad > 0 BEGIN
 		SET @hayError = 1
 		SET @errores = 'El Cliente ingresado ya tiene un Pasaje para el Viaje seleccionado'
@@ -1650,6 +2252,7 @@ AS
 						AND (vi.F_SALIDA BETWEEN @fecha_salida AND @fecha_llegada_estim 
 						     OR 
 							 vi.F_LLEGADA BETWEEN @fecha_salida AND @fecha_llegada_estim)
+						AND pa.ID_PASAJE not in (select ID_PASAJE from SASHAILO.Devolucion where ID_PASAJE is not null)
 						)
 	IF @cantidad > 0 BEGIN
 		SET @hayError = 1
@@ -1671,7 +2274,7 @@ AS
 		RETURN
 	END							
      
-GO
+GO 
 
 CREATE PROCEDURE SASHAILO.alta_butaca
     	@p_id_micro int, 
@@ -1698,6 +2301,73 @@ END
 GO
 
 /******************************************** FIN - CREACION DE STORED PROCEDURES, FUNCIONES Y VISTAS ************************************************/
+
+/******************************************** INICIO - TRIGGERS *****************************************/
+
+create trigger t_registro_llegada
+on SASHAILO.Llegada
+for insert
+as
+BEGIN
+	
+	BEGIN TRANSACTION 
+	
+	declare @id_viaje int
+	declare @f_llegada datetime
+	select @id_viaje=id_viaje, @f_llegada=f_llegada from inserted
+	
+	UPDATE SASHAILO.Viaje SET F_LLEGADA = @f_llegada WHERE ID_VIAJE = @id_viaje
+	
+	DECLARE @precio numeric(18,2)
+	DECLARE @id_pasaje numeric(18,0)
+	DECLARE @id_encomienda numeric(18,0)
+	DECLARE @id_cliente int
+	DECLARE @puntos int
+	
+	DECLARE curr_pasajes CURSOR FOR 
+	select PRECIO, ID_PASAJE, ID_CLIENTE from SASHAILO.Pasaje pa where pa.ID_VIAJE = @id_viaje
+	OPEN curr_pasajes 
+	FETCH curr_pasajes INTO @precio, @id_pasaje, @id_cliente	
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+	
+		SET @puntos = @precio / 5
+		
+		INSERT INTO SASHAILO.Historial_Puntos(ID_CLIENTE, ID_PASAJE, PUNTOS, FECHA)
+		VALUES(@id_cliente, @id_pasaje, @puntos, @f_llegada)
+		
+		UPDATE SASHAILO.Cliente SET PUNTOS = PUNTOS + @puntos WHERE ID_CLIENTE = @id_cliente
+		
+		FETCH curr_pasajes INTO @precio, @id_pasaje, @id_cliente
+	END
+	CLOSE curr_pasajes
+	DEALLOCATE curr_pasajes	
+	
+	DECLARE curr_encomienda CURSOR FOR 
+	select PRECIO, ID_ENCOMIENDA, ID_CLIENTE from SASHAILO.Encomienda en where en.ID_VIAJE = @id_viaje
+	OPEN curr_encomienda 
+	FETCH curr_encomienda INTO @precio, @id_encomienda, @id_cliente	
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+
+		SET @puntos = @precio / 5
+		
+		INSERT INTO SASHAILO.Historial_Puntos(ID_CLIENTE, ID_ENCOMIENDA, PUNTOS, FECHA)
+		VALUES(@id_cliente, @id_encomienda, @puntos, @f_llegada)
+		
+		UPDATE SASHAILO.Cliente SET PUNTOS = PUNTOS + @puntos WHERE ID_CLIENTE = @id_cliente
+		
+		FETCH curr_encomienda INTO @precio, @id_encomienda, @id_cliente
+	END
+	CLOSE curr_encomienda
+	DEALLOCATE curr_encomienda		
+		
+	COMMIT TRANSACTION 
+	
+END
+
+/******************************************** FIN - TRIGGERS *****************************************/
+
 
 /****************************** INICIO -  LLENADO DE TABLAS A TRAVES DE SP *********************************/
 
