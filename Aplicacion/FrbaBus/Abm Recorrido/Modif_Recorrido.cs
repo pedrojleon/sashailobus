@@ -123,6 +123,8 @@ namespace FrbaBus.Abm_Recorrido
             string str_error = "";
             if (((ComboboxItem)origen.SelectedItem) == null || ((ComboboxItem)destino.SelectedItem) == null)
                 str_error = "Debe seleccionar las ciudades Origen y Destino.\n";
+            if (((ComboboxItem)origen.SelectedItem) != null && ((ComboboxItem)destino.SelectedItem) != null && ((ComboboxItem)origen.SelectedItem).Value == ((ComboboxItem)destino.SelectedItem).Value)
+                str_error = "Las Ciudades Origen y Destino no pueden ser la misma.\n";
             if (((ComboboxItem)tipo_servicio.SelectedItem) == null)
                 str_error = str_error + "Debe seleccionar el Tipo de Servicio.\n";
             if (base_kg.Text.Trim().Equals("") || base_pasaje.Text.Trim().Equals(""))
@@ -171,7 +173,7 @@ namespace FrbaBus.Abm_Recorrido
                     conn.desconectar();
                     return;
                 }
-                MessageBox.Show("El recorrido ha sido modificado", null, MessageBoxButtons.OK);
+                MessageBox.Show("El recorrido ha sido modificado", "", MessageBoxButtons.OK);
             }
             catch (Exception error)
             {

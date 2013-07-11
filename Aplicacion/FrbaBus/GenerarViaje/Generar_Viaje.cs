@@ -343,7 +343,7 @@ namespace FrbaBus.GenerarViaje
                     conn.desconectar();
                     return;
                 }
-                MessageBox.Show("El Viaje ha sido dado de alta", null, MessageBoxButtons.OK);
+                MessageBox.Show("El Viaje ha sido dado de alta", "", MessageBoxButtons.OK);
             }
             catch (Exception error)
             {

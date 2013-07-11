@@ -173,6 +173,12 @@
     <Compile Include="Consulta Puntos Adquiridos\Consulta_Puntos.Designer.cs">
       <DependentUpon>Consulta_Puntos.cs</DependentUpon>
     </Compile>
+    <Compile Include="Estadisticas\Listado_Estadistico.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Estadisticas\Listado_Estadistico.Designer.cs">
+      <DependentUpon>Listado_Estadistico.cs</DependentUpon>
+    </Compile>
     <Compile Include="Funciones.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -264,6 +270,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Consulta Puntos Adquiridos\Consulta_Puntos.resx">
       <DependentUpon>Consulta_Puntos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Estadisticas\Listado_Estadistico.resx">
+      <DependentUpon>Listado_Estadistico.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Funciones.resx">
       <DependentUpon>Funciones.cs</DependentUpon>

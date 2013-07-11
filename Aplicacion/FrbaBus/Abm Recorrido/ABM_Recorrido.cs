@@ -129,15 +129,49 @@ namespace FrbaBus.Abm_Recorrido
             {
                 Int32 id_recorrido = Convert.ToInt32(listado_recorridos.Rows[e.RowIndex].Cells["id_recorrido"].Value.ToString());
                 String habilitado = (listado_recorridos.Rows[e.RowIndex].Cells["habilitado"].Value.ToString().Trim().Equals("N")) ? "S" : "N";
+
                 Conexion conn = new Conexion();
-                SqlDataReader resultado = conn.consultar("UPDATE SASHAILO.Recorrido SET HABILITADO = '"+habilitado+"' WHERE ID_RECORRIDO = " + id_recorrido + "");
-                resultado.Dispose(); // Aca hago el borrado logico
-                if(habilitado.Equals("N"))
-                    MessageBox.Show("El recorrido ha sido deshabilitado", "");
-                else
+                bool hizoAlgo = false;
+
+                if (habilitado.Equals("N"))
+                {
+                    int v_tieneViajes = tieneViajes(id_recorrido);
+                    if (v_tieneViajes == 1)
+                    {
+
+                        string msj = "El recorrido que intenta deshabilitar tiene viajes programados. \n";
+                        msj = msj + "¿Desea cancelar esos viajes?";
+                        DialogResult dialogResult = MessageBox.Show(msj, "Atención", MessageBoxButtons.YesNo);
+                        if (dialogResult == DialogResult.Yes)
+                        {
+                            int viajesCancel = cancelarViajes(id_recorrido);
+                            MessageBox.Show("Cantidad de Viajes cancelados: " + viajesCancel, "");
+
+                            SqlDataReader resultado = conn.consultar("UPDATE SASHAILO.Recorrido SET HABILITADO = '" + habilitado + "' WHERE ID_RECORRIDO = " + id_recorrido + "");
+                            resultado.Dispose();
+                            MessageBox.Show("El recorrido ha sido deshabilitado", "");
+
+                            hizoAlgo = true;
+                        }
+                    }
+                    else {
+                        SqlDataReader resultado = conn.consultar("UPDATE SASHAILO.Recorrido SET HABILITADO = '" + habilitado + "' WHERE ID_RECORRIDO = " + id_recorrido + "");
+                        resultado.Dispose();
+                        MessageBox.Show("El recorrido ha sido deshabilitado", "");
+                        hizoAlgo = true;
+                    }
+                }
+                else {
+                    SqlDataReader resultado = conn.consultar("UPDATE SASHAILO.Recorrido SET HABILITADO = '" + habilitado + "' WHERE ID_RECORRIDO = " + id_recorrido + "");
+                    resultado.Dispose();
                     MessageBox.Show("El recorrido ha sido habilitado", "");
+                    hizoAlgo = true;
+                }
+
                 conn.desconectar();
-                b_buscar_Click(null, null);
+
+                if(hizoAlgo)
+                    b_buscar_Click(null, null);
 
             }
 
@@ -153,9 +187,79 @@ namespace FrbaBus.Abm_Recorrido
             }
         }
 
+        public int tieneViajes(int id_recorrido) {
+
+            Conexion conn = new Conexion();
+            SqlCommand sp_recorrido_alta;
+            Funciones func = new Funciones();
+
+            sp_recorrido_alta = new SqlCommand("SASHAILO.sp_tiene_viajes_recorrido", conn.miConexion); // Lo inicializo
+            sp_recorrido_alta.CommandType = CommandType.StoredProcedure; // Defino que tipo de comando es
+            SqlParameter ID_RECORRIDO = sp_recorrido_alta.Parameters.Add("@p_id_recorrido", SqlDbType.BigInt);
+            SqlParameter FECHA = sp_recorrido_alta.Parameters.Add("@p_fecha", SqlDbType.DateTime);
+            SqlParameter TIENE_VIAJES = sp_recorrido_alta.Parameters.Add("@tieneViajes", SqlDbType.Int);
+
+            ID_RECORRIDO.Value = id_recorrido;
+            FECHA.Value = func.getFechaActual();
+            TIENE_VIAJES.Direction = ParameterDirection.Output;
+
+            int tieneViajes = 0;
+
+            try
+            {
+                sp_recorrido_alta.ExecuteNonQuery();
+                tieneViajes = Convert.ToInt16(sp_recorrido_alta.Parameters["@tieneViajes"].Value.ToString());
+            }
+            catch (Exception error)
+            {
+                conn.desconectar();
+            }
+            conn.desconectar();
+
+            return tieneViajes;
+        }
+
+        public int cancelarViajes(int id_recorrido)
+        {
+
+            Conexion conn = new Conexion();
+            SqlCommand sp_recorrido_alta;
+            Funciones func = new Funciones();
+
+            sp_recorrido_alta = new SqlCommand("SASHAILO.reco_cancelar_viajes", conn.miConexion); // Lo inicializo
+            sp_recorrido_alta.CommandType = CommandType.StoredProcedure; // Defino que tipo de comando es
+            SqlParameter ID_RECORRIDO = sp_recorrido_alta.Parameters.Add("@p_id_recorrido", SqlDbType.BigInt);
+            SqlParameter FECHA = sp_recorrido_alta.Parameters.Add("@p_f_actual", SqlDbType.DateTime);
+            SqlParameter V_CANCELADOS = sp_recorrido_alta.Parameters.Add("@viajesCancelados", SqlDbType.Int);
+            SqlParameter P_CANCELADOS = sp_recorrido_alta.Parameters.Add("@pasajesCancelados", SqlDbType.Int);
+            SqlParameter E_CANCELADAS = sp_recorrido_alta.Parameters.Add("@encoCanceladas", SqlDbType.Int);
+
+            ID_RECORRIDO.Value = id_recorrido;
+            FECHA.Value = func.getFechaActual();
+            V_CANCELADOS.Direction = ParameterDirection.Output;
+            P_CANCELADOS.Direction = ParameterDirection.Output;
+            E_CANCELADAS.Direction = ParameterDirection.Output;
+
+            int cantViajes = 0;
+
+            try
+            {
+                sp_recorrido_alta.ExecuteNonQuery();
+                cantViajes = Convert.ToInt16(sp_recorrido_alta.Parameters["@viajesCancelados"].Value.ToString());
+            }
+            catch (Exception error)
+            {
+                conn.desconectar();
+            }
+            conn.desconectar();
+
+            return cantViajes;
+        }
+
         private void groupBox1_Enter(object sender, EventArgs e)
         {
 
         }
     }
 }
+
