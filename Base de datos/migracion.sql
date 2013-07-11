@@ -583,7 +583,6 @@ GO
 
 /******************************************** FIN - LLENADO DE TABLAS ************************************************/
 
-
 /******************************************** INICIO - CREACION DE STORED PROCEDURES, FUNCIONES Y VISTAS ************************************************/
 
 CREATE PROCEDURE SASHAILO.login
@@ -1406,6 +1405,7 @@ AS
 	
 	COMMIT TRANSACTION
 GO
+
 
 CREATE PROCEDURE SASHAILO.sp_alta_encomienda_provisoria
 	@p_id_viaje INT,
@@ -2346,73 +2346,6 @@ GO
 
 /******************************************** FIN - CREACION DE STORED PROCEDURES, FUNCIONES Y VISTAS ************************************************/
 
-/******************************************** INICIO - TRIGGERS *****************************************/
-
-create trigger t_registro_llegada
-on SASHAILO.Llegada
-for insert
-as
-BEGIN
-	
-	BEGIN TRANSACTION 
-	
-	declare @id_viaje int
-	declare @f_llegada datetime
-	select @id_viaje=id_viaje, @f_llegada=f_llegada from inserted
-	
-	UPDATE SASHAILO.Viaje SET F_LLEGADA = @f_llegada WHERE ID_VIAJE = @id_viaje
-	
-	DECLARE @precio numeric(18,2)
-	DECLARE @id_pasaje numeric(18,0)
-	DECLARE @id_encomienda numeric(18,0)
-	DECLARE @id_cliente int
-	DECLARE @puntos int
-	
-	DECLARE curr_pasajes CURSOR FOR 
-	select PRECIO, ID_PASAJE, ID_CLIENTE from SASHAILO.Pasaje pa where pa.ID_VIAJE = @id_viaje
-	OPEN curr_pasajes 
-	FETCH curr_pasajes INTO @precio, @id_pasaje, @id_cliente	
-	WHILE (@@FETCH_STATUS = 0)
-	BEGIN
-	
-		SET @puntos = @precio / 5
-		
-		INSERT INTO SASHAILO.Historial_Puntos(ID_CLIENTE, ID_PASAJE, PUNTOS, FECHA)
-		VALUES(@id_cliente, @id_pasaje, @puntos, @f_llegada)
-		
-		UPDATE SASHAILO.Cliente SET PUNTOS = PUNTOS + @puntos WHERE ID_CLIENTE = @id_cliente
-		
-		FETCH curr_pasajes INTO @precio, @id_pasaje, @id_cliente
-	END
-	CLOSE curr_pasajes
-	DEALLOCATE curr_pasajes	
-	
-	DECLARE curr_encomienda CURSOR FOR 
-	select PRECIO, ID_ENCOMIENDA, ID_CLIENTE from SASHAILO.Encomienda en where en.ID_VIAJE = @id_viaje
-	OPEN curr_encomienda 
-	FETCH curr_encomienda INTO @precio, @id_encomienda, @id_cliente	
-	WHILE (@@FETCH_STATUS = 0)
-	BEGIN
-
-		SET @puntos = @precio / 5
-		
-		INSERT INTO SASHAILO.Historial_Puntos(ID_CLIENTE, ID_ENCOMIENDA, PUNTOS, FECHA)
-		VALUES(@id_cliente, @id_encomienda, @puntos, @f_llegada)
-		
-		UPDATE SASHAILO.Cliente SET PUNTOS = PUNTOS + @puntos WHERE ID_CLIENTE = @id_cliente
-		
-		FETCH curr_encomienda INTO @precio, @id_encomienda, @id_cliente
-	END
-	CLOSE curr_encomienda
-	DEALLOCATE curr_encomienda		
-		
-	COMMIT TRANSACTION 
-	
-END
-
-/******************************************** FIN - TRIGGERS *****************************************/
-
-
 /****************************** INICIO -  LLENADO DE TABLAS A TRAVES DE SP *********************************/
 
 INSERT INTO SASHAILO.Micro(PATENTE, ID_MARCA, MODELO, ID_TIPO_SERVICIO, CANT_KG, F_ALTA)
@@ -2820,3 +2753,70 @@ ON SASHAILO.Cliente.ID_CLIENTE = t2.id_CLIENTE
 GO
 
 /****************************** FIN -  LLENADO DE TABLAS II *********************************/
+
+
+/******************************************** INICIO - TRIGGERS *****************************************/
+
+create trigger t_registro_llegada
+on SASHAILO.Llegada
+for insert
+as
+BEGIN
+	
+	BEGIN TRANSACTION 
+	
+	declare @id_viaje int
+	declare @f_llegada datetime
+	select @id_viaje=id_viaje, @f_llegada=f_llegada from inserted
+	
+	UPDATE SASHAILO.Viaje SET F_LLEGADA = @f_llegada WHERE ID_VIAJE = @id_viaje
+	
+	DECLARE @precio numeric(18,2)
+	DECLARE @id_pasaje numeric(18,0)
+	DECLARE @id_encomienda numeric(18,0)
+	DECLARE @id_cliente int
+	DECLARE @puntos int
+	
+	DECLARE curr_pasajes CURSOR FOR 
+	select PRECIO, ID_PASAJE, ID_CLIENTE from SASHAILO.Pasaje pa where pa.ID_VIAJE = @id_viaje
+	OPEN curr_pasajes 
+	FETCH curr_pasajes INTO @precio, @id_pasaje, @id_cliente	
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+	
+		SET @puntos = @precio / 5
+		
+		INSERT INTO SASHAILO.Historial_Puntos(ID_CLIENTE, ID_PASAJE, PUNTOS, FECHA)
+		VALUES(@id_cliente, @id_pasaje, @puntos, @f_llegada)
+		
+		UPDATE SASHAILO.Cliente SET PUNTOS = PUNTOS + @puntos WHERE ID_CLIENTE = @id_cliente
+		
+		FETCH curr_pasajes INTO @precio, @id_pasaje, @id_cliente
+	END
+	CLOSE curr_pasajes
+	DEALLOCATE curr_pasajes	
+	
+	DECLARE curr_encomienda CURSOR FOR 
+	select PRECIO, ID_ENCOMIENDA, ID_CLIENTE from SASHAILO.Encomienda en where en.ID_VIAJE = @id_viaje
+	OPEN curr_encomienda 
+	FETCH curr_encomienda INTO @precio, @id_encomienda, @id_cliente	
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+
+		SET @puntos = @precio / 5
+		
+		INSERT INTO SASHAILO.Historial_Puntos(ID_CLIENTE, ID_ENCOMIENDA, PUNTOS, FECHA)
+		VALUES(@id_cliente, @id_encomienda, @puntos, @f_llegada)
+		
+		UPDATE SASHAILO.Cliente SET PUNTOS = PUNTOS + @puntos WHERE ID_CLIENTE = @id_cliente
+		
+		FETCH curr_encomienda INTO @precio, @id_encomienda, @id_cliente
+	END
+	CLOSE curr_encomienda
+	DEALLOCATE curr_encomienda		
+		
+	COMMIT TRANSACTION 
+	
+END
+
+/******************************************** FIN - TRIGGERS *****************************************/
