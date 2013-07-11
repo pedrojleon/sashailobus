@@ -1713,18 +1713,22 @@ BEGIN
 			SET @viajesCancelados = @viajesCancelados + 1
 			DECLARE @cantPasajes int
 			DECLARE @cantEnco int
-			SET @cantPasajes = (select COUNT(1) from SASHAILO.Pasaje pa where pa.ID_VIAJE = @id_viaje)
-			SET @cantEnco = (select COUNT(1) from SASHAILO.Encomienda en where en.ID_VIAJE = @id_viaje)
+			SET @cantPasajes = (select COUNT(1) from SASHAILO.Pasaje pa where pa.ID_VIAJE = @id_viaje and pa.ID_PASAJE not in (select distinct ID_PASAJE from SASHAILO.Devolucion where ID_PASAJE is not null))
+			SET @cantEnco = (select COUNT(1) from SASHAILO.Encomienda en where en.ID_VIAJE = @id_viaje and en.ID_ENCOMIENDA not in (select distinct ID_ENCOMIENDA from SASHAILO.Devolucion where ID_ENCOMIENDA is not null))
 			SET @pasajesCancelados = @pasajesCancelados + @cantPasajes
 			SET @encoCanceladas = @encoCanceladas + @cantEnco
 			
 			--cancelo pasajes
 			INSERT INTO SASHAILO.Devolucion(ID_PASAJE, F_DEVOLUCION, MOTIVO)
-			SELECT ID_PASAJE, @p_f_actual, 'Viaje Cancelado' FROM SASHAILO.Pasaje where ID_VIAJE = @id_viaje
-			
+			SELECT ID_PASAJE, @p_f_actual, 'Viaje Cancelado por baja de Recorrido' 
+			FROM SASHAILO.Pasaje pa where ID_VIAJE = @id_viaje
+			and pa.ID_PASAJE not in (select distinct ID_PASAJE from SASHAILO.Devolucion where ID_PASAJE is not null)
+		
 			--cancelo encomiendas
 			INSERT INTO SASHAILO.Devolucion(ID_ENCOMIENDA, F_DEVOLUCION, MOTIVO)
-			SELECT ID_ENCOMIENDA, @p_f_actual, 'Viaje Cancelado' FROM SASHAILO.Encomienda where ID_VIAJE = @id_viaje
+			SELECT ID_ENCOMIENDA, @p_f_actual, 'Viaje Cancelado por baja de Recorrido' 
+			FROM SASHAILO.Encomienda en where ID_VIAJE = @id_viaje
+			and en.ID_ENCOMIENDA not in (select distinct ID_ENCOMIENDA from SASHAILO.Devolucion where ID_ENCOMIENDA is not null)
 			
 			--marco el viaje como cancelado
 			UPDATE SASHAILO.Viaje SET CANCELADO = 'S' WHERE ID_VIAJE = @id_viaje
@@ -1777,6 +1781,85 @@ BEGIN
 			DEALLOCATE curr_butacas				
 					                                     
 		END
+		
+		FETCH curr_viajes INTO @id_viaje, @f_salida, @f_llegada_estim
+	END
+	
+	CLOSE curr_viajes
+	DEALLOCATE curr_viajes	
+	
+	COMMIT TRANSACTION
+
+END
+GO
+
+CREATE PROCEDURE SASHAILO.reco_cancelar_viajes
+    	@p_id_recorrido int,
+    	@p_f_actual datetime,
+    	@viajesCancelados int OUT,
+    	@pasajesCancelados int OUT,
+    	@encoCanceladas int OUT
+    	
+AS
+BEGIN
+	SET @viajesCancelados = 0
+	SET @pasajesCancelados = 0
+	SET @encoCanceladas = 0
+	
+	DECLARE @cantViajes int
+	select @cantViajes = (select COUNT(1) from SASHAILO.Viaje vi where vi.ID_RECORRIDO = @p_id_recorrido
+																 and vi.CANCELADO = 'N'
+																 and vi.F_SALIDA >= @p_f_actual)
+	
+	--no tiene viajes programados, puede salir de servicio sin ningun problema
+	if @cantViajes = 0
+	BEGIN
+		RETURN
+	END
+
+	DECLARE @id_viaje int 
+	DECLARE @f_salida datetime
+	DECLARE @f_llegada_estim datetime
+	
+	DECLARE curr_viajes CURSOR FOR 
+	select vi.ID_VIAJE, vi.F_SALIDA, vi.F_LLEGADA_ESTIMADA 
+	from SASHAILO.Viaje vi where vi.ID_RECORRIDO = @p_id_recorrido
+	and vi.CANCELADO = 'N'
+	and vi.F_SALIDA >= @p_f_actual
+	
+	BEGIN TRANSACTION
+	
+	OPEN curr_viajes 
+	FETCH curr_viajes INTO @id_viaje, @f_salida, @f_llegada_estim
+	
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+		
+		--cancelo el viaje y los pasajes/encomiendas
+			
+		SET @viajesCancelados = @viajesCancelados + 1
+		DECLARE @cantPasajes int
+		DECLARE @cantEnco int
+		SET @cantPasajes = (select COUNT(1) from SASHAILO.Pasaje pa where pa.ID_VIAJE = @id_viaje and pa.ID_PASAJE not in (select distinct ID_PASAJE from SASHAILO.Devolucion where ID_PASAJE is not null))
+		SET @cantEnco = (select COUNT(1) from SASHAILO.Encomienda en where en.ID_VIAJE = @id_viaje and en.ID_ENCOMIENDA not in (select distinct ID_ENCOMIENDA from SASHAILO.Devolucion where ID_ENCOMIENDA is not null))
+		SET @pasajesCancelados = @pasajesCancelados + @cantPasajes
+		SET @encoCanceladas = @encoCanceladas + @cantEnco
+		
+		--cancelo pasajes
+		INSERT INTO SASHAILO.Devolucion(ID_PASAJE, F_DEVOLUCION, MOTIVO)
+		SELECT ID_PASAJE, @p_f_actual, 'Viaje Cancelado por baja de Recorrido' 
+		FROM SASHAILO.Pasaje pa where ID_VIAJE = @id_viaje
+		and pa.ID_PASAJE not in (select distinct ID_PASAJE from SASHAILO.Devolucion where ID_PASAJE is not null)
+		
+		--cancelo encomiendas
+		INSERT INTO SASHAILO.Devolucion(ID_ENCOMIENDA, F_DEVOLUCION, MOTIVO)
+		SELECT ID_ENCOMIENDA, @p_f_actual, 'Viaje Cancelado por baja de Recorrido' 
+		FROM SASHAILO.Encomienda en where ID_VIAJE = @id_viaje
+		and en.ID_ENCOMIENDA not in (select distinct ID_ENCOMIENDA from SASHAILO.Devolucion where ID_ENCOMIENDA is not null)
+		
+		--marco el viaje como cancelado
+		UPDATE SASHAILO.Viaje SET CANCELADO = 'S' WHERE ID_VIAJE = @id_viaje
+	
 		
 		FETCH curr_viajes INTO @id_viaje, @f_salida, @f_llegada_estim
 	END
@@ -2753,6 +2836,32 @@ ON SASHAILO.Cliente.ID_CLIENTE = t2.id_CLIENTE
 GO
 
 /****************************** FIN -  LLENADO DE TABLAS II *********************************/
+
+CREATE PROCEDURE SASHAILO.sp_tiene_viajes_recorrido
+    	@p_id_recorrido numeric(18,0),
+    	@p_fecha datetime,
+    	@tieneViajes int OUT
+AS
+	
+BEGIN
+
+	SET @tieneViajes = 0
+	DECLARE @cantViajes INT
+	SET @cantViajes = (select COUNT(1) 
+					   from SASHAILO.Viaje vi
+					   where vi.ID_RECORRIDO = @p_id_recorrido
+					   and vi.F_SALIDA >= @p_fecha
+					   and vi.CANCELADO = 'N')
+
+	if @cantViajes > 0
+	BEGIN
+		set @tieneViajes = 1
+		RETURN
+	END
+	
+END
+
+GO
 
 
 /******************************************** INICIO - TRIGGERS *****************************************/
