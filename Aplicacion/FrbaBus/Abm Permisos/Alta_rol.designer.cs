@@ -32,7 +32,6 @@
             this.NombreRol = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.botonGuardar = new System.Windows.Forms.Button();
-            this.botonCancelar = new System.Windows.Forms.Button();
             this.ABMRol = new System.Windows.Forms.CheckBox();
             this.ABMCiudad = new System.Windows.Forms.CheckBox();
             this.ABMRecorrido = new System.Windows.Forms.CheckBox();
@@ -44,20 +43,21 @@
             this.ListadoEstadistico = new System.Windows.Forms.CheckBox();
             this.ConsultaPuntos = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.Habilitado = new System.Windows.Forms.CheckBox();
+            this.CanjePuntos = new System.Windows.Forms.CheckBox();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // NombreRol
             // 
-            this.NombreRol.Location = new System.Drawing.Point(98, 12);
+            this.NombreRol.Location = new System.Drawing.Point(114, 19);
             this.NombreRol.Name = "NombreRol";
-            this.NombreRol.Size = new System.Drawing.Size(175, 20);
+            this.NombreRol.Size = new System.Drawing.Size(120, 20);
             this.NombreRol.TabIndex = 0;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 15);
+            this.label1.Location = new System.Drawing.Point(28, 22);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(80, 13);
             this.label1.TabIndex = 1;
@@ -65,7 +65,7 @@
             // 
             // botonGuardar
             // 
-            this.botonGuardar.Location = new System.Drawing.Point(39, 241);
+            this.botonGuardar.Location = new System.Drawing.Point(150, 250);
             this.botonGuardar.Name = "botonGuardar";
             this.botonGuardar.Size = new System.Drawing.Size(75, 23);
             this.botonGuardar.TabIndex = 4;
@@ -73,20 +73,10 @@
             this.botonGuardar.UseVisualStyleBackColor = true;
             this.botonGuardar.Click += new System.EventHandler(this.botonGuardar_Click);
             // 
-            // botonCancelar
-            // 
-            this.botonCancelar.Location = new System.Drawing.Point(120, 241);
-            this.botonCancelar.Name = "botonCancelar";
-            this.botonCancelar.Size = new System.Drawing.Size(75, 23);
-            this.botonCancelar.TabIndex = 5;
-            this.botonCancelar.Text = "Cancelar";
-            this.botonCancelar.UseVisualStyleBackColor = true;
-            this.botonCancelar.Click += new System.EventHandler(this.botonCancelar_Click);
-            // 
             // ABMRol
             // 
             this.ABMRol.AutoSize = true;
-            this.ABMRol.Location = new System.Drawing.Point(54, 79);
+            this.ABMRol.Location = new System.Drawing.Point(46, 77);
             this.ABMRol.Name = "ABMRol";
             this.ABMRol.Size = new System.Drawing.Size(83, 17);
             this.ABMRol.TabIndex = 6;
@@ -96,7 +86,7 @@
             // ABMCiudad
             // 
             this.ABMCiudad.AutoSize = true;
-            this.ABMCiudad.Location = new System.Drawing.Point(54, 102);
+            this.ABMCiudad.Location = new System.Drawing.Point(46, 100);
             this.ABMCiudad.Name = "ABMCiudad";
             this.ABMCiudad.Size = new System.Drawing.Size(100, 17);
             this.ABMCiudad.TabIndex = 7;
@@ -106,7 +96,7 @@
             // ABMRecorrido
             // 
             this.ABMRecorrido.AutoSize = true;
-            this.ABMRecorrido.Location = new System.Drawing.Point(54, 125);
+            this.ABMRecorrido.Location = new System.Drawing.Point(46, 123);
             this.ABMRecorrido.Name = "ABMRecorrido";
             this.ABMRecorrido.Size = new System.Drawing.Size(113, 17);
             this.ABMRecorrido.TabIndex = 8;
@@ -116,7 +106,7 @@
             // ABMMicro
             // 
             this.ABMMicro.AutoSize = true;
-            this.ABMMicro.Location = new System.Drawing.Point(54, 149);
+            this.ABMMicro.Location = new System.Drawing.Point(46, 147);
             this.ABMMicro.Name = "ABMMicro";
             this.ABMMicro.Size = new System.Drawing.Size(93, 17);
             this.ABMMicro.TabIndex = 9;
@@ -126,7 +116,7 @@
             // GeneracionViaje
             // 
             this.GeneracionViaje.AutoSize = true;
-            this.GeneracionViaje.Location = new System.Drawing.Point(54, 172);
+            this.GeneracionViaje.Location = new System.Drawing.Point(46, 170);
             this.GeneracionViaje.Name = "GeneracionViaje";
             this.GeneracionViaje.Size = new System.Drawing.Size(122, 17);
             this.GeneracionViaje.TabIndex = 10;
@@ -136,7 +126,7 @@
             // RegistroLlegada
             // 
             this.RegistroLlegada.AutoSize = true;
-            this.RegistroLlegada.Location = new System.Drawing.Point(187, 79);
+            this.RegistroLlegada.Location = new System.Drawing.Point(179, 77);
             this.RegistroLlegada.Name = "RegistroLlegada";
             this.RegistroLlegada.Size = new System.Drawing.Size(121, 17);
             this.RegistroLlegada.TabIndex = 12;
@@ -146,7 +136,7 @@
             // CompraPasaje
             // 
             this.CompraPasaje.AutoSize = true;
-            this.CompraPasaje.Location = new System.Drawing.Point(187, 102);
+            this.CompraPasaje.Location = new System.Drawing.Point(179, 100);
             this.CompraPasaje.Name = "CompraPasaje";
             this.CompraPasaje.Size = new System.Drawing.Size(176, 17);
             this.CompraPasaje.TabIndex = 13;
@@ -157,7 +147,7 @@
             // Devolucion
             // 
             this.Devolucion.AutoSize = true;
-            this.Devolucion.Location = new System.Drawing.Point(187, 125);
+            this.Devolucion.Location = new System.Drawing.Point(179, 123);
             this.Devolucion.Name = "Devolucion";
             this.Devolucion.Size = new System.Drawing.Size(144, 17);
             this.Devolucion.TabIndex = 14;
@@ -167,7 +157,7 @@
             // ListadoEstadistico
             // 
             this.ListadoEstadistico.AutoSize = true;
-            this.ListadoEstadistico.Location = new System.Drawing.Point(187, 172);
+            this.ListadoEstadistico.Location = new System.Drawing.Point(179, 170);
             this.ListadoEstadistico.Name = "ListadoEstadistico";
             this.ListadoEstadistico.Size = new System.Drawing.Size(116, 17);
             this.ListadoEstadistico.TabIndex = 15;
@@ -177,7 +167,7 @@
             // ConsultaPuntos
             // 
             this.ConsultaPuntos.AutoSize = true;
-            this.ConsultaPuntos.Location = new System.Drawing.Point(187, 149);
+            this.ConsultaPuntos.Location = new System.Drawing.Point(179, 147);
             this.ConsultaPuntos.Name = "ConsultaPuntos";
             this.ConsultaPuntos.Size = new System.Drawing.Size(118, 17);
             this.ConsultaPuntos.TabIndex = 16;
@@ -186,29 +176,29 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Location = new System.Drawing.Point(39, 54);
+            this.groupBox1.Controls.Add(this.CanjePuntos);
+            this.groupBox1.Location = new System.Drawing.Point(31, 52);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(326, 165);
+            this.groupBox1.Size = new System.Drawing.Size(326, 180);
             this.groupBox1.TabIndex = 17;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Funcionalidades";
             // 
-            // Habilitado
+            // CanjePuntos
             // 
-            this.Habilitado.AutoSize = true;
-            this.Habilitado.Location = new System.Drawing.Point(292, 15);
-            this.Habilitado.Name = "Habilitado";
-            this.Habilitado.Size = new System.Drawing.Size(73, 17);
-            this.Habilitado.TabIndex = 35;
-            this.Habilitado.Text = "Habilitado";
-            this.Habilitado.UseVisualStyleBackColor = true;
+            this.CanjePuntos.AutoSize = true;
+            this.CanjePuntos.Location = new System.Drawing.Point(15, 141);
+            this.CanjePuntos.Name = "CanjePuntos";
+            this.CanjePuntos.Size = new System.Drawing.Size(104, 17);
+            this.CanjePuntos.TabIndex = 16;
+            this.CanjePuntos.Text = "Canje de Puntos";
+            this.CanjePuntos.UseVisualStyleBackColor = true;
             // 
             // Alta_rol
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(412, 285);
-            this.Controls.Add(this.Habilitado);
+            this.ClientSize = new System.Drawing.Size(389, 290);
             this.Controls.Add(this.ConsultaPuntos);
             this.Controls.Add(this.ListadoEstadistico);
             this.Controls.Add(this.Devolucion);
@@ -219,7 +209,6 @@
             this.Controls.Add(this.ABMRecorrido);
             this.Controls.Add(this.ABMCiudad);
             this.Controls.Add(this.ABMRol);
-            this.Controls.Add(this.botonCancelar);
             this.Controls.Add(this.botonGuardar);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.NombreRol);
@@ -228,6 +217,8 @@
             this.MaximizeBox = false;
             this.Name = "Alta_rol";
             this.Text = "Alta de Rol";
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -238,7 +229,6 @@
         private System.Windows.Forms.TextBox NombreRol;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button botonGuardar;
-        private System.Windows.Forms.Button botonCancelar;
         private System.Windows.Forms.CheckBox ABMRol;
         private System.Windows.Forms.CheckBox ABMCiudad;
         private System.Windows.Forms.CheckBox ABMRecorrido;
@@ -250,6 +240,6 @@
         private System.Windows.Forms.CheckBox ListadoEstadistico;
         private System.Windows.Forms.CheckBox ConsultaPuntos;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox Habilitado;
+        private System.Windows.Forms.CheckBox CanjePuntos;
     }
 }

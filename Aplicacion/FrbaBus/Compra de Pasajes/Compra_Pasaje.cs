@@ -20,13 +20,15 @@ namespace FrbaBus.Compra_de_Pasajes
         public List<Nuevo_Pasaje.Pasaje> lista_pasajes;
         public List<Nueva_Encomienda.Encomienda> lista_encomiendas;
         public bool hay_discapacitado;
+        public bool hayLogueado;
 
-        public Compra_Pasaje()
+        public Compra_Pasaje(bool hayLogueado)
         {
             InitializeComponent();
             this.lista_pasajes = new List<Nuevo_Pasaje.Pasaje>();
             this.lista_encomiendas = new List<Nueva_Encomienda.Encomienda>();
             this.hay_discapacitado = false;
+            this.hayLogueado = hayLogueado;
             cargarCombosCiudad();
             listado_de_viajes.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             listado_pasajes.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -496,7 +498,7 @@ namespace FrbaBus.Compra_de_Pasajes
                 return;
             }
             
-            Finalizar_Compra fin_compra = new Finalizar_Compra(this.viaje, this.lista_pasajes, this.lista_encomiendas);
+            Finalizar_Compra fin_compra = new Finalizar_Compra(this.viaje, this.lista_pasajes, this.lista_encomiendas, this.hayLogueado);
             fin_compra.Tag = this; //guardo en Tag una referencia a mi formulario
             fin_compra.ShowDialog();
 

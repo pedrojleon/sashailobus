@@ -31,15 +31,15 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Cancelar_Viaje));
             this.b_guardar = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.motivo = new System.Windows.Forms.RichTextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.encomienda = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.compra = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.pasaje = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.motivo = new System.Windows.Forms.RichTextBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -71,6 +71,34 @@
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Datos de la Cancelación";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(26, 140);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(42, 13);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "Motivo:";
+            // 
+            // motivo
+            // 
+            this.motivo.Location = new System.Drawing.Point(152, 109);
+            this.motivo.Name = "motivo";
+            this.motivo.Size = new System.Drawing.Size(242, 71);
+            this.motivo.TabIndex = 3;
+            this.motivo.Text = "";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.Color.Red;
+            this.label2.Location = new System.Drawing.Point(239, 36);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(11, 13);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "*";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // encomienda
             // 
@@ -124,34 +152,6 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Código de Pasaje:";
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.ForeColor = System.Drawing.Color.Red;
-            this.label2.Location = new System.Drawing.Point(239, 36);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(11, 13);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "*";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
-            // 
-            // motivo
-            // 
-            this.motivo.Location = new System.Drawing.Point(152, 109);
-            this.motivo.Name = "motivo";
-            this.motivo.Size = new System.Drawing.Size(242, 71);
-            this.motivo.TabIndex = 3;
-            this.motivo.Text = "";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(26, 140);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(42, 13);
-            this.label4.TabIndex = 9;
-            this.label4.Text = "Motivo:";
-            // 
             // Cancelar_Viaje
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -160,6 +160,7 @@
             this.Controls.Add(this.groupBox2);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Cancelar_Viaje";
+            this.Text = "Cancelalación";
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.ResumeLayout(false);

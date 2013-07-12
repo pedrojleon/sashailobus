@@ -30,11 +30,11 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ABMRol));
             this.DGVRol = new System.Windows.Forms.DataGridView();
-            this.CrearRol = new System.Windows.Forms.Button();
             this.NombreDelRol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Habilitado = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.acciones = new System.Windows.Forms.DataGridViewImageColumn();
             this.modificacion = new System.Windows.Forms.DataGridViewImageColumn();
+            this.CrearRol = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DGVRol)).BeginInit();
             this.SuspendLayout();
             // 
@@ -48,25 +48,15 @@
             this.Habilitado,
             this.acciones,
             this.modificacion});
-            this.DGVRol.Location = new System.Drawing.Point(62, 28);
+            this.DGVRol.Location = new System.Drawing.Point(23, 21);
             this.DGVRol.MultiSelect = false;
             this.DGVRol.Name = "DGVRol";
             this.DGVRol.ReadOnly = true;
             this.DGVRol.RowHeadersWidth = 30;
             this.DGVRol.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.DGVRol.Size = new System.Drawing.Size(396, 180);
+            this.DGVRol.Size = new System.Drawing.Size(396, 157);
             this.DGVRol.TabIndex = 0;
             this.DGVRol.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGVRol_CellContentClick);
-            // 
-            // CrearRol
-            // 
-            this.CrearRol.Location = new System.Drawing.Point(383, 225);
-            this.CrearRol.Name = "CrearRol";
-            this.CrearRol.Size = new System.Drawing.Size(75, 23);
-            this.CrearRol.TabIndex = 1;
-            this.CrearRol.Text = "Crear nuevo";
-            this.CrearRol.UseVisualStyleBackColor = true;
-            this.CrearRol.Click += new System.EventHandler(this.CrearRol_Click);
             // 
             // NombreDelRol
             // 
@@ -98,11 +88,21 @@
             this.modificacion.ReadOnly = true;
             this.modificacion.Width = 32;
             // 
+            // CrearRol
+            // 
+            this.CrearRol.Location = new System.Drawing.Point(344, 184);
+            this.CrearRol.Name = "CrearRol";
+            this.CrearRol.Size = new System.Drawing.Size(75, 23);
+            this.CrearRol.TabIndex = 1;
+            this.CrearRol.Text = "Crear nuevo";
+            this.CrearRol.UseVisualStyleBackColor = true;
+            this.CrearRol.Click += new System.EventHandler(this.CrearRol_Click);
+            // 
             // ABMRol
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(521, 281);
+            this.ClientSize = new System.Drawing.Size(443, 221);
             this.Controls.Add(this.CrearRol);
             this.Controls.Add(this.DGVRol);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

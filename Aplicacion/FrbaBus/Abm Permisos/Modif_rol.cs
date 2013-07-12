@@ -15,6 +15,7 @@ namespace FrbaBus.Abm_Permisos
         
         public DataGridViewSelectedCellCollection celdaSeleccionada;
         private string nombreRolAModificar;
+        private int id_rol;
 
         public Modif_rol()
         {
@@ -24,179 +25,196 @@ namespace FrbaBus.Abm_Permisos
         public void cargarDatos(string rol) // Carga las funcionalidades que tiene un rol a la hora de hacer una modificacion
         {
             
+            this.id_rol = getIdRol(rol.Trim());
+
             Conexion conn = new Conexion(); // Creo un nuevo objeto Conexion a la hora de conectarme
 
-            SqlDataReader habilitado = conn.consultar("select HABILITADO from SASHAILO.Rol where NOMBRE = '" + rol + "'");
+            SqlDataReader habilitado = conn.consultar("select HABILITADO from SASHAILO.Rol where ID_ROL = " + this.id_rol + "");
             habilitado.Read();
             string estaHabilitado = habilitado.GetString(0);
             if (estaHabilitado == "S")
                 Habilitado.Checked = true;
             else
                 Habilitado.Checked = false;
-
             habilitado.Close();
 
             NombreRol.Text = rol;
             nombreRolAModificar = NombreRol.Text;
 
-            SqlDataReader resultado = conn.consultar("select F.DESCRIPCION from SASHAILO.Rol R, SASHAILO.FuncionxRol FR, SASHAILO.Funcion F where R.NOMBRE = '" + rol + "' AND FR.ID_ROL = R.ID_ROL AND F.ID_FUNCION = FR.ID_FUNCION");
+            SqlDataReader resultado = conn.consultar("select F.ID_FUNCION from SASHAILO.Rol R, SASHAILO.FuncionxRol FR, SASHAILO.Funcion F where R.ID_ROL = " + this.id_rol + " AND FR.ID_ROL = R.ID_ROL AND F.ID_FUNCION = FR.ID_FUNCION");
 
             // La consulta me devuelve la descripcion de las funcionalidades que tiene ese Rol
             
             while (resultado.Read())
             {
                 // Para que cuando se realice una modificacion, ya aparezcan tildados las funcionalidades que tiene
-                string funcion = resultado.GetString(0);
+                int id_funcion = resultado.GetInt32(0);
 
-                switch (funcion)
+                switch (id_funcion)
                 {
-                    case "ABM de Rol": ABMRol.Checked = true;
+                    case 1: ABMRol.Checked = true;
                         break;
-                    case "ABM de Ciudad": ABMCiudad.Checked = true;
+                    case 2: ABMCiudad.Checked = true;
                         break;
-                    case "ABM de Recorrido": ABMRecorrido.Checked = true;
+                    case 3: ABMRecorrido.Checked = true;
                         break;
-                    case "ABM de Micro": ABMMicro.Checked = true;
+                    case 4: ABMMicro.Checked = true;
                         break;
-                    case "Generación de Viaje": GeneracionViaje.Checked = true;
+                    case 5: GeneracionViaje.Checked = true;
                         break;
-                    case "Registro de llegada a Destino": RegistroLlegada.Checked = true;
+                    case 6: RegistroLlegada.Checked = true;
                         break;
-                    case "Compra de Pasaje/Encomienda": CompraPasaje.Checked = true;
+                    case 7: CompraPasaje.Checked = true;
                         break;
-                    case "Devolución/Cancelación de pasaje y/o encomienda": Devolucion.Checked = true;
+                    case 8: Devolucion.Checked = true;
                         break;
-                    case "Consulta de puntos de pasajero frecuente": ConsultaPuntos.Checked = true;
+                    case 9: ConsultaPuntos.Checked = true;
                         break;
-                    case "Listado Estadístico": ListadoEstadistico.Checked = true;
+                    case 10: ListadoEstadistico.Checked = true;
+                        break;
+                    case 11: CanjePuntos.Checked = true;
                         break;
                 }               
             }
-                    conn.desconectar();
-        }
-
-        private void botonCancelar_Click(object sender, EventArgs e)
-        {
-            Modif_rol.ActiveForm.Close();
-        }
-
-        private void Modif_rol_Load(object sender, EventArgs e)
-        {
-
-        }     
-
-
-        private bool verificarDatos()
-        {
-            if (NombreRol.Text == "" || NombreRol.Text.Length > 20) // Verifica si el nombre supera los 20 char o si esta vacio
-            {
-                MessageBox.Show("Por favor, inserte un nombre valido", "Error");
-                return false;
-            }
-
-            Conexion cn = new Conexion();
-
-            {   // Verifico si ya existe otro Rol con ese nombre
-
-                SqlDataReader consulta = cn.consultar("SELECT NOMBRE FROM SASHAILO.ROL WHERE NOMBRE ='" + NombreRol.Text + "' and ELIMINADO = 'N' ");
-                if (consulta.Read()) // Si existe un rol en la DB con ese nombre.. ERROR
-                {
-                    if (consulta.GetString(0) == nombreRolAModificar) return true;
-                    else
-                    {
-                        cn.desconectar();
-                        MessageBox.Show("El rol " + NombreRol.Text + " ya se encuentra en el sistema", "Error");
-                        return false;
-                    }             
-                  
-                }
-
-                return true;
-            }
-        }
-
-        private string si_no(CheckBox chbox)
-        {
-            if (chbox.Checked == false)
-                return "N";
-            else
-                return "S";
-        }
-
-        private void guardarDatos()
-        {
-            Conexion conn2 = new Conexion();
-                        
-            // Aca hago las modificaciones en la DB
-
-            conn2.consultar("UPDATE SASHAILO.Rol SET NOMBRE = '" + NombreRol.Text + "', HABILITADO = '" + si_no(Habilitado) + "', ELIMINADO = 'N' where NOMBRE = '" + nombreRolAModificar + "'");
-            conn2.desconectar();
-
-            execSP();
-
-            // Aca deberia ejecutar el trigger que si deshabilita el rol, tiene que deshabilitar a todos los usuarios que tengan ese rol
-
-            MessageBox.Show("Rol modificado correctamente", "Modificación de Rol");
-
             
+            conn.desconectar();
         }
 
-        private void execSP()
+        private void modificarRol()
         {
             Conexion conn = new Conexion();
             SqlCommand sp_rol;
 
-                sp_rol = new SqlCommand("SASHAILO.rol_modificacion", conn.miConexion);
-                sp_rol.CommandType = CommandType.StoredProcedure;
-                SqlParameter nombreRol = sp_rol.Parameters.Add("@nombreRol", SqlDbType.VarChar, 20);
-                SqlParameter FuncionABMRol = sp_rol.Parameters.Add("@FuncionABMRol", SqlDbType.Int);
-                SqlParameter FuncionABMCiudad = sp_rol.Parameters.Add("@FuncionABMCiudad", SqlDbType.Int);
-                SqlParameter FuncionABMRecorrido = sp_rol.Parameters.Add("@FuncionABMRecorrido", SqlDbType.Int);
-                SqlParameter FuncionABMMicro = sp_rol.Parameters.Add("@FuncionABMMicro", SqlDbType.Int);
-                SqlParameter FuncionGeneracionViaje = sp_rol.Parameters.Add("@FuncionGeneracionViaje", SqlDbType.Int);
-                SqlParameter FuncionRegistroLlegada = sp_rol.Parameters.Add("@FuncionRegistroLlegada", SqlDbType.Int);
-                SqlParameter FuncionCompraPasaje = sp_rol.Parameters.Add("@FuncionCompraPasaje", SqlDbType.Int);
-                SqlParameter FuncionDevolucion = sp_rol.Parameters.Add("@FuncionDevolucion", SqlDbType.Int);
-                SqlParameter FuncionConsultaPuntos = sp_rol.Parameters.Add("@FuncionConsultaPuntos", SqlDbType.Int);
-                SqlParameter FuncionListadoEstadistico = sp_rol.Parameters.Add("@FuncionListadoEstadistico", SqlDbType.Int);
+            sp_rol = new SqlCommand("SASHAILO.rol_modificacion", conn.miConexion);
+            sp_rol.CommandType = CommandType.StoredProcedure;
+            SqlParameter ID_ROL = sp_rol.Parameters.Add("@id_rol", SqlDbType.Int);
+            SqlParameter nombreRol = sp_rol.Parameters.Add("@nombreRol", SqlDbType.VarChar, 20);
+            SqlParameter habilitado = sp_rol.Parameters.Add("@habilitado", SqlDbType.Char, 1);
 
-                nombreRol.Value = NombreRol.Text;
-                FuncionABMRol.Value = Convert.ToByte(ABMRol.Checked);
-                FuncionABMCiudad.Value = Convert.ToByte(ABMCiudad.Checked);
-                FuncionABMRecorrido.Value = Convert.ToByte(ABMRecorrido.Checked);
-                FuncionABMMicro.Value = Convert.ToByte(ABMMicro.Checked);
-                FuncionGeneracionViaje.Value = Convert.ToByte(GeneracionViaje.Checked);
-                FuncionRegistroLlegada.Value = Convert.ToByte(RegistroLlegada.Checked);
-                FuncionCompraPasaje.Value = Convert.ToByte(CompraPasaje.Checked);
-                FuncionDevolucion.Value = Convert.ToByte(Devolucion.Checked);
-                FuncionConsultaPuntos.Value = Convert.ToByte(ConsultaPuntos.Checked);
-                FuncionListadoEstadistico.Value = Convert.ToByte(ListadoEstadistico.Checked);
+            ID_ROL.Value = this.id_rol;
+            nombreRol.Value = NombreRol.Text;
+            habilitado.Value = (Habilitado.Checked) ? "S" : "N";
 
-                try
-                {
-                    sp_rol.ExecuteNonQuery();
-                }
-                catch (Exception error)
-                {
-                    MessageBox.Show("Error en la inserción del rol, consulte a un administrador " + error.ToString());
-                    conn.desconectar();
-                    return;
-                }
-                conn.desconectar();
+            try
+            {
+                sp_rol.ExecuteNonQuery();
+                MessageBox.Show("El rol ha sido modificado", "", MessageBoxButtons.OK);
             }
+            catch (Exception error)
+            {
+                MessageBox.Show("Error en la modificacion del rol: " + error.ToString());
+                conn.desconectar();
+                return;
+            }
+            conn.desconectar();
         
-            
+        }
+
+        private void modificarFunciones() {
+
+            eliminarFunciones();
+            insertarFunciones(this.id_rol);
+        
+        }
+
+        private void insertarFunciones(int id_rol)
+        {
+
+            if (ABMRol.Checked)
+                insertarFuncion(id_rol, 1);
+            if (ABMCiudad.Checked)
+                insertarFuncion(id_rol, 2);
+            if (ABMRecorrido.Checked)
+                insertarFuncion(id_rol, 3);
+            if (ABMMicro.Checked)
+                insertarFuncion(id_rol, 4);
+            if (GeneracionViaje.Checked)
+                insertarFuncion(id_rol, 5);
+            if (RegistroLlegada.Checked)
+                insertarFuncion(id_rol, 6);
+            if (CompraPasaje.Checked)
+                insertarFuncion(id_rol, 7);
+            if (Devolucion.Checked)
+                insertarFuncion(id_rol, 8);
+            if (ConsultaPuntos.Checked)
+                insertarFuncion(id_rol, 9);
+            if (ListadoEstadistico.Checked)
+                insertarFuncion(id_rol, 10);
+            if (CanjePuntos.Checked)
+                insertarFuncion(id_rol, 11);
+
+        }
+
+        public void insertarFuncion(int id_rol, int id_funcion)
+        {
+
+            Conexion conn = new Conexion();
+            conn.consultar("INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (" + id_funcion + ", " + id_rol + ")");
+            conn.desconectar();
+        }
+
+        private void eliminarFunciones()
+        {
+
+            Conexion conn = new Conexion();
+            conn.consultar("DELETE FROM SASHAILO.FuncionxRol WHERE ID_ROL = " + this.id_rol + "");
+            conn.desconectar();
+
+        }
 
         private void botonGuardar_Click(object sender, EventArgs e)
         {
-            if (verificarDatos())
+            string str_errores = "";
+            if (NombreRol.Text.Trim().Equals(""))
+                str_errores = str_errores + "Ingrese un Nombre de Rol.\n";
+            if (existeNombreRol())
+                str_errores = str_errores + "El Rol ingresado ya existe.\n";
+
+            if (!str_errores.Equals(""))
             {
-                guardarDatos();
-                botonGuardar.Enabled = false;
-                botonGuardar.Text = "Guardado";
-                Modif_rol.ActiveForm.Close();
-                
+                MessageBox.Show(str_errores, "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
             }
+
+            modificarRol();
+            modificarFunciones();
+
+            Modif_rol.ActiveForm.Close();
+
+        }
+
+        private bool existeNombreRol()
+        {
+
+            if (NombreRol.Text.Trim().Equals(""))
+                return false;
+
+            Conexion cn = new Conexion();
+
+            SqlDataReader consulta = cn.consultar("select 1 from SASHAILO.Rol WHERE upper(NOMBRE) = upper('" + NombreRol.Text.Trim() + "') and ID_ROL <> "+ this.id_rol+ "");
+            if (consulta.Read())
+            {
+                return true;
+            }
+            cn.desconectar();
+            return false;
+
+        }
+
+        private int getIdRol(string nombre)
+        {
+            int id_rol = -1;
+
+            Conexion cn = new Conexion();
+
+            SqlDataReader consulta = cn.consultar("select ID_ROL from SASHAILO.Rol WHERE upper(NOMBRE) = upper('" + nombre + "')");
+            if (consulta.Read())
+            {
+                id_rol = consulta.GetInt32(0);
+            }
+            cn.desconectar();
+            return id_rol;
+
         }
 
     }

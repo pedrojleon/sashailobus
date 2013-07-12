@@ -16,6 +16,7 @@ namespace FrbaBus.Abm_Permisos
         public ABMRol()
         {
             InitializeComponent();
+            DGVRol.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
            
         }
 
@@ -25,6 +26,11 @@ namespace FrbaBus.Abm_Permisos
 
             Conexion conn = new Conexion();
             SqlDataReader resultado = conn.consultar("select NOMBRE, HABILITADO from SASHAILO.Rol where ELIMINADO = 'N' order by NOMBRE");
+
+            DGVRol.Columns["NombreDelRol"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            DGVRol.Columns["Habilitado"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            DGVRol.Columns["acciones"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            DGVRol.Columns["modificacion"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
             int renglon;
             while (resultado.Read())
@@ -95,9 +101,18 @@ namespace FrbaBus.Abm_Permisos
         {
             if (e.ColumnIndex == 2)
             {
+
+                string msj = "El Rol será eliminado. ";
+                msj = msj + "¿Desea continuar?";
+                DialogResult dialogResult = MessageBox.Show(msj, "Atención", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.No)
+                    return;
+
                 string rol = DGVRol.Rows[e.RowIndex].Cells["NombreDelRol"].Value.ToString();
+                int id_rol = getIdRol(rol);
+
                 Conexion conn = new Conexion();
-                SqlDataReader resultado = conn.consultar("UPDATE SASHAILO.Rol SET ELIMINADO = 'S' WHERE NOMBRE = '" + rol + "'");
+                SqlDataReader resultado = conn.consultar("UPDATE SASHAILO.Rol SET ELIMINADO = 'S' WHERE ID_ROL = " + id_rol + "");
                 resultado.Dispose(); // Aca hago el borrado logico
                 MessageBox.Show("El rol '" + rol + "' ha sido eliminado", "");
                 conn.desconectar();
@@ -115,6 +130,22 @@ namespace FrbaBus.Abm_Permisos
                 modificacion.ShowDialog();
                 inicializarTabla();
             }
-        }  
+        }
+
+        private int getIdRol(string nombre)
+        {
+            int id_rol = -1;
+
+            Conexion cn = new Conexion();
+
+            SqlDataReader consulta = cn.consultar("select ID_ROL from SASHAILO.Rol WHERE upper(NOMBRE) = upper('" + nombre + "')");
+            if (consulta.Read())
+            {
+                id_rol = consulta.GetInt32(0);
+            }
+            cn.desconectar();
+            return id_rol;
+
+        }
     }
 }

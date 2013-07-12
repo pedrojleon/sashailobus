@@ -36,24 +36,25 @@
             this.usuario = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuABMS = new System.Windows.Forms.ToolStripMenuItem();
-            this.aBMDeRolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aBMDeCiudadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aBMDeRecorridoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aBMDeMicroToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuViajes = new System.Windows.Forms.ToolStripMenuItem();
-            this.generaciónDeViajeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.registroDeLlegadaADestinoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pasajesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.compraDePasajesEncomiendasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.devoluciónCancelaciónDePasajesEncomiendasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pasajerosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.consultaDePuntosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuEstadisticas = new System.Windows.Forms.ToolStripMenuItem();
-            this.listadoEstadísticoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mp_abms = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnu_abm_rol = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnu_abm_ciudad = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnu_abm_reco = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnu_abm_micro = new System.Windows.Forms.ToolStripMenuItem();
+            this.mp_viajes = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnu_gen_viaje = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnu_reg_llega = new System.Windows.Forms.ToolStripMenuItem();
+            this.mp_pasajes = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnu_compra_pas = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnu_dev_pas = new System.Windows.Forms.ToolStripMenuItem();
+            this.mp_pasajeros = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnu_consul_puntos = new System.Windows.Forms.ToolStripMenuItem();
+            this.mp_estadisticas = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnu_listado_est = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuIngresar = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuSalir = new System.Windows.Forms.ToolStripMenuItem();
             this.CuadroLogin = new System.Windows.Forms.GroupBox();
+            this.mnu_canje_puntos = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.CuadroLogin.SuspendLayout();
             this.SuspendLayout();
@@ -107,11 +108,11 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem1,
-            this.MenuABMS,
-            this.MenuViajes,
-            this.pasajesToolStripMenuItem,
-            this.pasajerosToolStripMenuItem,
-            this.MenuEstadisticas,
+            this.mp_abms,
+            this.mp_viajes,
+            this.mp_pasajes,
+            this.mp_pasajeros,
+            this.mp_estadisticas,
             this.MenuIngresar,
             this.MenuSalir});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
@@ -125,115 +126,124 @@
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(12, 20);
             // 
-            // MenuABMS
+            // mp_abms
             // 
-            this.MenuABMS.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aBMDeRolToolStripMenuItem,
-            this.aBMDeCiudadToolStripMenuItem,
-            this.aBMDeRecorridoToolStripMenuItem,
-            this.aBMDeMicroToolStripMenuItem});
-            this.MenuABMS.Name = "MenuABMS";
-            this.MenuABMS.Size = new System.Drawing.Size(54, 20);
-            this.MenuABMS.Text = "ABM\'S";
-            this.MenuABMS.Visible = false;
+            this.mp_abms.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnu_abm_rol,
+            this.mnu_abm_ciudad,
+            this.mnu_abm_reco,
+            this.mnu_abm_micro});
+            this.mp_abms.Name = "mp_abms";
+            this.mp_abms.Size = new System.Drawing.Size(54, 20);
+            this.mp_abms.Text = "ABM\'S";
+            this.mp_abms.Visible = false;
             // 
-            // aBMDeRolToolStripMenuItem
+            // mnu_abm_rol
             // 
-            this.aBMDeRolToolStripMenuItem.Name = "aBMDeRolToolStripMenuItem";
-            this.aBMDeRolToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.aBMDeRolToolStripMenuItem.Text = "ABM de Rol";
-            this.aBMDeRolToolStripMenuItem.Click += new System.EventHandler(this.aBMDeRolToolStripMenuItem_Click);
+            this.mnu_abm_rol.Name = "mnu_abm_rol";
+            this.mnu_abm_rol.Size = new System.Drawing.Size(170, 22);
+            this.mnu_abm_rol.Text = "ABM de Rol";
+            this.mnu_abm_rol.Click += new System.EventHandler(this.aBMDeRolToolStripMenuItem_Click);
             // 
-            // aBMDeCiudadToolStripMenuItem
+            // mnu_abm_ciudad
             // 
-            this.aBMDeCiudadToolStripMenuItem.Name = "aBMDeCiudadToolStripMenuItem";
-            this.aBMDeCiudadToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.aBMDeCiudadToolStripMenuItem.Text = "ABM de Ciudad";
-            this.aBMDeCiudadToolStripMenuItem.Click += new System.EventHandler(this.aBMDeCiudadToolStripMenuItem_Click);
+            this.mnu_abm_ciudad.Name = "mnu_abm_ciudad";
+            this.mnu_abm_ciudad.Size = new System.Drawing.Size(170, 22);
+            this.mnu_abm_ciudad.Text = "ABM de Ciudad";
+            this.mnu_abm_ciudad.Click += new System.EventHandler(this.aBMDeCiudadToolStripMenuItem_Click);
             // 
-            // aBMDeRecorridoToolStripMenuItem
+            // mnu_abm_reco
             // 
-            this.aBMDeRecorridoToolStripMenuItem.Name = "aBMDeRecorridoToolStripMenuItem";
-            this.aBMDeRecorridoToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.aBMDeRecorridoToolStripMenuItem.Text = "ABM de Recorrido";
+            this.mnu_abm_reco.Name = "mnu_abm_reco";
+            this.mnu_abm_reco.Size = new System.Drawing.Size(170, 22);
+            this.mnu_abm_reco.Text = "ABM de Recorrido";
+            this.mnu_abm_reco.Click += new System.EventHandler(this.aBMDeRecorridoToolStripMenuItem_Click);
             // 
-            // aBMDeMicroToolStripMenuItem
+            // mnu_abm_micro
             // 
-            this.aBMDeMicroToolStripMenuItem.Name = "aBMDeMicroToolStripMenuItem";
-            this.aBMDeMicroToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.aBMDeMicroToolStripMenuItem.Text = "ABM de Micro";
+            this.mnu_abm_micro.Name = "mnu_abm_micro";
+            this.mnu_abm_micro.Size = new System.Drawing.Size(170, 22);
+            this.mnu_abm_micro.Text = "ABM de Micro";
+            this.mnu_abm_micro.Click += new System.EventHandler(this.aBMDeMicroToolStripMenuItem_Click);
             // 
-            // MenuViajes
+            // mp_viajes
             // 
-            this.MenuViajes.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.generaciónDeViajeToolStripMenuItem,
-            this.registroDeLlegadaADestinoToolStripMenuItem});
-            this.MenuViajes.Name = "MenuViajes";
-            this.MenuViajes.Size = new System.Drawing.Size(49, 20);
-            this.MenuViajes.Text = "Viajes";
-            this.MenuViajes.Visible = false;
+            this.mp_viajes.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnu_gen_viaje,
+            this.mnu_reg_llega});
+            this.mp_viajes.Name = "mp_viajes";
+            this.mp_viajes.Size = new System.Drawing.Size(49, 20);
+            this.mp_viajes.Text = "Viajes";
+            this.mp_viajes.Visible = false;
             // 
-            // generaciónDeViajeToolStripMenuItem
+            // mnu_gen_viaje
             // 
-            this.generaciónDeViajeToolStripMenuItem.Name = "generaciónDeViajeToolStripMenuItem";
-            this.generaciónDeViajeToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
-            this.generaciónDeViajeToolStripMenuItem.Text = "Generación de Viaje";
+            this.mnu_gen_viaje.Name = "mnu_gen_viaje";
+            this.mnu_gen_viaje.Size = new System.Drawing.Size(226, 22);
+            this.mnu_gen_viaje.Text = "Generación de Viaje";
+            this.mnu_gen_viaje.Click += new System.EventHandler(this.generaciónDeViajeToolStripMenuItem_Click);
             // 
-            // registroDeLlegadaADestinoToolStripMenuItem
+            // mnu_reg_llega
             // 
-            this.registroDeLlegadaADestinoToolStripMenuItem.Name = "registroDeLlegadaADestinoToolStripMenuItem";
-            this.registroDeLlegadaADestinoToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
-            this.registroDeLlegadaADestinoToolStripMenuItem.Text = "Registro de llegada a Destino";
+            this.mnu_reg_llega.Name = "mnu_reg_llega";
+            this.mnu_reg_llega.Size = new System.Drawing.Size(226, 22);
+            this.mnu_reg_llega.Text = "Registro de llegada a Destino";
+            this.mnu_reg_llega.Click += new System.EventHandler(this.registroDeLlegadaADestinoToolStripMenuItem_Click);
             // 
-            // pasajesToolStripMenuItem
+            // mp_pasajes
             // 
-            this.pasajesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.compraDePasajesEncomiendasToolStripMenuItem,
-            this.devoluciónCancelaciónDePasajesEncomiendasToolStripMenuItem});
-            this.pasajesToolStripMenuItem.Name = "pasajesToolStripMenuItem";
-            this.pasajesToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.pasajesToolStripMenuItem.Text = "Pasajes";
+            this.mp_pasajes.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnu_compra_pas,
+            this.mnu_dev_pas});
+            this.mp_pasajes.Name = "mp_pasajes";
+            this.mp_pasajes.Size = new System.Drawing.Size(57, 20);
+            this.mp_pasajes.Text = "Pasajes";
             // 
-            // compraDePasajesEncomiendasToolStripMenuItem
+            // mnu_compra_pas
             // 
-            this.compraDePasajesEncomiendasToolStripMenuItem.Name = "compraDePasajesEncomiendasToolStripMenuItem";
-            this.compraDePasajesEncomiendasToolStripMenuItem.Size = new System.Drawing.Size(337, 22);
-            this.compraDePasajesEncomiendasToolStripMenuItem.Text = "Compra de Pasajes/Encomiendas";
+            this.mnu_compra_pas.Name = "mnu_compra_pas";
+            this.mnu_compra_pas.Size = new System.Drawing.Size(337, 22);
+            this.mnu_compra_pas.Text = "Compra de Pasajes/Encomiendas";
+            this.mnu_compra_pas.Click += new System.EventHandler(this.compraDePasajesEncomiendasToolStripMenuItem_Click);
             // 
-            // devoluciónCancelaciónDePasajesEncomiendasToolStripMenuItem
+            // mnu_dev_pas
             // 
-            this.devoluciónCancelaciónDePasajesEncomiendasToolStripMenuItem.Name = "devoluciónCancelaciónDePasajesEncomiendasToolStripMenuItem";
-            this.devoluciónCancelaciónDePasajesEncomiendasToolStripMenuItem.Size = new System.Drawing.Size(337, 22);
-            this.devoluciónCancelaciónDePasajesEncomiendasToolStripMenuItem.Text = "Devolución/Cancelación de pasajes/Encomiendas";
+            this.mnu_dev_pas.Name = "mnu_dev_pas";
+            this.mnu_dev_pas.Size = new System.Drawing.Size(337, 22);
+            this.mnu_dev_pas.Text = "Devolución/Cancelación de pasajes/Encomiendas";
+            this.mnu_dev_pas.Click += new System.EventHandler(this.devoluciónCancelaciónDePasajesEncomiendasToolStripMenuItem_Click);
             // 
-            // pasajerosToolStripMenuItem
+            // mp_pasajeros
             // 
-            this.pasajerosToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.consultaDePuntosToolStripMenuItem});
-            this.pasajerosToolStripMenuItem.Name = "pasajerosToolStripMenuItem";
-            this.pasajerosToolStripMenuItem.Size = new System.Drawing.Size(68, 20);
-            this.pasajerosToolStripMenuItem.Text = "Pasajeros";
+            this.mp_pasajeros.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnu_consul_puntos,
+            this.mnu_canje_puntos});
+            this.mp_pasajeros.Name = "mp_pasajeros";
+            this.mp_pasajeros.Size = new System.Drawing.Size(68, 20);
+            this.mp_pasajeros.Text = "Pasajeros";
             // 
-            // consultaDePuntosToolStripMenuItem
+            // mnu_consul_puntos
             // 
-            this.consultaDePuntosToolStripMenuItem.Name = "consultaDePuntosToolStripMenuItem";
-            this.consultaDePuntosToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-            this.consultaDePuntosToolStripMenuItem.Text = "Consulta de Puntos";
+            this.mnu_consul_puntos.Name = "mnu_consul_puntos";
+            this.mnu_consul_puntos.Size = new System.Drawing.Size(177, 22);
+            this.mnu_consul_puntos.Text = "Consulta de Puntos";
+            this.mnu_consul_puntos.Click += new System.EventHandler(this.consultaDePuntosToolStripMenuItem_Click);
             // 
-            // MenuEstadisticas
+            // mp_estadisticas
             // 
-            this.MenuEstadisticas.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.listadoEstadísticoToolStripMenuItem});
-            this.MenuEstadisticas.Name = "MenuEstadisticas";
-            this.MenuEstadisticas.Size = new System.Drawing.Size(79, 20);
-            this.MenuEstadisticas.Text = "Estadísticas";
-            this.MenuEstadisticas.Visible = false;
+            this.mp_estadisticas.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnu_listado_est});
+            this.mp_estadisticas.Name = "mp_estadisticas";
+            this.mp_estadisticas.Size = new System.Drawing.Size(79, 20);
+            this.mp_estadisticas.Text = "Estadísticas";
+            this.mp_estadisticas.Visible = false;
             // 
-            // listadoEstadísticoToolStripMenuItem
+            // mnu_listado_est
             // 
-            this.listadoEstadísticoToolStripMenuItem.Name = "listadoEstadísticoToolStripMenuItem";
-            this.listadoEstadísticoToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
-            this.listadoEstadísticoToolStripMenuItem.Text = "Listado Estadístico";
+            this.mnu_listado_est.Name = "mnu_listado_est";
+            this.mnu_listado_est.Size = new System.Drawing.Size(171, 22);
+            this.mnu_listado_est.Text = "Listado Estadístico";
+            this.mnu_listado_est.Click += new System.EventHandler(this.listadoEstadísticoToolStripMenuItem_Click);
             // 
             // MenuIngresar
             // 
@@ -267,6 +277,13 @@
             this.CuadroLogin.TabStop = false;
             this.CuadroLogin.Visible = false;
             // 
+            // mnu_canje_puntos
+            // 
+            this.mnu_canje_puntos.Name = "mnu_canje_puntos";
+            this.mnu_canje_puntos.Size = new System.Drawing.Size(177, 22);
+            this.mnu_canje_puntos.Text = "Canje de Puntos";
+            this.mnu_canje_puntos.Click += new System.EventHandler(this.canjeDePuntosToolStripMenuItem_Click);
+            // 
             // Login
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -296,23 +313,24 @@
         private System.Windows.Forms.TextBox usuario;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem MenuABMS;
-        private System.Windows.Forms.ToolStripMenuItem aBMDeRolToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aBMDeCiudadToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aBMDeRecorridoToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aBMDeMicroToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem MenuViajes;
-        private System.Windows.Forms.ToolStripMenuItem generaciónDeViajeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem registroDeLlegadaADestinoToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem pasajesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem compraDePasajesEncomiendasToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem devoluciónCancelaciónDePasajesEncomiendasToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem pasajerosToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem consultaDePuntosToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem MenuEstadisticas;
-        private System.Windows.Forms.ToolStripMenuItem listadoEstadísticoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mp_abms;
+        private System.Windows.Forms.ToolStripMenuItem mnu_abm_rol;
+        private System.Windows.Forms.ToolStripMenuItem mnu_abm_ciudad;
+        private System.Windows.Forms.ToolStripMenuItem mnu_abm_reco;
+        private System.Windows.Forms.ToolStripMenuItem mnu_abm_micro;
+        private System.Windows.Forms.ToolStripMenuItem mp_viajes;
+        private System.Windows.Forms.ToolStripMenuItem mnu_gen_viaje;
+        private System.Windows.Forms.ToolStripMenuItem mnu_reg_llega;
+        private System.Windows.Forms.ToolStripMenuItem mp_pasajes;
+        private System.Windows.Forms.ToolStripMenuItem mnu_compra_pas;
+        private System.Windows.Forms.ToolStripMenuItem mnu_dev_pas;
+        private System.Windows.Forms.ToolStripMenuItem mp_pasajeros;
+        private System.Windows.Forms.ToolStripMenuItem mnu_consul_puntos;
+        private System.Windows.Forms.ToolStripMenuItem mp_estadisticas;
+        private System.Windows.Forms.ToolStripMenuItem mnu_listado_est;
         private System.Windows.Forms.GroupBox CuadroLogin;
         private System.Windows.Forms.ToolStripMenuItem MenuSalir;
         private System.Windows.Forms.ToolStripMenuItem MenuIngresar;
+        private System.Windows.Forms.ToolStripMenuItem mnu_canje_puntos;
     }
 }

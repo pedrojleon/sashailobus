@@ -98,11 +98,11 @@ namespace FrbaBus.Cancelar_Viaje
                     return;
                 }
                 if (!pasaje.Text.Trim().Equals(""))
-                    MessageBox.Show("El Pasaje ha sido cancelado", null, MessageBoxButtons.OK);
-                if (!encomienda.Text.Trim().Equals(""))
-                    MessageBox.Show("La Encomienda ha sido cancelada", null, MessageBoxButtons.OK);
+                    MessageBox.Show("El Pasaje ha sido cancelado", "", MessageBoxButtons.OK);
+                else if (!encomienda.Text.Trim().Equals(""))
+                    MessageBox.Show("La Encomienda ha sido cancelada", "", MessageBoxButtons.OK);
                 else
-                    MessageBox.Show("La Compra ha sido cancelada", null, MessageBoxButtons.OK);
+                    MessageBox.Show("La Compra ha sido cancelada", "", MessageBoxButtons.OK);
             }
             catch (Exception error)
             {

@@ -25,8 +25,9 @@ namespace FrbaBus.Compra_de_Pasajes
         public decimal precio_total;
         public int id_compra_generada;
         public bool mostroComprobante;
+        public bool hayLogueado;
 
-        public Finalizar_Compra(Compra_Pasaje.Viaje via, List<Nuevo_Pasaje.Pasaje> l_pasajes, List<Nueva_Encomienda.Encomienda> l_encomiendas)
+        public Finalizar_Compra(Compra_Pasaje.Viaje via, List<Nuevo_Pasaje.Pasaje> l_pasajes, List<Nueva_Encomienda.Encomienda> l_encomiendas, bool hayLogueado)
         {
 
             InitializeComponent();
@@ -36,6 +37,7 @@ namespace FrbaBus.Compra_de_Pasajes
             this.lista_encomiendas = l_encomiendas;
             this.cliente = null;
             this.mostroComprobante = false;
+            this.hayLogueado = hayLogueado;
             cargarDetallesCompra();
             cargarCombosSexo();
             cargarComboTipoPago();
@@ -43,6 +45,15 @@ namespace FrbaBus.Compra_de_Pasajes
             setearPreciosALosPasajes();
             setearPreciosALasEncomiendas();
             label_p_total.Text = getPrecioTotal();
+
+            if(!this.hayLogueado){
+                seleccionarEnCombo(c_tipo_pago, 2);
+                c_tipo_pago.Enabled = false;
+                n_tarjeta.Enabled = true;
+                codigo_seguridad.Enabled = true;
+                combo_vto.Enabled = true;
+                c_cuotas.Enabled = true;
+            }
 
         }
 
