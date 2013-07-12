@@ -454,6 +454,9 @@ GO
 INSERT INTO SASHAILO.Funcion(DESCRIPCION)
 values ('Listado Estadístico');
 GO
+INSERT INTO SASHAILO.Funcion(DESCRIPCION)
+values ('Canje de Puntos');
+GO
 
 -- FUNCIONES X ROL
 INSERT INTO SASHAILO.FuncionxRol(ID_ROL, ID_FUNCION)
@@ -476,7 +479,19 @@ INSERT INTO SASHAILO.FuncionxRol(ID_ROL, ID_FUNCION)
 values(1,6)
 GO
 INSERT INTO SASHAILO.FuncionxRol(ID_ROL, ID_FUNCION)
+values(1,7)
+GO
+INSERT INTO SASHAILO.FuncionxRol(ID_ROL, ID_FUNCION)
+values(1,8)
+GO
+INSERT INTO SASHAILO.FuncionxRol(ID_ROL, ID_FUNCION)
+values(1,9)
+GO
+INSERT INTO SASHAILO.FuncionxRol(ID_ROL, ID_FUNCION)
 values(1,10)
+GO
+INSERT INTO SASHAILO.FuncionxRol(ID_ROL, ID_FUNCION)
+values(1,11)
 GO
 
 -- PRODUCTOS
@@ -616,6 +631,18 @@ BEGIN
 		set @errores = 'El usuario está bloqueado.'
 		RETURN
 	END
+	
+	/*verifico que el usuario tenga algun rol*/
+	DECLARE @roles int 
+	DECLARE @id_usuario int 
+	select @id_usuario = (select ID_USUARIO from SASHAILO.Usuario where USUARIO=@p_usuario)
+	select @roles = (select COUNT(1) from SASHAILO.RolxUsuario where ID_USUARIO=@id_usuario)
+	if @roles = 0
+	BEGIN
+		set @hayErr = 1
+		set @errores = 'El usuario no tiene ningún rol asignado.'
+		RETURN
+	END	
 		
 	/*verifico si la password es correcta*/
 	DECLARE @password_db varchar(64) 
@@ -766,238 +793,37 @@ END
 
 GO
 
-CREATE PROCEDURE SASHAILO.rol_alta
-	
+CREATE PROCEDURE SASHAILO.rol_alta	
 	@nombreRol varchar(20),
-	@FuncionABMRol int,
-	@FuncionABMCiudad int,
-	@FuncionABMRecorrido int,
-	@FuncionABMMicro int,
-	@FuncionGeneracionViaje int,
-	@FuncionRegistroLlegada int,
-	@FuncionCompraPasaje int,
-	@FuncionDevolucion int,
-	@FuncionConsultaPuntos int,
-	@FuncionListadoEstadistico int
+	@id_rol int out
 
 AS
-
--- Cargo las tablas
-
--- ID DEL ROL
-DECLARE @IDROL int = (select ID_ROL from SASHAILO.Rol where NOMBRE = @nombreRol)
--- ID DE FUNCIONES
-DECLARE	@idFuncionABMRol int, @idFuncionABMCiudad int, @idFuncionABMRecorrido int, @idFuncionABMMicro int, @idFuncionGeneracionViaje int,	@idFuncionRegistroLlegada int,	@idFuncionDevolucion int, @idFuncionCompraPasaje int, @idFuncionConsultaPuntos int, @idFuncionListadoEstadistico int
-
-select @idFuncionABMCiudad = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'ABM de Ciudad'
-
-select @idFuncionABMRecorrido = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'ABM de Recorrido'
-
-select @idFuncionABMRol = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'ABM de Rol'
-
-select @idFuncionABMMicro = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'ABM de Micro'
-
-select @idFuncionGeneracionViaje = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'Generación de Viaje'
-
-select @idFuncionRegistroLlegada = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'Registro de llegada a Destino'
-
-select @idFuncionDevolucion = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'Devolución/Cancelación de pasaje y/o encomienda'
-
-select @idFuncionCompraPasaje = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'Compra de Pasaje/Encomienda'
-
-select @idFuncionConsultaPuntos = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'Consulta de puntos de pasajero frecuente'
-
-select @idFuncionListadoEstadistico = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'Listado Estadístico'
-
--- Actualizo las tablas
-
-IF @FuncionABMCiudad != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionABMCiudad, @IDROL)
-END
-
-IF @FuncionABMRol != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionABMRol, @IDROL)
-END
-
-IF @FuncionABMRecorrido != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionABMRecorrido, @IDROL)
-END
-
-IF @FuncionABMMicro != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionABMMicro, @IDROL)
-END
-
-IF @FuncionGeneracionViaje != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionGeneracionViaje, @IDROL)
-END
-
-IF @FuncionRegistroLlegada != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionRegistroLlegada, @IDROL)
-END
-
-IF @FuncionDevolucion != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionDevolucion, @IDROL)
-END
-
-IF @FuncionListadoEstadistico != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionListadoEstadistico, @IDROL)
-END
-
-IF @FuncionCompraPasaje != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionCompraPasaje, @IDROL)
-END
-
-IF @FuncionConsultaPuntos != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionConsultaPuntos, @IDROL)
-END
+	BEGIN
+		insert into SASHAILO.Rol(NOMBRE, ELIMINADO, HABILITADO)
+		values(@nombreRol, 'N', 'S')
+		SET @id_rol = SCOPE_IDENTITY()
+	END
 
 GO
 
-CREATE PROCEDURE SASHAILO.rol_modificacion
-	
+CREATE PROCEDURE SASHAILO.rol_modificacion	
+	@id_rol int,
 	@nombreRol varchar(20),
-	@FuncionABMRol int,
-	@FuncionABMCiudad int,
-	@FuncionABMRecorrido int,
-	@FuncionABMMicro int,
-	@FuncionGeneracionViaje int,
-	@FuncionRegistroLlegada int,
-	@FuncionCompraPasaje int,
-	@FuncionDevolucion int,
-	@FuncionConsultaPuntos int,
-	@FuncionListadoEstadistico int
+	@habilitado char(1)
 
 AS
-
--- Cargo las tablas
-
--- ID DEL ROL
-DECLARE @IDROL int = (select ID_ROL from SASHAILO.Rol where NOMBRE = @nombreRol)
--- ID DE FUNCIONES
-DECLARE	@idFuncionABMRol int, @idFuncionABMCiudad int, @idFuncionABMRecorrido int, @idFuncionABMMicro int, @idFuncionGeneracionViaje int,	@idFuncionRegistroLlegada int,	@idFuncionDevolucion int, @idFuncionCompraPasaje int, @idFuncionConsultaPuntos int, @idFuncionListadoEstadistico int
-
-select @idFuncionABMCiudad = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'ABM de Ciudad'
-
-select @idFuncionABMRecorrido = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'ABM de Recorrido'
-
-select @idFuncionABMRol = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'ABM de Rol'
-
-select @idFuncionABMMicro = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'ABM de Micro'
-
-select @idFuncionGeneracionViaje = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'Generación de Viaje'
-
-select @idFuncionRegistroLlegada = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'Registro de llegada a Destino'
-
-select @idFuncionDevolucion = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'Devolución/Cancelación de pasaje y/o encomienda'
-
-select @idFuncionCompraPasaje = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'Compra de Pasaje/Encomienda'
-
-select @idFuncionConsultaPuntos = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'Consulta de puntos de pasajero frecuente'
-
-select @idFuncionListadoEstadistico = ID_FUNCION from SASHAILO.Funcion
-where DESCRIPCION = 'Listado Estadístico'
-
--- Actualizo las tablas
-DELETE SASHAILO.FuncionxRol where ID_ROL = @IDROL
-
-IF @FuncionABMCiudad != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionABMCiudad, @IDROL)
-END
-
-IF @FuncionABMRol != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionABMRol, @IDROL)
-END
-
-IF @FuncionABMRecorrido != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionABMRecorrido, @IDROL)
-END
-
-IF @FuncionABMMicro != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionABMMicro, @IDROL)
-END
-
-IF @FuncionGeneracionViaje != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionGeneracionViaje, @IDROL)
-END
-
-IF @FuncionRegistroLlegada != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionRegistroLlegada, @IDROL)
-END
-
-IF @FuncionDevolucion != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionDevolucion, @IDROL)
-END
-
-IF @FuncionListadoEstadistico != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionListadoEstadistico, @IDROL)
-END
-
-IF @FuncionCompraPasaje != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionCompraPasaje, @IDROL)
-END
-
-IF @FuncionConsultaPuntos != 0
-BEGIN
-INSERT INTO SASHAILO.FuncionxRol (ID_FUNCION, ID_ROL) VALUES (@idFuncionConsultaPuntos, @IDROL)
-END
-
-GO
-
-CREATE PROCEDURE SASHAILO.listado_recorridos
-    	@p_id_ciudad_origen int, 
-    	@p_id_ciudad_destino int,
-	    @p_m_habilitado char(1)
-AS
-
-	SELECT ID_RECORRIDO, ori.NOMBRE_CIUDAD, dest.NOMBRE_CIUDAD, ts.DESCRIPCION, rc.PRECIO_BASE_PASAJE, rc.PRECIO_BASE_KG, re.HABILITADO
-	FROM SASHAILO.Recorrido re
-	JOIN SASHAILO.Recorrido_Ciudades rc on rc.ID_RECORRIDO_CIUDADES = re.ID_RECORRIDO_CIUDADES
-	JOIN SASHAILO.Ciudad ori on ori.ID_CIUDAD = rc.ID_CIUDAD_ORIGEN
-	JOIN SASHAILO.Ciudad dest on dest.ID_CIUDAD = rc.ID_CIUDAD_DESTINO
-	JOIN SASHAILO.Tipo_Servicio ts on ts.ID_TIPO_SERVICIO = re.ID_TIPO_SERVICIO
-	WHERE (@p_id_ciudad_origen is null or ori.ID_CIUDAD = @p_id_ciudad_origen)
-	and (@p_id_ciudad_destino is null or dest.ID_CIUDAD = @p_id_ciudad_destino)
-	and (@p_m_habilitado is null or re.HABILITADO = @p_m_habilitado)
-	;
+	BEGIN TRANSACTION 
+	
+		BEGIN
+			UPDATE SASHAILO.Rol SET NOMBRE = @nombreRol, HABILITADO = @habilitado where ID_ROL = @id_rol
+		END
 		
+		IF @habilitado = 'N' BEGIN
+			DELETE FROM SASHAILO.RolxUsuario where ID_ROL = @id_rol
+		END
+	
+	COMMIT TRANSACTION 
+
 GO
 
 CREATE PROCEDURE SASHAILO.puntos_cliente
@@ -2927,5 +2753,27 @@ BEGIN
 	COMMIT TRANSACTION 
 	
 END
+GO
+
+create trigger t_baja_rol
+on SASHAILO.Rol
+for update
+as
+BEGIN
+	
+	BEGIN TRANSACTION 
+	
+	declare @id_rol int
+	declare @eliminado char(1)
+	select @id_rol = ID_ROL, @eliminado = ELIMINADO from inserted
+	
+	IF @eliminado = 'S' BEGIN
+		DELETE FROM SASHAILO.RolxUsuario where ID_ROL = @id_rol
+	END
+		
+	COMMIT TRANSACTION 
+	
+END
+GO
 
 /******************************************** FIN - TRIGGERS *****************************************/
