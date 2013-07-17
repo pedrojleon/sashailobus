@@ -104,11 +104,11 @@ namespace FrbaBus.Registrar_LLegada_Micro
                     conn.desconectar();
                     return;
                 }
-                MessageBox.Show(errores, null, MessageBoxButtons.OK);
+                MessageBox.Show(errores, "", MessageBoxButtons.OK);
             }
             catch (Exception error)
             {
-                MessageBox.Show("Error en la creación del recorrido. Error: " + error.ToString(), null, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show("Errores. Error: " + error.ToString(), null, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 conn.desconectar();
                 return;
             }

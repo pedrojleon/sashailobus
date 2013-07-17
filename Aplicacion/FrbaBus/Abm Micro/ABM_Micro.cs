@@ -212,9 +212,9 @@ namespace FrbaBus.Abm_Micro
                         return;
                     }
                     if(fin_vida_util.Equals("S"))
-                        MessageBox.Show("El fin de la vida útil del Micro ha sido registrado", null, MessageBoxButtons.OK);
+                        MessageBox.Show("El fin de la vida útil del Micro ha sido registrado", "", MessageBoxButtons.OK);
                     else
-                        MessageBox.Show("El micro aún posee vida útil", null, MessageBoxButtons.OK);
+                        MessageBox.Show("El micro aún posee vida útil", "", MessageBoxButtons.OK);
                     conn.desconectar();
                 }
                 catch (Exception error)
